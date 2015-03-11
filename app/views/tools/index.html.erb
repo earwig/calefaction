@@ -1,7 +1,15 @@
 <h1>Tools#index</h1>
 
-<p>Users: <a href="/signup">Signup</a> &bull; <a href="/login">Login</a></p>
-<p>Admin: <a href="/admin">Admin</a></p>
+<p>
+    Users:
+    <%= link_to "Signup", controller: "users", action: "create" %>
+    &bull;
+    <%= link_to "Login", controller: "users", action: "login" %>
+</p>
+<p>
+    Admin:
+    <%= link_to "Admin", controller: "admin", action: "index" %>
+</p>
 <p>Tools: ...</p>
 
 <p>[Site description]</p>
