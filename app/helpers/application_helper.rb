@@ -1,3 +1,5 @@
+require 'calefaction/version'
+
 module ApplicationHelper
 
   def get_title(title = '')
@@ -9,9 +11,5 @@ module ApplicationHelper
     start = 2015
     year = Time.now.year
     year > start ? "#{start}–#{year}" : start
-  end
-
-  def get_project_version
-    '0.1'  # todo
   end
 end
