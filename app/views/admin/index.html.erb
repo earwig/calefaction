@@ -2,8 +2,6 @@
 
 <h1>Admin#index</h1>
 
-<p><%= link_to 'Home', controller: 'tools', action: 'index' %></p>
-
 <%= form_tag do %>
   <table>
     <% AdminHelper::SETTINGS.each do |s| %>

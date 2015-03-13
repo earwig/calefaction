@@ -1,3 +1,15 @@
 <div id="header">
-  <!-- -->
+  <p>
+    <%= link_to 'Home', controller: 'tools', action: 'index' %>
+  </p>
+  <p>
+    Users:
+    <%= link_to "Signup", controller: "users", action: "create" %>
+    &bull;
+    <%= link_to "Login", controller: "users", action: "login" %>
+  </p>
+  <p>
+    Admin:
+    <%= link_to "Admin", controller: "admin", action: "index" %>
+  </p>
 </div>
