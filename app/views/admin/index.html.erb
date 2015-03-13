@@ -1,4 +1,23 @@
 <% provide(:title, 'Admin') %>
 
 <h1>Admin#index</h1>
-<p>Find me in app/views/admin/index.html.erb</p>
+
+<p><%= link_to 'Home', controller: 'tools', action: 'index' %></p>
+
+<%= form_tag do %>
+  <table>
+    <% AdminHelper::SETTINGS.each do |s| %>
+      <tr>
+        <td><%= label_tag(s[:key], s[:label]) %></td>
+        <% if s[:textarea] %>
+          <td><%= text_area_tag(s[:key], AdminSetting.get(s[:key].to_s), size: "60x5") %></td>
+        <% else %>
+          <td><%= text_field_tag(s[:key], AdminSetting.get(s[:key].to_s), size: 40) %></td>
+        <% end %>
+      </tr>
+    <% end %>
+    <tr>
+      <td colspan="2"><%= submit_tag('Update') %></td>
+    </tr>
+  </table>
+<% end %>
