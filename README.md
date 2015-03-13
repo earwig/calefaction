@@ -8,3 +8,5 @@ Installing
 ----------
 
 calefaction can be deployed as a standard Rails app.
+
+- describe db setup here...
