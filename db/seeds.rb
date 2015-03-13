@@ -6,7 +6,7 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-AdminSetting.create(key: 'site_name',   value: 'Your Corporation')
+AdminSetting.create(key: 'site_name',   value: 'Your Corporation Site')
 AdminSetting.create(key: 'corporation', value: 'Your Corporation')
 AdminSetting.create(key: 'description', value: 'Your corporation\'s description goes here!')
 AdminSetting.create(key: 'copyright',   value: 'Your Corporation/Your Name')

@@ -8,11 +8,11 @@
   <table>
     <% AdminHelper::SETTINGS.each do |s| %>
       <tr>
-        <td><%= label_tag(s[:key], s[:label]) %></td>
+        <td><%= label_tag("settings[#{s[:key]}]", s[:label]) %></td>
         <% if s[:textarea] %>
-          <td><%= text_area_tag(s[:key], AdminSetting.get(s[:key].to_s), size: "60x5") %></td>
+          <td><%= text_area_tag("settings[#{s[:key]}]", AdminSetting.get(s[:key]), size: "60x5") %></td>
         <% else %>
-          <td><%= text_field_tag(s[:key], AdminSetting.get(s[:key].to_s), size: 40) %></td>
+          <td><%= text_field_tag("settings[#{s[:key]}]", AdminSetting.get(s[:key]), size: 40) %></td>
         <% end %>
       </tr>
     <% end %>

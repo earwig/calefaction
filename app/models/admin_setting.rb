@@ -7,10 +7,7 @@ class AdminSetting < ActiveRecord::Base
   end
 
   def self.set(key, value)
-    setting = self.find_by(key: key)
-    setting.update(value: value)
-    Rails.cache.write("admin_setting/#{key}") do
-      value
-    end
+    self.find_by(key: key).update(value: value)
+    Rails.cache.write("admin_setting/#{key}", value)
   end
 end
