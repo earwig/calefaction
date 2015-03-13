@@ -14,7 +14,25 @@
  *= require_self
  */
 
-img#corp_logo {
-    width:  64px;
+header #home-link {
+    text-decoration: none;
+    color: black;
+    font-family: sans-serif;
+}
+
+header #corp-logo {
+    width: 64px;
     height: 64px;
+    vertical-align: middle;
+    margin-right: 0.5em;
+}
+
+header #corp-name {
+    font-size: 250%;
+    vertical-align: middle;
+}
+
+header #user-links {
+    float: right;
+    margin: 0.5em;
 }
