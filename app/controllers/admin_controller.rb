@@ -3,10 +3,8 @@ class AdminController < ApplicationController
   end
 
   def update
-    if !params[:settings].nil?
+    if params[:settings].is_a? Hash
       params[:settings].each do |key, value|
-        ## assert in list of valid settings...
-        ## only if changed (i.e. not equal to get)
         AdminSetting.set(key, value)
       end
     end
