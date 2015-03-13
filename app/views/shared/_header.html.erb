@@ -1,4 +1,8 @@
 <div id="header">
+  <h1>
+    <%= corp_logo_tag %>
+    <%= AdminSetting.get('corp_name') %>
+  </h1>
   <p>
     <%= link_to 'Home', controller: 'tools', action: 'index' %>
   </p>
