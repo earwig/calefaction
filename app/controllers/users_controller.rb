@@ -1,7 +1,11 @@
 class UsersController < ApplicationController
-  def create
+  def login
   end
 
-  def login
+  def signup
+  end
+
+  def create
+    render 'signup'
   end
 end

@@ -3,11 +3,15 @@
 one:
   name: MyString
   email: MyString
-  password_hash: MyString
+  password_digest: <%= BCrypt::Password.create('secret') %>
+  api_key: MyString
   is_admin: false
+  is_corp: false
 
 two:
   name: MyString
   email: MyString
-  password_hash: MyString
+  password_digest: <%= BCrypt::Password.create('secret') %>
+  api_key: MyString
   is_admin: false
+  is_corp: false

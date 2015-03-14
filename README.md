@@ -9,4 +9,6 @@ Installing
 
 calefaction can be deployed as a standard Rails app.
 
-- describe db setup here...
+To set up the database and create your admin account, run:
+
+    rake db:setup calefaction:setup
