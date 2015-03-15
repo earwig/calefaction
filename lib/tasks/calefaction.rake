@@ -8,29 +8,11 @@ namespace :calefaction do
 
     print "\nEnter your corporation's ID (this is visible in the URL for "\
           "your corp's page on \nzKillboard, among other places): "
-    corp_id = STDIN.gets.chomp.to_i
+    corp_id = STDIN.gets.to_i
     if corp_id <= 0
       puts 'Corporation ID must be a positive integer. Stopping.'
       next
     end
-
-    print "\nEnter your character's name: "
-    user_name = STDIN.gets.chomp
-
-    print "\nEnter your email address (used for password resets; may be blank): "
-    user_email = STDIN.gets.chomp
-    user_email = nil if user_email.empty?
-
-    print "\nEnter your new password (to log in to the website, **NOT** for EVE!): "
-    user_pass = STDIN.noecho(&:gets).chomp
-    puts
-
-    print "\nConfirm the password: "
-    if user_pass != STDIN.noecho(&:gets).chomp
-      puts "\nPasswords do not match. Stopping."
-      next
-    end
-    puts
 
     print "\nEnter your character's API key ID (create one at\n"\
           "https://community.eveonline.com/support/api-key/createpredefined?accessMask=8): "
@@ -39,17 +21,55 @@ namespace :calefaction do
     print "\nEnter the verification code for the key you just entered: "
     user_api_verify = STDIN.gets.chomp
 
-    User.transaction do
-      AdminSetting.where(key: %w(corp_name site_name)).update_all(value: corp_name)
-      AdminSetting.find_by(key: 'corp_id').update(value: corp_id)
-      user = User.new(name: user_name, email: user_email, password: user_pass,
-                      api_key: user_api_key, api_verify: user_api_verify,
-                      is_admin: true, is_corp: true)
-      unless user.member_of? corp_id
-        puts 'You are not a member of the given corporation. Stopping.'
-        raise ActiveRecord::Rollback
-      end
-      user.save
+    user = User.new(api_key: user_api_key, api_verify: user_api_verify,
+                    is_admin: true, is_corp: true)
+    chars = user.char_names
+    if chars.empty?
+      puts "The given API key is invalid, has no characters, or something "\
+           "else is wrong\nwith the EVE API right now..."
+      next
     end
+
+    if chars.length == 1
+      user.name = chars.first
+    else
+      puts "\nChoose a character:"
+      chars.each_with_index do |name, i|
+        puts "  [#{i}]: #{name}"
+      end
+      puts "Enter the number next to your chosen character: "
+      loop do
+        index = STDIN.gets.to_i
+        break unless index >= chars.length || index < 0
+        puts "Bad input; try again: "
+      end
+      user.name = chars[index]
+    end
+
+    unless user.member_of? corp_id
+      puts 'You are not a member of the given corporation. Stopping.'
+      next
+    end
+
+    print "\nEnter your email address (used for password resets; may be blank): "
+    user.email = STDIN.gets.chomp
+    user.email = nil if user.email.empty?
+
+    print "\nEnter your new password (to log in to the website, **NOT** for EVE!): "
+    user.password = STDIN.noecho(&:gets).chomp
+    puts
+
+    print "\nConfirm the password: "
+    if user.password != STDIN.noecho(&:gets).chomp
+      puts "\nPasswords do not match. Stopping."
+      next
+    end
+    puts
+
+    AdminSetting.where(key: %w(corp_name site_name)).update_all(value: corp_name)
+    AdminSetting.find_by(key: 'corp_id').update(value: corp_id)
+    user.save
+
+    puts "\nDone!"
   end
 end

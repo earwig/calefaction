@@ -5,6 +5,7 @@ gem 'sqlite3'
 gem 'uglifier', '>= 1.3.0'
 gem 'jquery-rails'
 gem 'bcrypt', '~> 3.1.7'
+gem 'eaal', '~> 0.1.12'
 
 # At this point, avoid using SASS or CoffeeScript
 # gem 'sass-rails', '~> 5.0'
