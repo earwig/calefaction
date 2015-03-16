@@ -7,6 +7,8 @@ Rails.application.routes.draw do
   post '/login'  => 'users#login'
   get  '/logout' => 'users#logout'
   post '/logout' => 'users#logout'
+  get  '/reset'  => 'users#reset'
+  post '/reset'  => 'users#reset'
 
   get  '/admin'  => 'admin#index'
   post '/admin'  => 'admin#update'

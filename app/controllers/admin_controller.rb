@@ -8,6 +8,7 @@ class AdminController < ApplicationController
         AdminSetting.set(key, value)
       end
     end
+    flash.now[:notice] = 'Admin settings updated.'
     render 'index'
   end
 end

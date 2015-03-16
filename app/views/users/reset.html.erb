@@ -1,0 +1,15 @@
+<% provide(:title, 'Reset Password') %>
+
+<h1>Reset Password</h1>
+
+<%= form_tag do %>
+  <table>
+    <tr>
+      <td><%= label_tag('email', 'Email address') %></td>
+      <td><%= email_field_tag('email') %></td>
+    </tr>
+    <tr>
+      <td colspan="2"><%= submit_tag('Send password reset email') %></td>
+    </tr>
+  </table>
+<% end %>

@@ -6,10 +6,13 @@
     </span>
   <% end %>
   <span id="user-links">
-    <%= link_to "Signup", controller: "users", action: "signup" %>
+    <%= link_to 'Signup', controller: 'users', action: 'signup' %>
     &bull;
-    <%= link_to "Login", controller: "users", action: "login" %>
+    <%= link_to 'Login', controller: 'users', action: 'login' %>
     &bull;
-    <%= link_to "Admin", controller: "admin", action: "index" %>
+    <%= link_to 'Admin', controller: 'admin', action: 'index' %>
   </span>
 </header>
+<% flash.each do |name, msg| %>
+  <div class="flash">FLASH: <%= name %>: <%= msg %></div>
+<% end %>
