@@ -2,7 +2,7 @@
   <%= link_to(root_url, id: 'home-link') do %>
     <%= corp_logo_tag %>
     <span id="corp-name">
-      <%= AdminSetting.get('corp_name') %>
+      <%= AdminSetting.get(:corp_name) %>
     </span>
   <% end %>
   <span id="user-links">

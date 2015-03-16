@@ -2,6 +2,8 @@ require 'eaal'
 
 class User < ActiveRecord::Base
   has_secure_password
+  alias_attribute :admin?, :is_admin
+  alias_attribute :corp?, :is_corp
 
   def char_names
     ensure_api_user

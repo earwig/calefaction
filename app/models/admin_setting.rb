@@ -1,6 +1,15 @@
 class AdminSetting < ActiveRecord::Base
 
+  def self.to_bool(value)
+    value == 't'
+  end
+
+  def self.from_bool(value)
+    value ? 't' : 'f'
+  end
+
   def self.add(key, value)
+    value = self.from_bool(value) if value == true || value == false
     self.create(key: key, value: value)
   end
 
@@ -13,10 +22,18 @@ class AdminSetting < ActiveRecord::Base
     setting.value
   end
 
+  def self.get_bool(key)
+    self.to_bool(self.get(key))
+  end
+
   def self.set(key, value)
     existing = self.get(key)
     return if existing.nil? || existing == value
     self.find_by(key: key).update(value: value)
     Rails.cache.write("admin_setting/#{key}", value)
+  end
+
+  def self.set_bool(key, value)
+    self.set(key, self.from_bool(value))
   end
 end
