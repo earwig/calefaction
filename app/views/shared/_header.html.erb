@@ -1,5 +1,5 @@
 <header>
-  <%= link_to({controller: 'tools', action: 'index'}, {id: 'home-link'}) do %>
+  <%= link_to(root_url, id: 'home-link') do %>
     <%= corp_logo_tag %>
     <span id="corp-name">
       <%= AdminSetting.get('corp_name') %>

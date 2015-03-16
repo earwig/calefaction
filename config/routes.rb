@@ -1,9 +1,12 @@
 Rails.application.routes.draw do
   root 'tools#index'
 
-  get  '/login'  => 'users#login'
   get  '/signup' => 'users#signup'
-  post '/signup' => 'users#create'
+  post '/signup' => 'users#signup'
+  get  '/login'  => 'users#login'
+  post '/login'  => 'users#login'
+  get  '/logout' => 'users#logout'
+  post '/logout' => 'users#logout'
 
   get  '/admin'  => 'admin#index'
   post '/admin'  => 'admin#update'

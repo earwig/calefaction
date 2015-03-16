@@ -1,11 +1,23 @@
 class UsersController < ApplicationController
-  def login
-  end
 
   def signup
+    if request.post?
+      # do user create logic
+      redirect_to root_url
+    end
   end
 
-  def create
-    render 'signup'
+  def login
+    if request.post?
+      # do user login logic
+      redirect_to root_url
+    end
+  end
+
+  def logout
+    if request.post?
+      # do user logout logic
+      redirect_to root_url
+    end
   end
 end

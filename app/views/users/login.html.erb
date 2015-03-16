@@ -1,4 +1,11 @@
 <% provide(:title, 'Login') %>
 
-<h1>Users#login</h1>
-<p>Find me in app/views/users/login.html.erb</p>
+<h1>Login</h1>
+
+<%= form_tag do %>
+  <table>
+    <tr>
+      <td colspan="2"><%= submit_tag('Login') %></td>
+    </tr>
+  </table>
+<% end %>
