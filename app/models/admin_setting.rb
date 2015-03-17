@@ -28,9 +28,10 @@ class AdminSetting < ActiveRecord::Base
 
   def self.set(key, value)
     existing = self.get(key)
-    return if existing.nil? || existing == value
+    return false if existing.nil? || existing == value
     self.find_by(key: key).update(value: value)
     Rails.cache.write("admin_setting/#{key}", value)
+    true
   end
 
   def self.set_bool(key, value)
