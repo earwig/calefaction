@@ -8,7 +8,7 @@
   <nav>
     <ul>
       <% if @user %>
-        <li><%= @user.name %></li>
+        <li><%= @user.name %> [<%= Calefaction::EVE.corp_ticker @user.corp_id %>]</li>
         <% if @user.admin? %>
           <li><%= link_to 'Admin', controller: 'admin', action: 'index' %></li>
         <% end %>

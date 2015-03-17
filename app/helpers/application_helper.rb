@@ -1,3 +1,4 @@
+require 'calefaction/eve'
 require 'calefaction/version'
 
 module ApplicationHelper

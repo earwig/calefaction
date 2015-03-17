@@ -17,13 +17,17 @@ class User < ActiveRecord::Base
     member_of? AdminSetting.get(:corp_id).to_i
   end
 
-  def member_of?(corp_id)
+  def member_of?(corp)
+    corp_id == corp
+  end
+
+  def corp_id
     ensure_api_user
     @api.scope = 'char'
     begin
-      @api.CharacterSheet(names: name).corporationID.to_i == corp_id
+      @api.CharacterSheet(names: name).corporationID.to_i
     rescue EAAL::EAALError
-      false
+      0
     end
   end
 
