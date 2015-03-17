@@ -9,14 +9,14 @@ class UsersController < ApplicationController
 
   def login
     if request.post?
-      if params[:username].blank? || params[:password].blank?
-        flash.now[:alert] = 'Both a character name and password are required.'
+      if params[:email].blank? || params[:password].blank?
+        flash.now[:alert] = 'Both an email and a password are required.'
         render 'login' and return
       end
 
-      user = User.find_by(name: params[:username])
+      user = User.find_by(email: params[:email])
       if user.nil? || !user.authenticate(params[:password])
-        flash.now[:alert] = 'Incorrect character name or password.'
+        flash.now[:alert] = 'Incorrect email address or password.'
         render 'login' and return
       end
 

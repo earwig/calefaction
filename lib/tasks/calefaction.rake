@@ -13,14 +13,14 @@ namespace :calefaction do
 
     if AdminSetting.get(:corp_id).nil?
       puts "The database does not contain the correct seed values. You need "\
-           "to run\n`rake db:reset db:setup` first."
+           "to run\n`rake db:reset tmp:cache:clear` first."
       next
     end
 
     if AdminSetting.get(:corp_id).to_i > 0
       puts "The database is not empty; you should change settings from "\
            "within the\napplication. Alternatively, you can start over with\n"\
-           "`rake db:reset db:setup calefaction:setup`."
+           "`rake db:reset tmp:cache:clear calefaction:setup`."
       next
     end
 
@@ -43,7 +43,7 @@ namespace :calefaction do
     api_verify = STDIN.gets.chomp
 
     user = User.new(api_key: api_key, api_verify: api_verify, admin?: true)
-    chars = user.char_names
+    chars = user.characters
     if chars.empty?
       puts "The given API key is invalid, has no characters, or something "\
            "else is wrong\nwith the EVE API right now..."
@@ -51,20 +51,21 @@ namespace :calefaction do
     end
 
     if chars.length == 1
-      user.name = chars.first
-      puts "\nUsing character: #{user.name}"
+      puts "\nUsing character: #{chars.first.name}"
+      user.userid = chars.first.characterID
     else
       puts "\nChoose a character:"
-      chars.each_with_index do |name, i|
-        puts "  [#{i}]: #{name}"
+      chars.each_with_index do |char, i|
+        puts "  [#{i}]: #{char.name}"
       end
-      puts "Enter the number next to your chosen character: "
+      print "Enter the number next to your chosen character: "
       loop do
         index = STDIN.gets.to_i
-        break if index >= 0 && index < chars.length
-        puts "Bad input; try again: "
+        if index >= 0 && index < chars.length
+          user.userid = chars[index].characterID and break
+        end
+        print "Bad input; try again: "
       end
-      user.name = chars[index]
     end
 
     unless user.member_of? corp_id
@@ -72,9 +73,12 @@ namespace :calefaction do
       next
     end
 
-    print "\nEnter your email address (used for password resets; may be blank): "
+    print "\nEnter your email address (required; used to log in): "
     user.email = STDIN.gets.chomp
-    user.email = nil if user.email.empty?
+    if user.email.blank?
+      puts "\nInvalid email address. Stopping."
+      next
+    end
 
     print "\nEnter your new password (to log in to the website, **NOT** for EVE!): "
     user.password = STDIN.noecho(&:gets).chomp

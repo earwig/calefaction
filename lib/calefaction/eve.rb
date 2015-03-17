@@ -17,7 +17,7 @@ module Calefaction::EVE
     @@api.scope = 'corp'
     begin
       @@api.CorporationSheet(corporationID: corp_id).ticker
-    rescue EAAL::EAALError
+    rescue EAAL::Exception::EAALError
       nil
     end
   end

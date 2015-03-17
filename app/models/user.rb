@@ -4,12 +4,13 @@ class User < ActiveRecord::Base
   has_secure_password
   alias_attribute :admin?, :is_admin
 
-  def char_names
+  def name
     ensure_api_user
+    @api.scope = 'char'
     begin
-      @api.Characters.characters.map { |char| char.name }
-    rescue EAAL::EAALError
-      []
+      @api.CharacterSheet(characterID: userid).name
+    rescue EAAL::Exception::EAALError
+      '?'
     end
   end
 
@@ -25,9 +26,18 @@ class User < ActiveRecord::Base
     ensure_api_user
     @api.scope = 'char'
     begin
-      @api.CharacterSheet(names: name).corporationID.to_i
-    rescue EAAL::EAALError
+      @api.CharacterSheet(characterID: userid).corporationID.to_i
+    rescue EAAL::Exception::EAALError
       0
+    end
+  end
+
+  def characters
+    ensure_api_user
+    begin
+      @api.Characters.characters
+    rescue EAAL::Exception::EAALError
+      []
     end
   end
 
