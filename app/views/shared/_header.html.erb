@@ -13,6 +13,6 @@
     </ul>
   </nav>
 </header>
-<% flash.each do |name, msg| %>
-  <div class="flash"><%= name %>: <%= msg %></div>
+<% flash.each do |type, message| %>
+  <div class="flash <%= type %>"><%= message %></div>
 <% end %>

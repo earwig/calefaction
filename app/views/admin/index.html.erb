@@ -2,16 +2,27 @@
 
 <h1>Admin Settings</h1>
 
-<%= form_tag do %>
-  <table>
-    <% Calefaction::Settings::SETTINGS.each do |s| %>
+<section id="general">
+  <h2>General</h2>
+  <%= form_tag do %>
+    <table>
+      <% Calefaction::Settings::SETTINGS.each do |s| %>
+        <tr>
+          <td><%= label_tag("settings[#{s[:key]}]", s[:label]) %></td>
+          <td><%= setting_tag s %></td>
+        </tr>
+      <% end %>
       <tr>
-        <td><%= label_tag("settings[#{s[:key]}]", s[:label]) %></td>
-        <td><%= setting_tag s %></td>
+        <td colspan="2"><%= submit_tag('Update') %></td>
       </tr>
-    <% end %>
-    <tr>
-      <td colspan="2"><%= submit_tag('Update') %></td>
-    </tr>
-  </table>
-<% end %>
+    </table>
+  <% end %>
+</section>
+
+<section id="tools">
+  <h2>Tools</h2>
+</section>
+
+<section id="users">
+  <h2>Users</h2>
+</section>

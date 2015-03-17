@@ -1,3 +1,5 @@
+/* -------------------------------- Header --------------------------------- */
+
 header {
     display: table;
     width: 100%;
@@ -46,6 +48,19 @@ header nav li:not(:first-child) {
     padding-left: 1em;
 }
 
+/* --------------------------------- Flash --------------------------------- */
+
 div.flash {
-    /**/
+    margin: 1em 0;
+    padding: 0.5em;
+}
+
+div.flash.alert {
+    background-color: #FFEEEE;
+    border: 1px solid #FFCCCC;
+}
+
+div.flash.notice {
+    background-color: #FFFDDD;
+    border: 1px solid #EEEE00;
 }
