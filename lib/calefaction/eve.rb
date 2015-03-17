@@ -39,16 +39,15 @@ module Calefaction::EVE
 
   private
   def corporation_sheet(corp_id)
-    ensure_basic_api
-    @@api.scope = 'corp'
+    basic_api.scope = 'corp'
     begin
-      @@api.CorporationSheet(corporationID: corp_id)
+      basic_api.CorporationSheet(corporationID: corp_id)
     rescue EAAL::Exception::EAALError
       nil
     end
   end
 
-  def ensure_basic_api
+  def basic_api
     @@api ||= EAAL::API.new(nil, nil)
   end
 end
