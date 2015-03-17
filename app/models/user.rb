@@ -1,48 +1,37 @@
-require 'eaal'
+require 'calefaction/eve'
 
 class User < ActiveRecord::Base
   has_secure_password
   alias_attribute :admin?, :is_admin
 
-  def name
+  def characters
     ensure_api_user
-    @api.scope = 'char'
-    begin
-      @api.CharacterSheet(characterID: userid).name
-    rescue EAAL::Exception::EAALError
-      '?'
-    end
+    chars = @api.characters
+    chars.nil? ? [] : chars
   end
 
-  def in_corp?
-    member_of? AdminSetting.get(:corp_id).to_i
+  def name
+    ensure_api_user
+    sheet = @api.character_sheet(userid)
+    sheet.nil? ? '?' : sheet.name
+  end
+
+  def corp_id
+    ensure_api_user
+    sheet = @api.character_sheet(userid)
+    sheet.nil? ? 0 : sheet.corporationID.to_i
   end
 
   def member_of?(corp)
     corp_id == corp
   end
 
-  def corp_id
-    ensure_api_user
-    @api.scope = 'char'
-    begin
-      @api.CharacterSheet(characterID: userid).corporationID.to_i
-    rescue EAAL::Exception::EAALError
-      0
-    end
-  end
-
-  def characters
-    ensure_api_user
-    begin
-      @api.Characters.characters
-    rescue EAAL::Exception::EAALError
-      []
-    end
+  def in_corp?
+    member_of? AdminSetting.get(:corp_id).to_i
   end
 
   private
   def ensure_api_user
-    @api ||= EAAL::API.new(api_key, api_verify)
+    @api ||= Calefaction::EVE::APIUser.new(api_key, api_verify)
   end
 end
