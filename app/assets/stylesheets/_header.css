@@ -1,0 +1,51 @@
+header {
+    display: table;
+    width: 100%;
+    background-color: #EEE;
+}
+
+header #corp-banner {
+    display: table-cell;
+}
+
+header #corp-banner a {
+    text-decoration: none;
+    color: black;
+    font-family: sans-serif;
+}
+
+header #corp-banner img {
+    width: 64px;
+    height: 64px;
+    vertical-align: middle;
+    margin-right: 0.5em;
+}
+
+header #corp-banner span {
+    font-size: 250%;
+    vertical-align: middle;
+}
+
+header nav {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+}
+
+header nav ul {
+    padding-left: 0;
+    margin-right: 1.5em;
+}
+
+header nav li {
+    display: inline;
+    list-style-type: none;
+}
+
+header nav li:not(:first-child) {
+    padding-left: 1em;
+}
+
+div.flash {
+    /**/
+}

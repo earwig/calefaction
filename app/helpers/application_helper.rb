@@ -11,7 +11,7 @@ module ApplicationHelper
     corp_id = AdminSetting.get(:corp_id)
     corp_name = AdminSetting.get(:corp_name)
     image_tag("https://image.eveonline.com/Corporation/#{corp_id}_256.png",
-              id: 'corp-logo', title: corp_name, alt: "#{corp_name} Logo")
+              title: corp_name, alt: "#{corp_name} Logo")
   end
 
   def copyright_year

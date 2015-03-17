@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title><%= get_title(yield(:title)) %></title>
-  <%= stylesheet_link_tag    'application', media: 'all' %>
-  <%= javascript_include_tag 'application' %>
-  <%= csrf_meta_tags %>
-</head>
-<body>
-  <%= render "shared/header" %>
-  </div>
-  <main>
-    <%= yield %>
-  </main>
-  <%= render "shared/footer" %>
-</body>
+  <head>
+    <title><%= get_title(yield(:title)) %></title>
+    <%= stylesheet_link_tag    'application', media: 'all' %>
+    <%= javascript_include_tag 'application' %>
+    <%= csrf_meta_tags %>
+  </head>
+  <body>
+    <%= render "shared/header" %>
+    <main>
+      <%= yield %>
+    </main>
+    <%= render "shared/footer" %>
+  </body>
 </html>
