@@ -8,7 +8,7 @@
 
 AdminSetting.add(:site_name,      'Your Corporation\'s Site')
 AdminSetting.add(:corp_name,      'Your Corporation')
-AdminSetting.add(:corp_id,        '1')
+AdminSetting.add(:corp_id,        '0')
 AdminSetting.add(:copyright,      'Your Corporation/Your Name')
 AdminSetting.add(:description,
   'Welcome to your corporation\'s website! This message can be changed in the admin settings panel.')

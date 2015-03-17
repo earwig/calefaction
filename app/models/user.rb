@@ -3,7 +3,6 @@ require 'eaal'
 class User < ActiveRecord::Base
   has_secure_password
   alias_attribute :admin?, :is_admin
-  alias_attribute :corp?, :is_corp
 
   def char_names
     ensure_api_user
@@ -12,6 +11,10 @@ class User < ActiveRecord::Base
     rescue EAAL::EAALError
       []
     end
+  end
+
+  def in_corp?
+    member_of? AdminSettings.get(:corp_id)
   end
 
   def member_of?(corp_id)

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150314013929) do
+ActiveRecord::Schema.define(version: 20150316234044) do
 
   create_table "admin_settings", force: :cascade do |t|
     t.string "key"
@@ -25,7 +25,6 @@ ActiveRecord::Schema.define(version: 20150314013929) do
     t.string   "api_key"
     t.string   "api_verify"
     t.boolean  "is_admin"
-    t.boolean  "is_corp"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
   end

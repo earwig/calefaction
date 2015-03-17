@@ -1,8 +1,29 @@
 require 'io/console'
 
 namespace :calefaction do
-  desc "Sets some initial database values and creates an admin user"
+  desc "Set some initial database values and creates an admin user"
   task setup: :environment do
+    begin
+      AdminSetting.get(:test)
+    rescue ActiveRecord::StatementInvalid
+      puts "The database has not been set up properly. You need to run\n"\
+           "`rake db:setup` first."
+      next
+    end
+
+    if AdminSetting.get(:corp_id).nil?
+      puts "The database does not contain the correct seed values. You need "\
+           "to run\n`rake db:reset db:setup` first."
+      next
+    end
+
+    if AdminSetting.get(:corp_id).to_i > 0
+      puts "The database is not empty; you should change settings from "\
+           "within the\napplication. Alternatively, you can start over with\n"\
+           "`rake db:reset db:setup calefaction:setup`."
+      next
+    end
+
     print "Enter your corporation's name: "
     corp_name = STDIN.gets.chomp
 
@@ -16,13 +37,12 @@ namespace :calefaction do
 
     print "\nEnter your character's API key ID (create one at\n"\
           "https://community.eveonline.com/support/api-key/createpredefined?accessMask=8): "
-    user_api_key = STDIN.gets.chomp
+    api_key = STDIN.gets.chomp
 
     print "\nEnter the verification code for the key you just entered: "
-    user_api_verify = STDIN.gets.chomp
+    api_verify = STDIN.gets.chomp
 
-    user = User.new(api_key: user_api_key, api_verify: user_api_verify,
-                    is_admin: true, is_corp: true)
+    user = User.new(api_key: api_key, api_verify: api_verify, admin?: true)
     chars = user.char_names
     if chars.empty?
       puts "The given API key is invalid, has no characters, or something "\
@@ -32,6 +52,7 @@ namespace :calefaction do
 
     if chars.length == 1
       user.name = chars.first
+      puts "\nUsing character: #{user.name}"
     else
       puts "\nChoose a character:"
       chars.each_with_index do |name, i|
@@ -40,7 +61,7 @@ namespace :calefaction do
       puts "Enter the number next to your chosen character: "
       loop do
         index = STDIN.gets.to_i
-        break unless index >= chars.length || index < 0
+        break if index >= 0 && index < chars.length
         puts "Bad input; try again: "
       end
       user.name = chars[index]
@@ -66,10 +87,10 @@ namespace :calefaction do
     end
     puts
 
-    AdminSetting.where(key: %w(corp_name site_name)).update_all(value: corp_name)
-    AdminSetting.find_by(key: 'corp_id').update(value: corp_id)
+    AdminSetting.set(:corp_name, corp_name)
+    AdminSetting.set(:site_name, corp_name)
+    AdminSetting.set(:corp_id, corp_id)
     user.save
-
     puts "\nDone!"
   end
 end
