@@ -20,9 +20,9 @@ class UsersController < ApplicationController
         render 'login' and return
       end
 
-      allow_non_corp = AdminSettings.get_bool(:allow_non_corp)
+      allow_non_corp = AdminSetting.get_bool(:allow_non_corp)
       if !allow_non_corp && !user.in_corp? && !user.admin?
-        corp_name = AdminSettings.get_bool(:corp_name)
+        corp_name = AdminSetting.get_bool(:corp_name)
         flash[:alert] = "You are not a member of #{corp_name}, and access to "\
                         "this site is disallowed for non-corp members."
         redirect_to root_url and return
@@ -36,7 +36,8 @@ class UsersController < ApplicationController
 
   def logout
     if request.post?
-      # do user logout logic
+      session.delete(:user_id)
+      flash[:notice] = 'Logout successful!'
       redirect_to root_url
     end
   end

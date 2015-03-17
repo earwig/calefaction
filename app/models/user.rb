@@ -14,7 +14,7 @@ class User < ActiveRecord::Base
   end
 
   def in_corp?
-    member_of? AdminSettings.get(:corp_id).to_i
+    member_of? AdminSetting.get(:corp_id).to_i
   end
 
   def member_of?(corp_id)
