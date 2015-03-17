@@ -22,7 +22,7 @@ class UsersController < ApplicationController
 
       allow_non_corp = AdminSetting.get_bool(:allow_non_corp)
       if !allow_non_corp && !user.in_corp? && !user.admin?
-        corp_name = AdminSetting.get_bool(:corp_name)
+        corp_name = AdminSetting.get(:corp_name)
         flash[:alert] = "You are not a member of #{corp_name}, and access to "\
                         "this site is disallowed for non-corp members."
         redirect_to root_url and return
