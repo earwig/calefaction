@@ -47,4 +47,10 @@ class UsersController < ApplicationController
       # do user reset logic
     end
   end
+
+  def settings
+    if request.post?
+      # do settings save logic
+    end
+  end
 end
