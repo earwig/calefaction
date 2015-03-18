@@ -10,12 +10,12 @@ class User < ActiveRecord::Base
   end
 
   def name
-    sheet = api.character_sheet(userid)
+    sheet = api.character_sheet(char_id)
     sheet.nil? ? '?' : sheet.name
   end
 
   def corp_id
-    sheet = api.character_sheet(userid)
+    sheet = api.character_sheet(char_id)
     sheet.nil? ? 0 : sheet.corporationID.to_i
   end
 

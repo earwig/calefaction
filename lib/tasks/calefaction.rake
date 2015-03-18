@@ -52,7 +52,7 @@ namespace :calefaction do
 
     if chars.length == 1
       puts "\nUsing character: #{chars.first.name}"
-      user.userid = chars.first.characterID
+      user.char_id = chars.first.characterID
     else
       puts "\nChoose a character:"
       chars.each_with_index do |char, i|
@@ -62,7 +62,7 @@ namespace :calefaction do
       loop do
         index = STDIN.gets.to_i
         if index >= 0 && index < chars.length
-          user.userid = chars[index].characterID and break
+          user.char_id = chars[index].characterID and break
         end
         print "Bad input; try again: "
       end
