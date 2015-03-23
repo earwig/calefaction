@@ -8,11 +8,14 @@ module ApplicationHelper
     title.empty? ? base : "#{title} : #{base}"
   end
 
-  def corp_logo_tag
+  def corp_logo_url(size = 256)
     corp_id = AdminSetting.get(:corp_id)
+    "https://image.eveonline.com/Corporation/#{corp_id}_#{size}.png"
+  end
+
+  def corp_logo_tag
     corp_name = AdminSetting.get(:corp_name)
-    image_tag("https://image.eveonline.com/Corporation/#{corp_id}_256.png",
-              title: corp_name, alt: "#{corp_name} Logo")
+    image_tag(corp_logo_url, title: corp_name, alt: "#{corp_name} Logo")
   end
 
   def copyright_year
