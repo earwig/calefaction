@@ -1,14 +1,10 @@
 calefaction
 ===========
 
-__calefaction__ is a modular Rails corporation manager for the video game
-[EVE Online](http://www.eveonline.com/).
+__calefaction__ is a modular corporation manager for the video game
+[EVE Online](https://www.eveonline.com/).
 
 Installing
 ----------
 
-calefaction can be deployed as a standard Rails app.
-
-To set up the database and create your admin account, run:
-
-    rake db:setup calefaction:setup
+...
