@@ -27,20 +27,21 @@ main, header, footer {
 main, header > div, footer > div {
     max-width: 1000px;
     width: 80%;
+    padding: 1em;
 }
 
 main {
     margin: 2em auto;
-    padding: 1em;
+    border: 1px solid #364A5F;
 }
 
-header > div {
+header > div, footer > div {
     margin: 0 auto;
-    padding: 1.5em;
 }
 
 header > div > div {
     display: inline-block;
+    vertical-align: middle;
 }
 
 header > div > .left {
@@ -53,13 +54,14 @@ header > div > .right {
     width: 30%;
 }
 
-footer {
-    font-size: 85%;
+header {
+    font-size: 120%;
+    border-bottom: 1px solid #364A5F;
 }
 
-footer > div {
-    margin: 0 auto;
-    padding: 1em;
+footer {
+    font-size: 85%;
+    border-top: 1px solid #364A5F;
 }
 
 a {

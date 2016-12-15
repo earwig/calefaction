@@ -3,6 +3,6 @@
     [C_LOGO] C_NAME...
 </%block>
 <%block name="righthead">
-    [login]
+    <img id="login-button" src="${url_for('staticv', filename='images/eve-login.png')}"/>
 </%block>
 <p>Hello, world!</p>
