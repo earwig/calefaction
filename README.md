@@ -17,8 +17,15 @@ Guide
 
 ### Setup
 
+    cp config.yml.sample config.yml
+    vim config.yml
     ...
 
-### Run
+### Test
+
+    ./app.py
+    # go to http://localhost:8080
+
+### Deploy
 
     ...

@@ -1,0 +1,22 @@
+# This is a sample config file for Calefaction.
+# Copy this to config.yml and modify it to set up your website.
+
+corp:
+  # Find your corp's ID at, e.g., https://zkillboard.com/corporation/917701062/
+  id: 123456789
+  # Full corp name (doesn't need to match in-game name exactly, but should)
+  name: My Corp Name Here
+
+welcome: |-
+  (If you are seeing this message on the public internet, someone forgot to
+  configure their website. Whoops!)
+
+  This message is displayed to anyone who reaches your website without
+  (or before) logging in.
+
+  It's public, so don't give away any secrets. You might want to explain a bit
+  about your corp, with recruitment information, or invite corp members to log
+  in, or maybe just say something cryptic.
+
+  You can type raw HTML in here. Newlines are ignored, except for double
+  linebreaks, which are treated as separate paragraphs.

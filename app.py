@@ -6,7 +6,7 @@ from pathlib import Path
 from flask import Flask, g
 from flask_mako import MakoTemplates, render_template
 
-from calefaction import __version__ as version
+import calefaction
 from calefaction.config import Config
 from calefaction.eve import EVE
 from calefaction.util import catch_errors, set_up_hash_versioning
@@ -23,7 +23,7 @@ set_up_hash_versioning(app)
 def prepare_request():
     g.config = config
     g.eve = eve
-    g.version = version
+    g.version = calefaction.__version__
 
 @app.route("/")
 @catch_errors(app)

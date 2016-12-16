@@ -1,15 +1,10 @@
 <%inherit file="_base.mako"/>
 <%block name="title">
-    Error &ndash; ${g.config.get("corp.name")}
+    Error &ndash; ${g.config.get("corp.name") | h}
 </%block>
-<div id="container">
-    <div>
-        <main>
-            <h1>Error!</h1>
-            <p>You may report the following information to the developers:</p>
-            <div id="error">
-                <pre>${traceback | trim,h}</pre>
-            </div>
-        </main>
-    </div>
+<%block name="header"/>
+<h1>Error!</h1>
+<p>You may report the following information to the developers:</p>
+<div id="error">
+    <pre>${traceback | trim,h}</pre>
 </div>

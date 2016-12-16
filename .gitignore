@@ -1,5 +1,8 @@
 *.pyc
 __pycache__/
-config/
-data/
 venv/
+
+config/*
+data/*
+
+!config/config.yml.sample
