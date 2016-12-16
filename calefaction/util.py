@@ -30,7 +30,10 @@ def set_up_hash_versioning(app):
         if endpoint == "staticv":
             filename = values["filename"]
             fpath = path.join(app.static_folder, filename)
-            mtime = path.getmtime(fpath)
+            try:
+                mtime = path.getmtime(fpath)
+            except OSError:
+                return url_for("static", filename=filename)
             cache = app._hash_cache.get(fpath)
             if cache and cache[0] == mtime:
                 hashstr = cache[1]

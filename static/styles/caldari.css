@@ -1,0 +1,7 @@
+body {
+    background-image: url("/static/images/caldari.jpg");
+}
+
+main, header, footer {
+    border-color: #364A5F;
+}

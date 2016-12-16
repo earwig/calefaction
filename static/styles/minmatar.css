@@ -1,0 +1,7 @@
+body {
+    background-image: url("/static/images/minmatar.jpg");
+}
+
+main, header, footer {
+    border-color: #5F3C42;
+}

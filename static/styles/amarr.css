@@ -1,0 +1,7 @@
+body {
+    background-image: url("/static/images/amarr.jpg");
+}
+
+main, header, footer {
+    border-color: #5F4A26;
+}

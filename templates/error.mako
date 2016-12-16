@@ -1,6 +1,6 @@
 <%inherit file="_base.mako"/>
 <%block name="title">
-    Error &ndash; ...name...
+    Error &ndash; ${g.config.get("corp.name")}
 </%block>
 <div id="container">
     <div>

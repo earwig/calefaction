@@ -1,19 +1,29 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8  -*-
 
+from pathlib import Path
+
 from flask import Flask, g
 from flask_mako import MakoTemplates, render_template
 
+from calefaction import __version__ as version
+from calefaction.config import Config
+from calefaction.eve import EVE
 from calefaction.util import catch_errors, set_up_hash_versioning
 
+basepath = Path(__file__).resolve().parent
 app = Flask(__name__)
+config = Config(basepath / "config")
+eve = EVE()
 
 MakoTemplates(app)
 set_up_hash_versioning(app)
 
 @app.before_request
 def prepare_request():
-    g.something = None  # ...
+    g.config = config
+    g.eve = eve
+    g.version = version
 
 @app.route("/")
 @catch_errors(app)

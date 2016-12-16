@@ -1,0 +1,7 @@
+body {
+    background-image: url("/static/images/gallente.jpg");
+}
+
+main, header, footer {
+    border-color: #365F4A;
+}
