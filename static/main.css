@@ -55,6 +55,8 @@ header {
 
 footer {
     font-size: 85%;
+    text-align: center;
+    color: #BABABA;
     border-top-width: 1px;
     border-top-style: solid;
 }
