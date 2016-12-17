@@ -44,6 +44,8 @@
         <%block name="footer">
             <footer>
                 <div>
+                    YC ${g.eve.clock.now()}
+                    &bull;
                     Running <a href="https://github.com/earwig/calefaction">Calefaction</a> ${g.version}
                     &bull;
                     <a href="https://eveonline.com">EVE Online</a> and all related trademarks are property of <a href="https://ccpgames.com">CCP hf</a>.
