@@ -5,3 +5,11 @@ body {
 main, header, footer {
     border-color: #365F4A;
 }
+
+a {
+    color: #66BB99;
+}
+
+a:hover {
+    color: #60AA90;
+}
