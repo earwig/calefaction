@@ -5,13 +5,14 @@
         <title>
             <%block name="title">${g.config.get("corp.name") | h}</%block>
         </title>
-        <link rel="stylesheet" type="text/css" href="${url_for('staticv', filename='main.css')}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="${url_for('staticv', filename='main.css')}"/>
         % if g.config.get("style"):
             <% stylesheet = "styles/{}.css".format(g.config.get("style")) %>
-            <link rel="stylesheet" type="text/css" href="${url_for('staticv', filename=stylesheet)}" />
+            <link rel="stylesheet" type="text/css" href="${url_for('staticv', filename=stylesheet)}"/>
         % endif
         % for size in g.eve.image.corp_widths:
-            <link rel="icon" type="image/png" sizes="${size}x${size}" href="${g.eve.image.corp(g.config.get('corp.id'), size)}" />
+            <link rel="icon" type="image/png" sizes="${size}x${size}" href="${g.eve.image.corp(g.config.get('corp.id'), size)}"/>
         % endfor
     </head>
     <body>
@@ -25,8 +26,8 @@
                             </a>
                             <a href="/" class="aligned">${g.config.get("corp.name") | h}</a>
                         </%block>
-                    </div><!--
-                    --><div class="right">
+                    </div>
+                    <div class="right">
                         <%block name="righthead"/>
                     </div>
                 </div>
@@ -44,11 +45,11 @@
         <%block name="footer">
             <footer>
                 <div>
-                    YC ${g.eve.clock.now()}
-                    &bull;
-                    Running <a href="https://github.com/earwig/calefaction">Calefaction</a> ${g.version}
-                    &bull;
-                    <a href="https://eveonline.com">EVE Online</a> and all related trademarks are property of <a href="https://ccpgames.com">CCP hf</a>.
+                    <ul>
+                        <li>YC&nbsp;${g.eve.clock.now()}</li>
+                        <li>Running <a href="https://github.com/earwig/calefaction">Calefaction</a>&nbsp;${g.version}</li>
+                        <li><a href="https://eveonline.com">EVE&nbsp;Online</a> and all related trademarks are property of <a href="https://ccpgames.com">CCP&nbsp;hf</a>.</li>
+                    </ul>
                 </div>
             </footer>
         </%block>
