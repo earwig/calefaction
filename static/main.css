@@ -36,13 +36,13 @@ a:hover {
 }
 
 main, header, footer {
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.75);
     border-color: #4A4A4A;
 }
 
 main {
     margin: 2em auto;
-    padding: 0 1em;
+    padding: 0.5em 1.5em;
     border-width: 1px;
     border-style: solid;
 }
@@ -95,7 +95,8 @@ header a {
 }
 
 header a:hover {
-    color: #CACACA;
+    color: #BABABA;
+    text-decoration: none;
 }
 
 header .aligned {
@@ -104,7 +105,7 @@ header .aligned {
 
 #corp-masthead {
     height: 30px;
-    margin-right: 0.5em;
+    margin-right: 0.25em;
 }
 
 #login-button {

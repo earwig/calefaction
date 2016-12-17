@@ -6,7 +6,10 @@
             <%block name="title">${g.config.get("corp.name") | h}</%block>
         </title>
         <link rel="stylesheet" type="text/css" href="${url_for('staticv', filename='main.css')}" />
-        <link rel="stylesheet" type="text/css" href="${url_for('staticv', filename='styles/minmatar.css')}" />
+        % if g.config.get("style"):
+            <% stylesheet = "styles/{}.css".format(g.config.get("style")) %>
+            <link rel="stylesheet" type="text/css" href="${url_for('staticv', filename=stylesheet)}" />
+        % endif
         % for size in g.eve.image.corp_widths:
             <link rel="icon" type="image/png" sizes="${size}x${size}" href="${g.eve.image.corp(g.config.get('corp.id'), size)}" />
         % endfor
