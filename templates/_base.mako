@@ -22,7 +22,7 @@
                     <div class="left">
                         <%block name="lefthead">
                             <a href="/">
-                                <img id="corp-masthead" class="aligned" src="${g.eve.image.corp(g.config.get('corp.id'), 256)}"/>
+                                <img id="corp-masthead" class="aligned" title="Home" alt="Home" src="${g.eve.image.corp(g.config.get('corp.id'), 256)}"/>
                             </a>
                             <a href="/" class="aligned">${g.config.get("corp.name") | h}</a>
                         </%block>
