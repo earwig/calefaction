@@ -2,14 +2,37 @@
 # Copy this to config.yml and modify it to set up your website.
 # You must restart the server after making any changes.
 
+site:
+  # Full canonical server name; include port if not default:
+  canonical: example.com
+  # Assume HTTPS? This affects how URLs are generated, not how the site is
+  # served (setting up TLS is your responsibility):
+  https: yes
+
 corp:
-  # Find your corp's ID at, e.g., https://zkillboard.com/corporation/917701062/
+  # You need to reset the database if this value is changed in the future.
+  # Find your corp's ID at e.g. https://zkillboard.com/corporation/917701062/:
   id: 123456789
-  # Full corp name (doesn't need to match in-game name exactly, but it should)
+  # Full corp name (doesn't need to match in-game name exactly, but it should):
   name: My Corp Name Here
 
-# Default stylesheet from static/styles/*.css:
-# one of "amarr", "caldari", "gallente", "minmatar", or add your own
+auth:
+  # Secure session signing key. Never share with anyone. Can generate with
+  # "import base64, os; base64.b64encode(os.urandom(24))":
+  session_key: sEQMbNbxRxHBhyGtt8cuLEMN6sDM1JcP
+  # You need to create an application at
+  # https://developers.eveonline.com/applications for this corp's website.
+  # Set the callback URL to http(s)://<your domain>/login (match the protocol
+  # with "site.https" above) and the scopes to:
+  # - publicData
+  # - ...
+  # SSO client ID:
+  client_id: a290afea820b8dd8c46d3883898ab66d
+  # SSO client secret:
+  client_secret: XXAPGc0LM6wdOJAwSNQmliZ2QhQpoBuUutQY6Rlc
+
+# Default stylesheet from static/styles/*.css;
+# one of "amarr", "caldari", "gallente", "minmatar", or create your own:
 style: null
 
 welcome: |-

@@ -6,6 +6,7 @@
             <%block name="title">${g.config.get("corp.name") | h}</%block>
         </title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="canonical" href="${g.config.scheme}://${g.config.get('site.canonical')}${request.script_root}${request.path}">
         <link rel="stylesheet" type="text/css" href="${url_for('staticv', filename='main.css')}"/>
         % if g.config.get("style"):
             <% stylesheet = "styles/{}.css".format(g.config.get("style")) %>
@@ -21,10 +22,10 @@
                 <div>
                     <div class="left">
                         <%block name="lefthead">
-                            <a href="/">
+                            <a href="${url_for('index')}">
                                 <img id="corp-masthead" class="aligned" title="Home" alt="Home" src="${g.eve.image.corp(g.config.get('corp.id'), 256)}"/>
                             </a>
-                            <a href="/" class="aligned">${g.config.get("corp.name") | h}</a>
+                            <a href="${url_for('index')}" class="aligned">${g.config.get("corp.name") | h}</a>
                         </%block>
                     </div>
                     <div class="right">

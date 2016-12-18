@@ -22,3 +22,12 @@ class Config:
                 return default
             obj = obj[item]
         return obj
+
+    @property
+    def scheme(self):
+        return "https" if self.get("site.https") else "http"
+
+    def install(self, app):
+        app.config["SERVER_NAME"] = self.get("site.canonical")
+        app.config["PREFERRED_URL_SCHEME"] = self.scheme
+        app.secret_key = self.get("auth.session_key")

@@ -6,3 +6,4 @@ config/*
 data/*
 
 !config/config.yml.sample
+!data/schema.sql

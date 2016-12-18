@@ -17,8 +17,9 @@ Guide
 
 ### Setup
 
-    cp config.yml.sample config.yml
-    vim config.yml
+    cp config/config.yml.sample config/config.yml
+    vim config/config.yml  # follow instructions
+    cat data/schema.sql | sqlite3 data/db.sqlite3
     ...
 
 ### Test
