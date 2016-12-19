@@ -238,3 +238,11 @@ class AuthManager:
         g.db.attach_session(sid, char_id)
         g.db.touch_session(sid)
         return True
+
+    def handle_logout(self):
+        """Log out the user if they are logged in.
+
+        Invalidates their session and clears the session cookie.
+        """
+        self._invalidate_session()
+        session.clear()

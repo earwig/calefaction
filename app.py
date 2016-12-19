@@ -3,7 +3,7 @@
 
 from pathlib import Path
 
-from flask import Flask, g, redirect, request, url_for
+from flask import Flask, flash, g, redirect, request, url_for
 from flask_mako import MakoTemplates, render_template
 
 import calefaction
@@ -11,8 +11,10 @@ from calefaction.auth import AuthManager
 from calefaction.config import Config
 from calefaction.database import Database
 from calefaction.eve import EVE
-from calefaction.exceptions import AccessDeniedError, EVEAPIError
-from calefaction.util import catch_errors, set_up_asset_versioning
+from calefaction.messages import Messages
+from calefaction.util import (
+    try_func, make_error_catcher, make_route_restricter,
+    set_up_asset_versioning)
 
 app = Flask(__name__)
 
@@ -21,6 +23,9 @@ config = Config(basepath / "config")
 Database.path = str(basepath / "data" / "db.sqlite3")
 eve = EVE(config)
 auth = AuthManager(config, eve)
+catch_exceptions = make_error_catcher(app, "error.mako")
+route_restricted = make_route_restricter(
+    auth, lambda: redirect(url_for("index"), 303))
 
 MakoTemplates(app)
 set_up_asset_versioning(app)
@@ -37,32 +42,44 @@ app.before_request(Database.pre_hook)
 app.teardown_appcontext(Database.post_hook)
 
 @app.route("/")
-@catch_errors(app)
+@catch_exceptions
 def index():
-    ...  # handle flashed error messages in _base.mako
-    if auth.is_authenticated():  # ... need to check for exceptions
+    success, _ = try_func(auth.is_authenticated)
+    if success:
         return render_template("home.mako")
     return render_template("landing.mako")
 
 @app.route("/login", methods=["GET", "POST"])
-@catch_errors(app)
+@catch_exceptions
 def login():
     code = request.args.get("code")
     state = request.args.get("state")
-    try:
-        auth.handle_login(code, state)
-    except EVEAPIError:
-        ...  # flash error message
-    except AccessDeniedError:
-        ...  # flash error message
-    if getattr(g, "_session_expired"):
-        ...  # flash error message
+
+    success, caught = try_func(lambda: auth.handle_login(code, state))
+    if success:
+        flash(Messages.LOGGED_IN, "success")
+    elif getattr(g, "_session_expired", False):
+        flash(Messages.SESSION_EXPIRED, "error")
+    elif not caught:
+        flash(Messages.LOGIN_FAILED, "error")
     return redirect(url_for("index"), 303)
 
-# @app.route("/logout") ...
+@app.route("/logout", methods=["GET", "POST"])
+@catch_exceptions
+def logout():
+    if request.method == "GET":
+        return render_template("logout.mako")
 
-# @auth.route_restricted ...
-# check for same exceptions as login() and use same flashes
+    auth.handle_logout()
+    flash(Messages.LOGGED_OUT, "success")
+    return redirect(url_for("index"), 303)
+
+@app.route("/test")
+@catch_exceptions
+@route_restricted
+def test():
+    ...
+    return "Success! You are authenticated!"
 
 if __name__ == "__main__":
     app.run(debug=True, port=8080)

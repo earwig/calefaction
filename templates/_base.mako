@@ -38,6 +38,16 @@
             <div id="container">
                 <div>
                     <main>
+                        <%block name="flashes">
+                            <% messages = get_flashed_messages(with_categories=True) %>
+                            % if messages:
+                                <div id="flashes">
+                                    % for category, message in messages:
+                                        <div class="${category | h}">${message | h}</div>
+                                    % endfor
+                                </div>
+                            % endif
+                        </%block>
                         ${next.body()}
                     </main>
                 </div>

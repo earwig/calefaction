@@ -149,3 +149,23 @@ footer ul li:not(:last-child):after {
 #error pre {
     white-space: pre-wrap;
 }
+
+#flashes {
+    margin-top: 0.5em;
+}
+
+#flashes > div {
+    padding: 0.5em 0.75em;
+    border-left-width: 4px;
+    border-left-style: solid;
+}
+
+#flashes > .success {
+    border-color: #33AA22;
+    background-color: rgba(60, 255, 30, 0.2);
+}
+
+#flashes > .error {
+    border-color: #AA3322;
+    background-color: rgba(255, 60, 30, 0.2);
+}

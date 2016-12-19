@@ -6,6 +6,6 @@
     </nav>
 </%block>
 <%block name="righthead">
-    PLAYER_NAME... [logout]
+    PLAYER_NAME... [logout]  <!-- use GET /logout here and JS switch it to a POST form -->
 </%block>
 ${next.body()}
