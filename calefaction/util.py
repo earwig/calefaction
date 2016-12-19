@@ -8,9 +8,10 @@ from traceback import format_exc
 from flask import url_for
 from flask_mako import render_template, TemplateError
 
-__all__ = ["catch_errors", "set_up_hash_versioning"]
+__all__ = ["catch_errors", "set_up_asset_versioning"]
 
 def catch_errors(app):
+    """Wrap a route to display and log any uncaught exceptions."""
     def callback(func):
         @wraps(func)
         def inner(*args, **kwargs):
@@ -25,7 +26,8 @@ def catch_errors(app):
         return inner
     return callback
 
-def set_up_hash_versioning(app):
+def set_up_asset_versioning(app):
+    """Add a staticv endpoint that adds hash versioning to static assets."""
     def callback(app, error, endpoint, values):
         if endpoint == "staticv":
             filename = values["filename"]
@@ -45,4 +47,4 @@ def set_up_hash_versioning(app):
         raise error
 
     app._hash_cache = {}
-    app.url_build_error_handlers.append(lambda *args: callback(app, *args))
+    app.url_build_error_handlers.append(lambda a, b, c: callback(app, a, b, c))

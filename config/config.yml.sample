@@ -8,6 +8,8 @@ site:
   # Assume HTTPS? This affects how URLs are generated, not how the site is
   # served (setting up TLS is your responsibility):
   https: yes
+  # Contact info reported in the User-Agent when making requests to EVE's API:
+  contact: webmaster@example.com
 
 corp:
   # You need to reset the database if this value is changed in the future.
