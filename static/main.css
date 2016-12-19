@@ -24,6 +24,10 @@ a:hover {
     text-decoration: underline;
 }
 
+h1 {
+    margin-top: 0.5em;
+}
+
 #container {
     display: flex;
     flex: 1;
@@ -123,6 +127,11 @@ header .aligned {
     vertical-align: middle;
 }
 
+header .spacer {
+    height: 30px;
+    visibility: hidden;
+}
+
 footer ul {
     margin: 0;
     padding: 0;
@@ -140,14 +149,6 @@ footer ul li:not(:last-child):after {
 #corp-masthead {
     height: 30px;
     margin-right: 0.25em;
-}
-
-#login-button {
-    height: 30px;
-}
-
-#error pre {
-    white-space: pre-wrap;
 }
 
 #flashes {
@@ -168,4 +169,16 @@ footer ul li:not(:last-child):after {
 #flashes > .error {
     border-color: #AA3322;
     background-color: rgba(255, 60, 30, 0.2);
+}
+
+#error pre {
+    white-space: pre-wrap;
+}
+
+#login-button {
+    height: 30px;
+}
+
+#logout-form {
+    margin-bottom: 1em;
 }

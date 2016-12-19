@@ -29,7 +29,9 @@
                         </%block>
                     </div>
                     <div class="right">
-                        <%block name="righthead"/>
+                        <%block name="righthead">
+                            <img class="spacer aligned" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="/>
+                        </%block>
                     </div>
                 </div>
             </header>
