@@ -128,7 +128,7 @@ header .aligned {
 }
 
 header .spacer {
-    height: 30px;
+    height: 32px;
     visibility: hidden;
 }
 
@@ -147,8 +147,12 @@ footer ul li:not(:last-child):after {
 }
 
 #corp-masthead {
-    height: 30px;
+    height: 32px;
     margin-right: 0.25em;
+}
+
+#character-portrait {
+    height: 32px;
 }
 
 #flashes {
@@ -177,6 +181,7 @@ footer ul li:not(:last-child):after {
 
 #login-button {
     height: 30px;
+    padding-bottom: 2px;
 }
 
 #logout-form {

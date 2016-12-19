@@ -6,6 +6,8 @@
     </nav>
 </%block>
 <%block name="righthead">
-    PLAYER_NAME... [logout]  <!-- use GET /logout here and JS switch it to a POST form -->
+    <img id="character-portrait" class="aligned" title="${g.auth.get_character_prop('name')}" alt="" src="${g.eve.image.character(g.auth.get_character_id(), 256)}"/>
+    ${g.auth.get_character_prop("name")}
+    [<a title="Log out" href="${url_for('logout')}">logout</a>]  <!-- JS switch to a POST form -->
 </%block>
 ${next.body()}
