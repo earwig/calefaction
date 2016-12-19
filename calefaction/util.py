@@ -5,7 +5,7 @@ from hashlib import md5
 from os import path
 from traceback import format_exc
 
-from flask import flash, url_for
+from flask import flash, request, url_for
 from flask_mako import render_template, TemplateError
 
 from .exceptions import AccessDeniedError, EVEAPIError
@@ -81,5 +81,13 @@ def set_up_asset_versioning(app):
             return url_for("static", filename=filename, v=hashstr)
         raise error
 
+    old_get_max_age = app.get_send_file_max_age
+
+    def extend_max_age(filename):
+        if "v" in request.args:
+            return 60 * 60 * 24 * 365  # 1 year
+        return old_get_max_age(filename)
+
     app._hash_cache = {}
     app.url_build_error_handlers.append(lambda a, b, c: callback(app, a, b, c))
+    app.get_send_file_max_age = extend_max_age
