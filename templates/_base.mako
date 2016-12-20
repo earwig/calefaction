@@ -29,7 +29,7 @@
                             <a href="${url_for('index')}">
                                 <img id="corp-masthead" class="aligned" title="Home" alt="Home" src="${g.eve.image.corp(g.config.get('corp.id'), 256)}"/>
                             </a>
-                            <a href="${url_for('index')}" class="aligned">${g.config.get("corp.name") | h}</a>
+                            <a id="corp-title" class="aligned" href="${url_for('index')}">${g.config.get("corp.name") | h}</a>
                         </%block>
                     </div>
                     <div class="right">

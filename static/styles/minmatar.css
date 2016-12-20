@@ -1,8 +1,8 @@
 body {
-    background-image: url("/static/images/minmatar.jpg");
+    background-image: url("/static/images/minmatar.jpg?v=1");
 }
 
-main, header, footer {
+main, header, footer, #character-portrait {
     border-color: #5F3C42;
 }
 

@@ -1,8 +1,8 @@
 body {
-    background-image: url("/static/images/amarr.jpg");
+    background-image: url("/static/images/amarr.jpg?v=1");
 }
 
-main, header, footer {
+main, header, footer, #character-portrait {
     border-color: #5F4A26;
 }
 

@@ -7,6 +7,7 @@ baseLogger = logging.getLogger("calefaction")
 del logging
 
 def enable_logging():
+    """Set up calefaction's logger to print out all logs to stderr."""
     import logging
 
     fmt = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"

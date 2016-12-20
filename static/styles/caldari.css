@@ -1,8 +1,8 @@
 body {
-    background-image: url("/static/images/caldari.jpg");
+    background-image: url("/static/images/caldari.jpg?v=1");
 }
 
-main, header, footer {
+main, header, footer, #character-portrait {
     border-color: #364A5F;
 }
 

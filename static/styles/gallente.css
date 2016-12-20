@@ -1,8 +1,8 @@
 body {
-    background-image: url("/static/images/gallente.jpg");
+    background-image: url("/static/images/gallente.jpg?v=1");
 }
 
-main, header, footer {
+main, header, footer, #character-portrait {
     border-color: #365F4A;
 }
 

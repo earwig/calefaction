@@ -48,7 +48,6 @@ main {
 }
 
 header {
-    font-size: 120%;
     border-bottom-width: 1px;
     border-bottom-style: solid;
 }
@@ -114,15 +113,6 @@ header > div > div {
     }
 }
 
-header a {
-    color: #EAEAEA;
-}
-
-header a:hover {
-    color: #BABABA;
-    text-decoration: none;
-}
-
 header .aligned {
     vertical-align: middle;
 }
@@ -130,6 +120,11 @@ header .aligned {
 header .spacer {
     height: 32px;
     visibility: hidden;
+}
+
+header nav {
+    display: inline-block;
+    margin-left: 1.5em;
 }
 
 footer ul {
@@ -151,8 +146,22 @@ footer ul li:not(:last-child):after {
     margin-right: 0.25em;
 }
 
+#corp-title {
+    font-size: 120%;
+    color: #EAEAEA;
+}
+
+#corp-title:hover {
+    color: #BABABA;
+    text-decoration: none;
+}
+
 #character-portrait {
     height: 32px;
+    margin-right: 0.25em;
+    box-sizing: border-box;
+    border-width: 1px;
+    border-style: solid;
 }
 
 #flashes {
