@@ -51,21 +51,21 @@ class SSOManager:
             resp = self._session.post(url, data=params, timeout=10,
                                       auth=(client_id, client_secret))
             json = resp.json()
-        except (requests.RequestException, ValueError):
-            raise EVEAPIError()
+        except (requests.RequestException, ValueError) as exc:
+            raise EVEAPIError(str(exc))
 
         if not resp.ok or "error" in json:
             return None
 
         if json.get("token_type") != "Bearer":
-            raise EVEAPIError()
+            raise EVEAPIError("invalid token_type in response body")
 
         token = json.get("access_token")
         expiry = json.get("expires_in")
         refresh = json.get("refresh_token")
 
         if not token or not expiry or not refresh:
-            raise EVEAPIError()
+            raise EVEAPIError("missing data in token response body")
 
         return token, expiry, refresh
 
@@ -81,8 +81,8 @@ class SSOManager:
         try:
             resp = self._session.get(url, timeout=10, headers=headers)
             json = resp.json()
-        except (requests.RequestException, ValueError):
-            raise EVEAPIError()
+        except (requests.RequestException, ValueError) as exc:
+            raise EVEAPIError(str(exc))
 
         if not resp.ok or "error" in json:
             return None
@@ -91,6 +91,6 @@ class SSOManager:
         char_name = json.get("CharacterName")
 
         if not char_id or not char_name:
-            raise EVEAPIError()
+            raise EVEAPIError("missing character ID or name in response body")
 
         return char_id, char_name
