@@ -4,6 +4,7 @@ venv/
 
 config/*
 data/*
+logs/
 
 !config/config.yml.sample
 !data/schema.sql
