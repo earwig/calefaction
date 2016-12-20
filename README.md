@@ -20,7 +20,9 @@ Guide
     cp config/config.yml.sample config/config.yml
     vim config/config.yml  # follow instructions
     cat data/schema.sql | sqlite3 data/db.sqlite3
-    ...
+    mkdir logs
+    sudo chmod 0600 config/config.yml data/db.sqlite3
+    sudo chown www-data:www-data config/config.yml data data/db.sqlite3 logs
 
 ### Test
 

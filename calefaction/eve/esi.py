@@ -17,11 +17,11 @@ class _ESIQueryBuilder:
         self._path = "/"
 
     def __getattr__(self, item):
-        self._path += item + "/"
+        self._path += str(item) + "/"
         return self
 
     def __call__(self, item):
-        self._path += item + "/"
+        self._path += str(item) + "/"
         return self
 
     def get(self):
