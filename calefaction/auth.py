@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from flask import g, session, url_for
 from itsdangerous import BadSignature, URLSafeSerializer
 
+from . import baseLogger
 from .exceptions import AccessDeniedError
 
 __all__ = ["AuthManager"]
@@ -19,10 +20,14 @@ class AuthManager:
         self._config = config
         self._eve = eve
 
+        self._logger = baseLogger.getChild("auth")
+        self._debug = self._logger.debug
+
     def _get_session_id(self):
         """Return the current session ID, allocating a new one if necessary."""
         if "id" not in session:
             session["id"] = g.db.new_session()
+            self._debug("Allocated session id=%d", session["id"])
             g._session_checked = True
             g._session_expired = False
         return session["id"]
@@ -33,7 +38,9 @@ class AuthManager:
         Remove it from the database and from the user's cookies.
         """
         if "id" in session:
-            g.db.drop_session(session["id"])
+            sid = session["id"]
+            g.db.drop_session(sid)
+            self._debug("Dropped session id=%d", sid)
             del session["id"]
 
     def _check_session(self):
@@ -51,6 +58,7 @@ class AuthManager:
         g._session_checked = check = g.db.has_session(session["id"])
         if not check:
             g._session_expired = True
+            self._debug("Session expired id=%d", session["id"])
             self._invalidate_session()
         return check
 
@@ -74,9 +82,13 @@ class AuthManager:
         try:
             value = serializer.loads(state)
         except BadSignature:
+            self._debug("Bad signature for session id=%d", session["id"])
             self._invalidate_session()
             return False
+
         if value != session["id"]:
+            self._debug("Got session id=%d, expected id=%d", value,
+                        session["id"])
             self._invalidate_session()
             return False
         return True
@@ -117,23 +129,29 @@ class AuthManager:
         """
         result = g.db.get_auth(cid)
         if not result:
+            self._debug("No auth info in database for char id=%d", cid)
             return None
 
         token, expires, refresh = result
         seconds_til_expiry = (expires - datetime.utcnow()).total_seconds()
         if seconds_til_expiry >= self.EXPIRY_THRESHOLD:
+            self._debug("Using cached access token for char id=%d", cid)
             return token
 
         result = self._fetch_new_token(refresh, refresh=True)
         if not result:
+            self._debug("Couldn't refresh token for char id=%d", cid)
             g.db.drop_auth(cid)
             return None
 
         token, expires, refresh, char_id, char_name = result
         if char_id != cid:
+            self._debug("Refreshed token has incorrect char id=%d for "
+                        "char id=%d", char_id, cid)
             g.db.drop_auth(cid)
             return None
 
+        self._debug("Using fresh access token for char id=%d", cid)
         g.db.put_character(cid, char_name)
         g.db.update_auth(cid, token, expires, refresh)
         return token
@@ -145,6 +163,8 @@ class AuthManager:
         """
         resp = self._eve.esi(token).v3.characters(char_id).get()
         if resp.get("corporation_id") != self._config.get("corp.id"):
+            self._debug("Access denied per corp membership for char id=%d "
+                        "session id=%d", char_id, session["id"])
             g.db.drop_auth(char_id)
             self._invalidate_session()
             raise AccessDeniedError()
@@ -184,17 +204,24 @@ class AuthManager:
 
         EVEAPIError or AccessDeniedError may be raised.
         """
+        if "id" in session:
+            self._debug("Checking auth for session id=%d", session["id"])
+
         cid = self.get_character_id()
         if not cid:
             return False
 
         token = self._get_token(cid)
         if not token:
+            self._debug("No valid token for char id=%d session id=%d", cid,
+                        session["id"])
             self._invalidate_session()
             return False
 
         self._check_access(token, cid)
 
+        self._debug("Access granted for char id=%d session id=%d", cid,
+                    session["id"])
         g.db.touch_session(session["id"])
         return True
 
@@ -219,20 +246,25 @@ class AuthManager:
         """
         if not code or not state:
             return False
+
+        if "id" in session:
+            self._debug("Logging in session id=%d", session["id"])
         if not self._check_session():
             return False
         if not self._verify_state_hash(state):
             return False
 
+        sid = session["id"]
         result = self._fetch_new_token(code)
         if not result:
+            self._debug("Couldn't fetch token for session id=%d", sid)
             self._invalidate_session()
             return False
 
         token, expires, refresh, char_id, char_name = result
         self._check_access(token, char_id)
 
-        sid = session["id"]
+        self._debug("Logged in char id=%d session id=%d", char_id, sid)
         g.db.put_character(char_id, char_name)
         g.db.set_auth(char_id, token, expires, refresh)
         g.db.attach_session(sid, char_id)
@@ -244,5 +276,8 @@ class AuthManager:
 
         Invalidates their session and clears the session cookie.
         """
+        if "id" in session:
+            self._debug("Logging out session id=%d", session["id"])
+
         self._invalidate_session()
         session.clear()

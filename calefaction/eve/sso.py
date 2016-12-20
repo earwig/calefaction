@@ -11,8 +11,11 @@ __all__ = ["SSOManager"]
 class SSOManager:
     """EVE API module for Single Sign-On (SSO)."""
 
-    def __init__(self, session):
+    def __init__(self, session, logger):
         self._session = session
+
+        self._logger = logger
+        self._debug = logger.debug
 
     def get_authorize_url(self, client_id, redirect_uri, scopes=None,
                           state=None):
@@ -46,26 +49,32 @@ class SSOManager:
             params["grant_type"] = "refresh_token"
         else:
             params["grant_type"] = "authorization_code"
+        self._debug("[POST] /oauth/token")
 
         try:
             resp = self._session.post(url, data=params, timeout=10,
                                       auth=(client_id, client_secret))
             json = resp.json()
-        except (requests.RequestException, ValueError) as exc:
-            raise EVEAPIError(str(exc))
+        except (requests.RequestException, ValueError):
+            self._logger.exception("Access token fetch failed")
+            raise EVEAPIError()
 
         if not resp.ok or "error" in json:
+            self._debug("Access token fetch error: %s", json["error"])
             return None
 
         if json.get("token_type") != "Bearer":
-            raise EVEAPIError("invalid token_type in response body")
+            self._logger.error("Invalid token_type in response body: %s",
+                               json.get("token_type"))
+            raise EVEAPIError()
 
         token = json.get("access_token")
         expiry = json.get("expires_in")
         refresh = json.get("refresh_token")
 
         if not token or not expiry or not refresh:
-            raise EVEAPIError("missing data in token response body")
+            self._logger.error("Missing data in token response body")
+            raise EVEAPIError()
 
         return token, expiry, refresh
 
@@ -78,19 +87,24 @@ class SSOManager:
         """
         url = "https://login.eveonline.com/oauth/verify"
         headers = {"Authorization": "Bearer " + token}
+        self._debug("[GET] /oauth/verify")
+
         try:
             resp = self._session.get(url, timeout=10, headers=headers)
             json = resp.json()
-        except (requests.RequestException, ValueError) as exc:
-            raise EVEAPIError(str(exc))
+        except (requests.RequestException, ValueError):
+            self._logger.exception("Access token verify failed")
+            raise EVEAPIError()
 
         if not resp.ok or "error" in json:
+            self._debug("Access token verify error: %s", json["error"])
             return None
 
         char_id = json.get("CharacterID")
         char_name = json.get("CharacterName")
 
         if not char_id or not char_name:
-            raise EVEAPIError("missing character ID or name in response body")
+            self._logger.error("Missing character ID or name in response body")
+            raise EVEAPIError()
 
         return char_id, char_name

@@ -8,7 +8,7 @@ from .clock import Clock
 from .esi import EVESwaggerInterface
 from .image import ImageServer
 from .sso import SSOManager
-from .. import __release__
+from .. import __release__, baseLogger
 
 __all__ = ["EVE"]
 
@@ -19,11 +19,12 @@ class EVE:
         session = requests.Session()
         agent = self._get_user_agent(config.get("site.contact"))
         session.headers["User-Agent"] = agent
+        logger = baseLogger.getChild("eve")
 
         self._clock = Clock()
-        self._esi = EVESwaggerInterface(session)
+        self._esi = EVESwaggerInterface(session, logger.getChild("esi"))
         self._image = ImageServer()
-        self._sso = SSOManager(session)
+        self._sso = SSOManager(session, logger.getChild("sso"))
 
     @staticmethod
     def _get_user_agent(contact):

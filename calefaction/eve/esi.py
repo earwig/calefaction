@@ -130,8 +130,11 @@ class EVESwaggerInterface:
     data = esi(token).v1.universe.names.post(ids=[entity_id]})
     """
 
-    def __init__(self, session):
+    def __init__(self, session, logger):
         self._session = session
+        self._logger = logger
+        self._debug = logger.debug
+
         self._base_url = "https://esi.tech.ccp.is"
         self._data_source = "tranquility"
         self._cache = _ESICache()
@@ -148,8 +151,13 @@ class EVESwaggerInterface:
             pkey = self._cache.freeze_dict(params)
             key = "|".join((method.__name__, self._data_source, query, pkey))
             cached = self._cache.fetch(key)
-            if cached:
-                return cached
+        else:
+            cached = None
+
+        self._debug("[%s] [%s] %s", method.__name__.upper(),
+                    "cache" if cached else "fresh", query)
+        if cached:
+            return cached
 
         headers = {
             "Accept": "application/json",
@@ -164,8 +172,9 @@ class EVESwaggerInterface:
                           headers=headers, timeout=10)
             resp.raise_for_status()
             result = resp.json() if resp.content else None
-        except (requests.RequestException, ValueError) as exc:
-            raise EVEAPIError(str(exc))
+        except (requests.RequestException, ValueError):
+            self._logger.exception("ESI request failed")
+            raise EVEAPIError()
 
         if can_cache and result is not None:
             self._cache.insert(key, result, resp)
