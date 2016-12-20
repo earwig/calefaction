@@ -19,6 +19,8 @@
         % for size in g.eve.image.corp_widths:
             <link rel="icon" type="image/png" sizes="${size}x${size}" href="${g.eve.image.corp(g.config.get('corp.id'), size)}"/>
         % endfor
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+        <script src="${url_for('staticv', filename='main.js')}"></script>
     </head>
     <body>
         <%block name="header">
