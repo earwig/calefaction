@@ -113,6 +113,11 @@ header > div > div {
     }
 }
 
+header nav {
+    display: inline-block;
+    margin-left: 1.5em;
+}
+
 header .aligned {
     vertical-align: middle;
 }
@@ -122,9 +127,8 @@ header .spacer {
     visibility: hidden;
 }
 
-header nav {
-    display: inline-block;
-    margin-left: 1.5em;
+header .sep {
+    color: #777777;
 }
 
 footer ul {
@@ -146,6 +150,10 @@ footer ul li:not(:last-child):after {
     margin-right: 0.25em;
 }
 
+#corp-masthead-link:hover {
+    text-decoration: none;
+}
+
 #corp-title {
     font-size: 120%;
     color: #EAEAEA;
@@ -162,6 +170,10 @@ footer ul li:not(:last-child):after {
     box-sizing: border-box;
     border-width: 1px;
     border-style: solid;
+}
+
+#character-summary {
+    font-size: 90%;
 }
 
 #flashes {
