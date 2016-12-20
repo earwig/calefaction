@@ -68,6 +68,8 @@ class EVESwaggerInterface:
 
         Return the JSON result, if any. Raise EVEAPIError for any errors.
         """
+        ...  # cache requests
+
         params = {"datasource": self._data_source}
         headers = {
             "Accept": "application/json",
