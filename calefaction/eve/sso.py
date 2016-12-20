@@ -44,11 +44,13 @@ class SSOManager:
         in a sensible way or looks to be down.
         """
         url = "https://login.eveonline.com/oauth/token"
-        params = {"code": code}
+        params = {}
         if refresh:
             params["grant_type"] = "refresh_token"
+            params["code"] = code
         else:
             params["grant_type"] = "authorization_code"
+            params["refresh_token"] = code
         self._debug("[POST] /oauth/token")
 
         try:
