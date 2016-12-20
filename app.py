@@ -23,6 +23,7 @@ config = Config(basepath / "config")
 Database.path = str(basepath / "data" / "db.sqlite3")
 eve = EVE(config)
 auth = AuthManager(config, eve)
+
 catch_exceptions = make_error_catcher(app, "error.mako")
 route_restricted = make_route_restricter(
     auth, lambda: redirect(url_for("index"), 303))
@@ -30,6 +31,7 @@ route_restricted = make_route_restricter(
 MakoTemplates(app)
 set_up_asset_versioning(app)
 config.install(app)
+calefaction.enable_logging()
 
 @app.before_request
 def prepare_request():

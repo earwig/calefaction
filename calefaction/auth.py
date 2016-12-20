@@ -204,12 +204,11 @@ class AuthManager:
 
         EVEAPIError or AccessDeniedError may be raised.
         """
-        if "id" in session:
-            self._debug("Checking auth for session id=%d", session["id"])
-
         cid = self.get_character_id()
         if not cid:
             return False
+
+        self._debug("Checking auth for session id=%d", session["id"])
 
         token = self._get_token(cid)
         if not token:
