@@ -32,4 +32,4 @@ Guide
 ### Deploy
 
     uwsgi --ini config/uwsgi.ini
-    # proxy to 127.0.0.1:9001
+    # proxy to http://127.0.0.1:9001
