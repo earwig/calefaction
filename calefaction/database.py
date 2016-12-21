@@ -72,28 +72,37 @@ class Database:
             conn.execute(query.format(create_thresh, touch_thresh))
 
     def new_session(self):
-        """Allocate a new session in the database and return its ID."""
+        """Allocate a new session in the database.
+
+        Return its ID as an integer and creation timestamp as a naive UTC
+        datetime.
+        """
+        created = datetime.utcnow().replace(microsecond=0)
+        query = "INSERT INTO session (session_created) VALUES (?)"
         with self._conn as conn:
-            cur = conn.execute("INSERT INTO session DEFAULT VALUES")
-            return cur.lastrowid
+            cur = conn.execute(query, (created,))
+            return cur.lastrowid, created
 
     def has_session(self, sid):
-        """Return whether the given session ID exists in the database.
+        """Return the creation timestamp for the given session ID, or None.
 
-        Will only be True for non-expired sessions. This function randomly does
-        database maintenance; very old expired sessions may be cleared.
+        Will only return a timestamp for non-expired sessions. This function
+        randomly does database maintenance; very old expired sessions may be
+        cleared.
         """
         if random.random() <= 0.2:
             self._clear_old_sessions()
 
-        query = """SELECT 1 FROM session
+        query = """SELECT session_created FROM session
             WHERE session_id = ? AND
             strftime("%s", "now") - strftime("%s", session_created) < {} AND
             strftime("%s", "now") - strftime("%s", session_touched) < {}"""
         query = query.format(self.MAX_SESSION_AGE, self.MAX_SESSION_STALENESS)
 
-        cur = self._conn.execute(query, (sid,))
-        return bool(cur.fetchall())
+        res = self._conn.execute(query, (sid,)).fetchall()
+        if not res:
+            return None
+        return datetime.strptime(res[0][0], "%Y-%m-%d %H:%M:%S")
 
     def read_session(self, sid):
         """Return the character associated with the given session, or None."""
@@ -187,7 +196,7 @@ class Database:
             return None
 
         token, expiry, refresh = res[0]
-        expires = datetime.strptime(expiry, "%Y-%m-%d %H:%M:%S.%f")
+        expires = datetime.strptime(expiry, "%Y-%m-%d %H:%M:%S")
         return token, expires, refresh
 
     def drop_auth(self, cid):

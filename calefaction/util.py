@@ -5,7 +5,7 @@ from hashlib import md5
 from os import path
 from traceback import format_exc
 
-from flask import flash, request, url_for
+from flask import flash, g, request, url_for
 from flask_mako import render_template, TemplateError
 from werkzeug.exceptions import HTTPException
 
@@ -24,13 +24,17 @@ def try_func(inner):
     """
     try:
         result = inner()
-        return (result, False)
     except EVEAPIError:
         flash(Messages.EVE_API_ERROR, "error")
         return (False, True)
     except AccessDeniedError:
         flash(Messages.ACCESS_DENIED, "error")
         return (False, True)
+
+    if getattr(g, "_session_expired", False):
+        flash(Messages.SESSION_EXPIRED, "error")
+        return (result, True)
+    return (result, False)
 
 def make_error_catcher(app, error_template):
     """Wrap a route to display and log any uncaught exceptions."""

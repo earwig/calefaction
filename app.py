@@ -60,8 +60,6 @@ def login():
     success, caught = try_func(lambda: auth.handle_login(code, state))
     if success:
         flash(Messages.LOGGED_IN, "success")
-    elif getattr(g, "_session_expired", False):
-        flash(Messages.SESSION_EXPIRED, "error")
     elif not caught:
         flash(Messages.LOGIN_FAILED, "error")
     return redirect(url_for("index"), 303)

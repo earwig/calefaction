@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from flask import g, session, url_for
 from itsdangerous import BadSignature, URLSafeSerializer
@@ -23,13 +23,19 @@ class AuthManager:
         self._logger = baseLogger.getChild("auth")
         self._debug = self._logger.debug
 
+    def _allocate_new_session(self):
+        """Create a new session for the current user."""
+        sid, created = g.db.new_session()
+        session["id"] = sid
+        session["date"] = created.replace(tzinfo=timezone.utc).timestamp()
+        self._debug("Allocated session id=%d", sid)
+        g._session_check = True
+        g._session_expired = False
+
     def _get_session_id(self):
         """Return the current session ID, allocating a new one if necessary."""
         if "id" not in session:
-            session["id"] = g.db.new_session()
-            self._debug("Allocated session id=%d", session["id"])
-            g._session_checked = True
-            g._session_expired = False
+            self._allocate_new_session()
         return session["id"]
 
     def _invalidate_session(self):
@@ -41,9 +47,16 @@ class AuthManager:
             sid = session["id"]
             g.db.drop_session(sid)
             self._debug("Dropped session id=%d", sid)
-            del session["id"]
+        session.clear()
 
-    def _check_session(self):
+    def _expire_session(self, always_notify=False):
+        """Mark the current session as expired, then invalidate it."""
+        if always_notify or session.get("expire-notify"):
+            g._session_expired = True
+        self._debug("Session expired id=%d", session["id"])
+        self._invalidate_session()
+
+    def _check_session(self, always_notify_expired=False):
         """Return whether the user has a valid, non-expired session.
 
         This checks for the session existing in the database, but does not
@@ -52,15 +65,28 @@ class AuthManager:
         if "id" not in session:
             return False
 
-        if hasattr(g, "_session_checked"):
-            return g._session_checked
+        if hasattr(g, "_session_check"):
+            return g._session_check
 
-        g._session_checked = check = g.db.has_session(session["id"])
-        if not check:
-            g._session_expired = True
-            self._debug("Session expired id=%d", session["id"])
-            self._invalidate_session()
-        return check
+        if "date" not in session:
+            self._debug("Clearing dateless session id=%d", session["id"])
+            session.clear()
+            return False
+
+        created = g.db.has_session(session["id"])
+        if not created:
+            self._expire_session(always_notify=always_notify_expired)
+            g._session_check = False
+            return False
+
+        cstamp = created.replace(tzinfo=timezone.utc).timestamp()
+        if session["date"] != cstamp:
+            self._debug("Clearing bad-date session id=%d", session["id"])
+            session.clear()
+            return False
+
+        g._session_check = True
+        return True
 
     def _get_state_hash(self):
         """Return a hash of the user's session ID suitable for OAuth2 state.
@@ -109,7 +135,8 @@ class AuthManager:
             return None
 
         token, expiry, refresh = result
-        expires = datetime.utcnow() + timedelta(seconds=expiry)
+        expires = (datetime.utcnow().replace(microsecond=0) +
+                   timedelta(seconds=expiry))
 
         result = self._eve.sso.get_character_info(token)
         if not result:
@@ -265,7 +292,7 @@ class AuthManager:
 
         if "id" in session:
             self._debug("Logging in session id=%d", session["id"])
-        if not self._check_session():
+        if not self._check_session(always_notify_expired=True):
             return False
         if not self._verify_state_hash(state):
             return False
@@ -285,6 +312,7 @@ class AuthManager:
         g.db.set_auth(char_id, token, expires, refresh)
         g.db.attach_session(sid, char_id)
         g.db.touch_session(sid)
+        session["expire-notify"] = True
         return True
 
     def handle_logout(self):
@@ -294,6 +322,4 @@ class AuthManager:
         """
         if "id" in session:
             self._debug("Logging out session id=%d", session["id"])
-
         self._invalidate_session()
-        session.clear()
