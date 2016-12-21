@@ -27,7 +27,7 @@ class AuthManager:
         """Create a new session for the current user."""
         sid, created = g.db.new_session()
         session["id"] = sid
-        session["date"] = created.replace(tzinfo=timezone.utc).timestamp()
+        session["date"] = int(created.replace(tzinfo=timezone.utc).timestamp())
         self._debug("Allocated session id=%d", sid)
         g._session_check = True
         g._session_expired = False
@@ -79,7 +79,7 @@ class AuthManager:
             g._session_check = False
             return False
 
-        cstamp = created.replace(tzinfo=timezone.utc).timestamp()
+        cstamp = int(created.replace(tzinfo=timezone.utc).timestamp())
         if session["date"] != cstamp:
             self._debug("Clearing bad-date session id=%d", session["id"])
             session.clear()
