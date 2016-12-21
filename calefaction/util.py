@@ -7,6 +7,7 @@ from traceback import format_exc
 
 from flask import flash, request, url_for
 from flask_mako import render_template, TemplateError
+from werkzeug.exceptions import HTTPException
 
 from .exceptions import AccessDeniedError, EVEAPIError
 from .messages import Messages
@@ -38,6 +39,8 @@ def make_error_catcher(app, error_template):
         def inner(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
+            except HTTPException:
+                raise
             except TemplateError as exc:
                 app.logger.error("Caught exception:\n{0}".format(exc.text))
                 return render_template(error_template, traceback=exc.text)
