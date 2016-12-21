@@ -3,7 +3,7 @@
 
 from pathlib import Path
 
-from flask import Flask, flash, g, redirect, request, url_for
+from flask import Flask, abort, flash, g, redirect, request, url_for
 from flask_mako import MakoTemplates, render_template
 
 import calefaction
@@ -76,12 +76,13 @@ def logout():
     flash(Messages.LOGGED_OUT, "success")
     return redirect(url_for("index"), 303)
 
-@app.route("/test")
+@app.route("/settings/style/<style>", methods=["POST"])
 @catch_exceptions
 @route_restricted
-def test():
-    ...
-    return "Success! You are authenticated!"
+def set_style(style):
+    if not auth.set_character_style(style):
+        abort(404)
+    return "", 204
 
 if __name__ == "__main__":
     app.run(debug=True, port=8080)

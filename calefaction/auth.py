@@ -196,6 +196,23 @@ class AuthManager:
             g._character_props = g.db.read_character(cid)
         return g._character_props.get(prop)
 
+    def set_character_style(self, style):
+        """Update the current user's style and return whether successful."""
+        cid = self.get_character_id()
+        if not cid:
+            return False
+
+        style = style.strip().lower()
+        if style not in self._config.get("style.enabled"):
+            return False
+
+        self._debug("Setting style to %s for char id=%d", style, cid)
+        g.db.set_character_style(cid, style)
+
+        if hasattr(g, "_character_props"):
+            delattr(g, "_character_props")
+        return True
+
     def is_authenticated(self):
         """Return whether the user has permission to access this site.
 

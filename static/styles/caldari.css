@@ -1,9 +1,13 @@
 body {
-    background-image: url("/static/images/caldari.jpg?v=1");
+    background-image: url("/static/images/bg/caldari.jpg?v=1");
 }
 
-main, header, footer, #character-portrait {
+.styled-border {
     border-color: #364A5F;
+}
+
+#character-options:before {
+    border-bottom-color: #364A5F;
 }
 
 a {

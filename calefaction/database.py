@@ -148,6 +148,12 @@ class Database:
         res = self._conn.execute(query, (cid,)).fetchall()
         return {"name": res[0][0], "style": res[0][1]} if res else {}
 
+    def set_character_style(self, cid, style):
+        """Update a character's style setting."""
+        with self._conn as conn:
+            conn.execute("""UPDATE character SET character_style = ?
+                WHERE character_id = ?""", (style, cid))
+
     def set_auth(self, cid, token, expires, refresh):
         """Set the authentication info for the given character."""
         with self._conn as conn:

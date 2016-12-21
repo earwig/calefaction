@@ -8,12 +8,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="canonical" href="${g.config.scheme}://${g.config.get('site.canonical')}${request.script_root}${request.path}">
         <link rel="stylesheet" type="text/css" href="${url_for('staticv', filename='main.css')}"/>
-        % if g.config.get("style"):
-            <%
-                charstyle = g.auth.get_character_prop("style")
-                style = charstyle if charstyle else g.config.get("style")
-                stylesheet = "styles/{}.css".format(style)
-            %>
+        <%
+            charstyle = g.auth.get_character_prop("style")
+            style = charstyle if charstyle else g.config.get("style.default")
+        %>
+        % if style:
+            <% stylesheet = "styles/{}.css".format(style) %>
             <link rel="stylesheet" type="text/css" href="${url_for('staticv', filename=stylesheet)}"/>
         % endif
         % for size in g.eve.image.corp_widths:
@@ -24,7 +24,7 @@
     </head>
     <body>
         <%block name="header">
-            <header>
+            <header class="styled-border">
                 <div>
                     <div class="left">
                         <%block name="lefthead">
@@ -45,7 +45,7 @@
         <%block name="container">
             <div id="container">
                 <div>
-                    <main>
+                    <main class="styled-border">
                         <%block name="flashes">
                             <% messages = get_flashed_messages(with_categories=True) %>
                             % if messages:
@@ -62,7 +62,7 @@
             </div>
         </%block>
         <%block name="footer">
-            <footer>
+            <footer class="styled-border">
                 <div>
                     <ul>
                         <li>YC&nbsp;${g.eve.clock.now()}</li>

@@ -33,9 +33,14 @@ auth:
   # SSO client secret:
   client_secret: XXAPGc0LM6wdOJAwSNQmliZ2QhQpoBuUutQY6Rlc
 
-# Default stylesheet from static/styles/*.css;
-# one of "amarr", "caldari", "gallente", "minmatar", or create your own:
-style: null
+style:
+  # Default stylesheet from static/styles/*.css:
+  default: null
+  enabled:
+    - amarr
+    - caldari
+    - gallente
+    - minmatar
 
 welcome: |-
   (If you are seeing this message on the public internet, someone forgot to

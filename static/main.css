@@ -37,19 +37,21 @@ h1 {
     width: 100%;
 }
 
+.styled-border {
+    border-color: #4A4A4A;
+    border-style: solid;
+}
+
 main, header, footer {
     background-color: rgba(0, 0, 0, 0.8);
-    border-color: #4A4A4A;
 }
 
 main {
     border-width: 1px;
-    border-style: solid;
 }
 
 header {
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
+    border-width: 0 0 1px 0;
 }
 
 footer {
@@ -57,8 +59,7 @@ footer {
     font-size: 85%;
     text-align: center;
     color: #BABABA;
-    border-top-width: 1px;
-    border-top-style: solid;
+    border-width: 1px 0 0;
 }
 
 header > div, footer > div {
@@ -164,18 +165,6 @@ footer ul li:not(:last-child):after {
     text-decoration: none;
 }
 
-#character-portrait {
-    height: 32px;
-    margin-right: 0.25em;
-    box-sizing: border-box;
-    border-width: 1px;
-    border-style: solid;
-}
-
-#character-summary {
-    font-size: 90%;
-}
-
 #flashes {
     margin-top: 0.5em;
 }
@@ -194,6 +183,74 @@ footer ul li:not(:last-child):after {
 #flashes > .error {
     border-color: #AA3322;
     background-color: rgba(255, 60, 30, 0.2);
+}
+
+#character-portrait {
+    height: 32px;
+    margin-right: 0.25em;
+    box-sizing: border-box;
+    border-width: 1px;
+}
+
+#character-summary {
+    font-size: 90%;
+}
+
+#character-options {
+    position: absolute;
+    margin-top: 1em;
+    margin-left: -10px;
+    padding: 0.5em;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-width: 1px;
+}
+
+#character-options:after, #character-options:before {
+    bottom: 100%;
+    left: 20px;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+#character-options:after {
+    border-bottom-color: black;
+    border-width: 10px;
+    margin-left: -10px;
+}
+
+#character-options:before {
+    border-bottom-color: #4A4A4A;
+    border-width: 12px;
+    margin-left: -12px;
+}
+
+#style-options {
+    line-height: 0;
+}
+
+#style-options form {
+    display: inline-block;
+}
+
+#style-options form:not(:first-child) {
+    margin-left: 0.25em;
+}
+
+#style-options input[type=submit] {
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+    background-color: transparent;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    font-size: 0;
+    border: 0;
+    cursor: pointer;
 }
 
 #error pre {
