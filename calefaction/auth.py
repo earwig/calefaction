@@ -207,7 +207,7 @@ class AuthManager:
             return False
 
         self._debug("Setting style to %s for char id=%d", style, cid)
-        g.db.set_character_style(cid, style)
+        g.db.update_character(cid, "style", style)
 
         if hasattr(g, "_character_props"):
             delattr(g, "_character_props")
