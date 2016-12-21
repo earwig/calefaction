@@ -14,7 +14,7 @@
         %>
         % if style:
             <% stylesheet = "styles/{}.css".format(style) %>
-            <link rel="stylesheet" type="text/css" href="${url_for('staticv', filename=stylesheet)}"/>
+            <link id="user-style" rel="stylesheet" type="text/css" href="${url_for('staticv', filename=stylesheet)}"/>
         % endif
         % for size in g.eve.image.corp_widths:
             <link rel="icon" type="image/png" sizes="${size}x${size}" href="${g.eve.image.corp(g.config.get('corp.id'), size)}"/>

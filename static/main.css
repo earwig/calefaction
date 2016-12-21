@@ -199,7 +199,7 @@ footer ul li:not(:last-child):after {
 #character-options {
     position: absolute;
     margin-top: 1em;
-    margin-left: -10px;
+    margin-left: -5px;
     padding: 0.5em;
     background-color: rgba(0, 0, 0, 0.8);
     border-width: 1px;
@@ -240,7 +240,7 @@ footer ul li:not(:last-child):after {
     margin-left: 0.25em;
 }
 
-#style-options input[type=submit] {
+#style-options input[type="submit"] {
     display: inline-block;
     height: 24px;
     width: 24px;

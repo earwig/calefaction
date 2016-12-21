@@ -30,4 +30,11 @@ $(function() {
             });
         }
     }).css("cursor", "pointer");
+
+    // Switch style immediately without reloading the page:
+    $("#style-options form").submit(function() {
+        var style = $(this).find('input[type="submit"]').prop("value");
+        var stylesheet = "/static/styles/" + style + ".css";
+        $("#user-style").prop("href", stylesheet);
+    });
 });
