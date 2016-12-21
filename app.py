@@ -84,5 +84,9 @@ def set_style(style):
         abort(404)
     return "", 204
 
+@app.errorhandler(404)
+def page_not_found(err):
+    return render_template("404.mako"), 404
+
 if __name__ == "__main__":
     app.run(debug=True, port=8080)
