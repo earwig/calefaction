@@ -29,10 +29,10 @@ $(function() {
                 }
             });
         }
-    }).keypress(function (e) {
+    }).css("cursor", "pointer").keypress(function (e) {
         if (e.which === 13)
             $(this).click();
-    }).css("cursor", "pointer").prop("alt", "Options").prop("tabindex", 0);
+    }).prop("title", "Options").prop("alt", "Options").prop("tabindex", 0);
 
     // Switch style immediately without reloading the page:
     $("#style-options form").submit(function() {
