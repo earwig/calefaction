@@ -25,15 +25,15 @@
                 <div>
                     <div class="left">
                         <%block name="lefthead">
-                            <a id="corp-masthead-link" href="${url_for('index')}">
-                                <img id="corp-masthead" class="aligned" title="Home" alt="Home" src="${g.eve.image.corp(g.config.get('corp.id'), 256)}"/>
+                            <a id="corp-masthead" title="Home" href="${url_for('index')}">
+                                <img alt="Logo" src="${g.eve.image.corp(g.config.get('corp.id'), 256)}"/>
+                                <span>${g.config.get("corp.name") | h}</span>
                             </a>
-                            <a id="corp-title" class="aligned" href="${url_for('index')}">${g.config.get("corp.name") | h}</a>
                         </%block>
                     </div>
                     <div class="right">
                         <%block name="righthead">
-                            <img class="spacer aligned" alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="/>
+                            <img class="spacer" alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="/>
                         </%block>
                     </div>
                 </div>

@@ -117,14 +117,12 @@ header > div > div {
 header nav {
     display: inline-block;
     margin-left: 1.5em;
-}
-
-header .aligned {
     vertical-align: middle;
 }
 
 header .spacer {
     height: 32px;
+    vertical-align: middle;
     visibility: hidden;
 }
 
@@ -147,22 +145,25 @@ footer ul li:not(:last-child):after {
 }
 
 #corp-masthead {
+    color: #EAEAEA;
+}
+
+#corp-masthead:hover {
+    color: #BABABA;
+    text-decoration: none;
+}
+
+#corp-masthead img {
     height: 32px;
     margin-right: 0.25em;
 }
 
-#corp-masthead-link:hover {
-    text-decoration: none;
-}
-
-#corp-title {
+#corp-masthead span {
     font-size: 120%;
-    color: #EAEAEA;
 }
 
-#corp-title:hover {
-    color: #BABABA;
-    text-decoration: none;
+#corp-masthead > * {
+    vertical-align: middle;
 }
 
 #flashes {
@@ -191,10 +192,12 @@ footer ul li:not(:last-child):after {
     margin-right: 0.25em;
     box-sizing: border-box;
     border-width: 1px;
+    vertical-align: middle;
 }
 
 #character-summary {
     font-size: 90%;
+    vertical-align: middle;
 }
 
 #character-options {
@@ -268,6 +271,7 @@ footer ul li:not(:last-child):after {
 #login-button {
     height: 30px;
     padding-bottom: 2px;
+    vertical-align: middle;
 }
 
 #logout-form {

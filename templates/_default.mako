@@ -1,12 +1,12 @@
 <%inherit file="_base.mako"/>
 <%block name="lefthead">
     ${parent.lefthead()}
-    <nav class="aligned">
+    <nav>
         Campaign: XYZ | Map | Intel | Members...
     </nav>
 </%block>
 <%block name="righthead">
-    <img id="character-portrait" class="styled-border aligned" alt="" src="${g.eve.image.character(g.auth.get_character_id(), 256)}"/>
+    <img id="character-portrait" class="styled-border" alt="Portrait" src="${g.eve.image.character(g.auth.get_character_id(), 256)}"/>
     <div id="character-options" class="styled-border">
         <div id="style-options">
             <% cur_style = g.auth.get_character_prop("style") or g.config.get("style.default") %>
@@ -22,7 +22,7 @@
             % endfor
         </div>
     </div>
-    <span id="character-summary" class="aligned">
+    <span id="character-summary">
         ${g.auth.get_character_prop("name")}
         <span class="sep">[</span><a id="logout" title="Log out" href="${url_for('logout')}">log out</a><span class="sep">]</span>
     </span>
