@@ -3,11 +3,11 @@ body {
 }
 
 .styled-border {
-    border-color: #5F3C42;
+    border-color: #5F3632;
 }
 
 #character-options:before {
-    border-bottom-color: #5F3C42;
+    border-bottom-color: #5F3632;
 }
 
 a {
