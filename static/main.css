@@ -187,6 +187,7 @@ footer ul li:not(:last-child):after {
 
 #character-portrait {
     height: 32px;
+    width: 32px;
     margin-right: 0.25em;
     box-sizing: border-box;
     border-width: 1px;
@@ -200,7 +201,6 @@ footer ul li:not(:last-child):after {
     position: absolute;
     margin-top: 1em;
     margin-left: -5px;
-    padding: 0.5em;
     background-color: rgba(0, 0, 0, 0.8);
     border-width: 1px;
 }
@@ -229,27 +229,35 @@ footer ul li:not(:last-child):after {
 }
 
 #style-options {
+    margin: 4px;
     line-height: 0;
 }
 
-#style-options form {
+#style-options > * {
     display: inline-block;
+    padding: 4px;
 }
 
-#style-options form:not(:first-child) {
-    margin-left: 0.25em;
-}
-
-#style-options input[type="submit"] {
+#style-options > * > * {
     display: inline-block;
     height: 24px;
     width: 24px;
+    margin: 0;
+    padding: 0;
     background-color: transparent;
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
     font-size: 0;
     border: 0;
+    vertical-align: middle;
+}
+
+#style-options .cur {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+#style-options > :not(.cur) > * {
     cursor: pointer;
 }
 

@@ -9,10 +9,21 @@
     <img id="character-portrait" class="styled-border aligned" alt="" src="${g.eve.image.character(g.auth.get_character_id(), 256)}"/>
     <div id="character-options" class="styled-border">
         <div id="style-options">
+            <% cur_style = g.auth.get_character_prop("style") or g.config.get("style.default") %>
             % for style in g.config.get("style.enabled"):
-                <form action="${url_for('set_style', style=style)}" method="post">
-                    <input type="submit" title="${style.title()}" value="${style}" style="background-image: url('${url_for('staticv', filename='images/style/{}.png'.format(style))}')">
-                </form>
+                <%
+                    stitle = style.title()
+                    url = url_for('staticv', filename='images/style/{}.png'.format(style))
+                %>
+                % if style == cur_style:
+                    <div class="cur">
+                        <div style="background-image: url('${url}')">${stitle}</div>
+                    </div>
+                % else:
+                    <form action="${url_for('set_style', style=style)}" method="post">
+                        <input type="submit" title="${stitle}" value="${stitle}" style="background-image: url('${url}')">
+                    </form>
+                % endif
             % endfor
         </div>
     </div>

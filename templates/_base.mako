@@ -8,10 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="canonical" href="${g.config.scheme}://${g.config.get('site.canonical')}${request.script_root}${request.path}">
         <link rel="stylesheet" type="text/css" href="${url_for('staticv', filename='main.css')}"/>
-        <%
-            charstyle = g.auth.get_character_prop("style")
-            style = charstyle if charstyle else g.config.get("style.default")
-        %>
+        <% style = g.auth.get_character_prop("style") or g.config.get("style.default") %>
         % if style:
             <% stylesheet = "styles/{}.css".format(style) %>
             <link id="user-style" rel="stylesheet" type="text/css" href="${url_for('staticv', filename=stylesheet)}"/>
