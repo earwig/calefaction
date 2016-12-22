@@ -15,15 +15,10 @@
                     stitle = style.title()
                     url = url_for('staticv', filename='images/style/{}.png'.format(style))
                 %>
-                % if style == cur_style:
-                    <div class="cur">
-                        <div style="background-image: url('${url}')">${stitle}</div>
-                    </div>
-                % else:
-                    <form action="${url_for('set_style', style=style)}" method="post">
-                        <input type="submit" title="${stitle}" value="${stitle}" style="background-image: url('${url}')">
-                    </form>
-                % endif
+                <form action="${url_for('set_style', style=style)}" method="post"${' class="cur"' if style == cur_style else ''}>
+                    <input type="submit" title="${stitle}" value="${stitle}" data-style="${style}"${' disabled' if style == cur_style else ''}
+                        style="background-image: url('${url}')">
+                </form>
             % endfor
         </div>
     </div>

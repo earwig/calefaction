@@ -33,8 +33,11 @@ $(function() {
 
     // Switch style immediately without reloading the page:
     $("#style-options form").submit(function() {
-        var style = $(this).find('input[type="submit"]').prop("value");
+        var style = $(this).find('input[type="submit"]').data("style");
         var stylesheet = "/static/styles/" + style + ".css";
         $("#user-style").prop("href", stylesheet);
+        $("#style-options .cur").removeClass("cur").find(":submit")
+            .prop("disabled", false);
+        $(this).addClass("cur").find(":submit").prop("disabled", true);
     });
 });
