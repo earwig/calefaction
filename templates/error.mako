@@ -2,7 +2,7 @@
 <%block name="title">
     Error &ndash; ${g.config.get("corp.name") | h}
 </%block>
-<h1>Error!</h1>
+<h2>Error!</h2>
 <p>You may report the following information to the developers:</p>
 <div id="error">
     <pre>${traceback | trim,h}</pre>

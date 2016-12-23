@@ -27,7 +27,7 @@
                         <%block name="lefthead">
                             <a id="corp-masthead" title="Home" href="${url_for('index')}">
                                 <img alt="Logo" src="${g.eve.image.corp(g.config.get('corp.id'), 256)}"/>
-                                <span>${g.config.get("corp.name") | h}</span>
+                                <h1>${g.config.get("corp.name") | h}</h1>
                             </a>
                         </%block>
                     </div>

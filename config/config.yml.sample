@@ -18,6 +18,15 @@ corp:
   # Full corp name (doesn't need to match in-game name exactly, but it should):
   name: My Corp Name Here
 
+modules:
+  # Most site functionality comes from optional modules selected based on your
+  # corp's needs. They are located in the calefaction/modules/ directory. The
+  # order below determines how they appear in the navigation menu.
+  # List of enabled modules:
+  - campaigns
+  - map
+  - members
+
 auth:
   # Secure session signing key. Never share with anyone. Can generate with
   # "import base64, os; base64.b64encode(os.urandom(24))":
@@ -25,9 +34,8 @@ auth:
   # You need to create an application at
   # https://developers.eveonline.com/applications for this corp's website.
   # Set the callback URL to http(s)://<your domain>/login (match the protocol
-  # with "site.https" above) and the scopes to:
-  # - publicData
-  # - ...
+  # with "site.https" above) and the scopes to whatever is required by the
+  # modules you've enabled.
   # SSO client ID:
   client_id: a290afea820b8dd8c46d3883898ab66d
   # SSO client secret:

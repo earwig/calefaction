@@ -24,8 +24,8 @@ a:hover {
     text-decoration: underline;
 }
 
-h1 {
-    margin-top: 0.5em;
+h2 {
+    margin: 0.5em 0;
 }
 
 #container {
@@ -158,8 +158,10 @@ footer ul li:not(:last-child):after {
     margin-right: 0.25em;
 }
 
-#corp-masthead span {
+#corp-masthead h1 {
+    display: inline;
     font-size: 120%;
+    font-weight: normal;
 }
 
 #corp-masthead > * {

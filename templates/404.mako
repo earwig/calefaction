@@ -2,5 +2,5 @@
 <%block name="title">
     404 &ndash; ${g.config.get("corp.name") | h}
 </%block>
-<h1>Error 404</h1>
+<h2>Error 404</h2>
 <p>The page you asked for couldn't be found.</p>

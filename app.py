@@ -30,8 +30,8 @@ route_restricted = make_route_restricter(
 
 MakoTemplates(app)
 set_up_asset_versioning(app)
-config.install(app)
 calefaction.enable_logging()
+config.install(app)
 
 @app.before_request
 def prepare_request():
