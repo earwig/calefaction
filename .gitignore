@@ -3,8 +3,11 @@ __pycache__/
 venv/
 
 config/*
+config/modules/*
 data/*
 logs/
 
-!config/config.yml.sample
+!config/*.sample
+!config/modules
+!config/modules/*.sample
 !data/schema.sql

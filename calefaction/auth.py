@@ -10,7 +10,7 @@ from .exceptions import AccessDeniedError
 
 __all__ = ["AuthManager"]
 
-_SCOPES = ["publicData", "characterAssetsRead"]  # ...
+_SCOPES = []  # ...
 
 class AuthManager:
     """Authentication manager. Handles user access and management."""
@@ -196,10 +196,20 @@ class AuthManager:
             self._invalidate_session()
             raise AccessDeniedError()
 
+    def _update_prop_cache(self, module, prop, value):
+        """Update the value of a character module property in the cache."""
+        if hasattr(g, "_character_modprops"):
+            propcache = g._character_modprops
+        else:
+            propcache = g._character_modprops = {module: {}}
+        if module not in propcache:
+            propcache[module] = {}
+        propcache[module][prop] = value
+
     def get_character_id(self):
         """Return the character ID associated with the current session.
 
-        Returns None if the session is invalid or is not associated with a
+        Return None if the session is invalid or is not associated with a
         character.
         """
         if not self._check_session():
@@ -212,7 +222,7 @@ class AuthManager:
     def get_character_prop(self, prop):
         """Look up a property for the current session's character.
 
-        Returns None if the session is invalid, is not associated with a
+        Return None if the session is invalid, is not associated with a
         character, or the property has no non-default value.
         """
         cid = self.get_character_id()
@@ -238,6 +248,40 @@ class AuthManager:
 
         if hasattr(g, "_character_props"):
             delattr(g, "_character_props")
+        return True
+
+    def get_character_modprop(self, module, prop):
+        """Look up a module property for the current session's character.
+
+        Return None if the session is invalid, is not associated with a
+        character, or the property has no non-default value.
+        """
+        cid = self.get_character_id()
+        if not cid:
+            return None
+
+        if hasattr(g, "_character_modprops"):
+            propcache = g._character_modprops
+            if module in propcache and prop in propcache[module]:
+                return propcache[module][prop]
+
+        value = g.db.get_character_modprop(cid, module, prop)
+        self._update_prop_cache(module, prop, value)
+        return value
+
+    def set_character_modprop(self, module, prop, value):
+        """Update a module property for the current session's character.
+
+        Return whether successful.
+        """
+        cid = self.get_character_id()
+        if not cid:
+            return False
+
+        self._debug("Setting module %s property %s to %s for char id=%d",
+                    module, prop, value, cid)
+        g.db.set_character_modprop(cid, module, prop, value)
+        self._update_prop_cache(module, prop, value)
         return True
 
     def is_authenticated(self):

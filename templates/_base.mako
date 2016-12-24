@@ -23,18 +23,20 @@
         <%block name="header">
             <header class="styled-border">
                 <div>
-                    <div class="left">
-                        <%block name="lefthead">
-                            <a id="corp-masthead" title="Home" href="${url_for('index')}">
-                                <img alt="Logo" src="${g.eve.image.corp(g.config.get('corp.id'), 256)}"/>
-                                <h1>${g.config.get("corp.name") | h}</h1>
-                            </a>
-                        </%block>
-                    </div>
-                    <div class="right">
-                        <%block name="righthead">
-                            <img class="spacer" alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="/>
-                        </%block>
+                    <div>
+                        <div class="left">
+                            <%block name="lefthead">
+                                <a id="corp-masthead" title="Home" href="${url_for('index')}">
+                                    <img alt="Logo" src="${g.eve.image.corp(g.config.get('corp.id'), 256)}"/>
+                                    <h1>${g.config.get("corp.name") | h}</h1>
+                                </a>
+                            </%block>
+                        </div>
+                        <div class="right">
+                            <%block name="righthead">
+                                <img class="spacer" alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="/>
+                            </%block>
+                        </div>
                     </div>
                 </div>
             </header>

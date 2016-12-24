@@ -15,7 +15,7 @@ $(function() {
     // Toggle character options on click:
     var charopts = $("#character-options");
     charopts.hide();
-    $("#character-portrait").click(function() {
+    $("#character-portrait img").click(function() {
         if (charopts.is(":visible")) {
             charopts.hide();
             $(document).off("mouseup.charopts");
@@ -23,7 +23,7 @@ $(function() {
             charopts.show();
             $(document).on("mouseup.charopts", function(e) {
                 if (!overlaps(e.target, charopts) &&
-                        !overlaps(e.target, $("#character-portrait"))) {
+                        !overlaps(e.target, $("#character-portrait img"))) {
                     charopts.hide();
                     $(document).off("mouseup.charopts");
                 }

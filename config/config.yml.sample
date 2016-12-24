@@ -20,12 +20,15 @@ corp:
 
 modules:
   # Most site functionality comes from optional modules selected based on your
-  # corp's needs. They are located in the calefaction/modules/ directory. The
+  # corp's needs. They are located in the calefaction/modules/ directory. Their
   # order below determines how they appear in the navigation menu.
   # List of enabled modules:
-  - campaigns
-  - map
-  - members
+  enabled:
+    - campaigns
+    - map
+    - members
+  # Module to show on the home page after users log in:
+  home: campaigns
 
 auth:
   # Secure session signing key. Never share with anyone. Can generate with
@@ -44,6 +47,7 @@ auth:
 style:
   # Default stylesheet from static/styles/*.css:
   default: null
+  # List of enabled stylesheets:
   enabled:
     - amarr
     - caldari

@@ -24,8 +24,8 @@ Database.path = str(basepath / "data" / "db.sqlite3")
 eve = EVE(config)
 auth = AuthManager(config, eve)
 
-catch_exceptions = make_error_catcher(app, "error.mako")
-route_restricted = make_route_restricter(
+app.catch_exceptions = make_error_catcher(app, "error.mako")
+app.route_restricted = make_route_restricter(
     auth, lambda: redirect(url_for("index"), 303))
 
 MakoTemplates(app)
@@ -38,21 +38,25 @@ def prepare_request():
     g.auth = auth
     g.config = config
     g.eve = eve
+    g.modules = config.modules
     g.version = calefaction.__version__
 
 app.before_request(Database.pre_hook)
 app.teardown_appcontext(Database.post_hook)
 
 @app.route("/")
-@catch_exceptions
+@app.catch_exceptions
 def index():
     success, _ = try_func(auth.is_authenticated)
     if success:
-        return render_template("home.mako")
+        module = config.get("modules.home")
+        if module:
+            return config.modules[module].home()
+        return render_template("default_home.mako")
     return render_template("landing.mako")
 
 @app.route("/login", methods=["GET", "POST"])
-@catch_exceptions
+@app.catch_exceptions
 def login():
     code = request.args.get("code")
     state = request.args.get("state")
@@ -65,7 +69,7 @@ def login():
     return redirect(url_for("index"), 303)
 
 @app.route("/logout", methods=["GET", "POST"])
-@catch_exceptions
+@app.catch_exceptions
 def logout():
     if request.method == "GET":
         return render_template("logout.mako")
@@ -75,8 +79,8 @@ def logout():
     return redirect(url_for("index"), 303)
 
 @app.route("/settings/style/<style>", methods=["POST"])
-@catch_exceptions
-@route_restricted
+@app.catch_exceptions
+@app.route_restricted
 def set_style(style):
     if not auth.set_character_style(style):
         abort(404)

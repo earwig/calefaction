@@ -1,0 +1,15 @@
+# This is a sample config file for Calefaction's Campaigns module.
+# Copy this to campaigns.yml and modify it to set up the module.
+# You must restart the server after making any changes.
+
+# List of active campaigns, in your preferred order:
+enabled:
+  - Foo
+  - Bar
+
+campaigns:
+  # ...
+  Foo:
+    a: b
+  Bar:
+    a: b

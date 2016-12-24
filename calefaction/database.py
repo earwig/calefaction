@@ -203,3 +203,17 @@ class Database:
         """Drop any authentication info for the given character."""
         with self._conn as conn:
             conn.execute("DELETE FROM auth WHERE auth_character = ?", (cid,))
+
+    def set_character_modprop(self, cid, module, prop, value):
+        """Add or update a character module property."""
+        with self._conn as conn:
+            conn.execute("""INSERT OR REPLACE INTO character_prop
+                (cprop_character, cprop_module, cprop_key, cprop_value)
+                VALUES (?, ?, ?, ?)""", (cid, module, prop, value))
+
+    def get_character_modprop(self, cid, module, prop):
+        """Return the value of a character module property, or None."""
+        query = """SELECT cprop_value FROM character_prop
+            WHERE cprop_character = ? AND cprop_module = ? AND cprop_key = ?"""
+        res = self._conn.execute(query, (cid, module, prop)).fetchall()
+        return res[0][0] if res else None
