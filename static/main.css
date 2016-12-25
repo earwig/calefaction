@@ -335,14 +335,18 @@ footer ul li:not(:last-child):after {
     margin-bottom: 0.5em;
 }
 
-#members-list > li > img {
+#members-list > li a:hover {
+    text-decoration: none;
+}
+
+#members-list > li img {
     width: 48px;
     height: 48px;
     vertical-align: middle;
     border-width: 1px;
 }
 
-#members-list > li > span {
+#members-list > li span {
     margin-left: 0.5em;
     vertical-align: middle;
 }
