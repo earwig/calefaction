@@ -10,8 +10,6 @@ from .exceptions import AccessDeniedError
 
 __all__ = ["AuthManager"]
 
-_SCOPES = []  # ...
-
 class AuthManager:
     """Authentication manager. Handles user access and management."""
     EXPIRY_THRESHOLD = 30
@@ -316,7 +314,7 @@ class AuthManager:
         """Return a complete EVE SSO link that the user can use to log in."""
         cid = self._config.get("auth.client_id")
         target = url_for("login", _external=True, _scheme=self._config.scheme)
-        scopes = _SCOPES
+        scopes = self._config.collect_scopes()
         state = self._get_state_hash()
         return self._eve.sso.get_authorize_url(cid, target, scopes, state)
 

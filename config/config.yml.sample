@@ -38,7 +38,8 @@ auth:
   # https://developers.eveonline.com/applications for this corp's website.
   # Set the callback URL to http(s)://<your domain>/login (match the protocol
   # with "site.https" above) and the scopes to whatever is required by the
-  # modules you've enabled.
+  # modules you've enabled. If none of your modules require scopes, select at
+  # least "publicData".
   # SSO client ID:
   client_id: a290afea820b8dd8c46d3883898ab66d
   # SSO client secret:

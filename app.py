@@ -35,6 +35,7 @@ config.install(app)
 
 @app.before_request
 def prepare_request():
+    """Set up the Flask global context variable with important objects."""
     g.auth = auth
     g.config = config
     g.eve = eve
@@ -47,6 +48,11 @@ app.teardown_appcontext(Database.post_hook)
 @app.route("/")
 @app.catch_exceptions
 def index():
+    """Render and return the index page.
+
+    This is a informational landing page for non-logged-in users, and the corp
+    homepage for those who are logged in.
+    """
     success, _ = try_func(auth.is_authenticated)
     if success:
         module = config.get("modules.home")
@@ -58,6 +64,7 @@ def index():
 @app.route("/login", methods=["GET", "POST"])
 @app.catch_exceptions
 def login():
+    """Handle the last step of a SSO login request."""
     code = request.args.get("code")
     state = request.args.get("state")
 
@@ -71,6 +78,7 @@ def login():
 @app.route("/logout", methods=["GET", "POST"])
 @app.catch_exceptions
 def logout():
+    """Log the user out (POST), or ask them to confirm a log out (GET)."""
     if request.method == "GET":
         return render_template("logout.mako")
 
@@ -82,12 +90,14 @@ def logout():
 @app.catch_exceptions
 @app.route_restricted
 def set_style(style):
+    """Set the user's style preference."""
     if not auth.set_character_style(style):
         abort(404)
     return "", 204
 
 @app.errorhandler(404)
 def page_not_found(err):
+    """Render and return the 404 error template."""
     return render_template("404.mako"), 404
 
 if __name__ == "__main__":

@@ -51,3 +51,9 @@ class Module:
         """Return a navigation bar HTML snippet for this module, or None."""
         if hasattr(self._module, "navitem"):
             return self._module.navitem()
+
+    def scopes(self):
+        """Return a set of SSO scopes required by this module."""
+        if hasattr(self._module, "SCOPES"):
+            return set(self._module.SCOPES)
+        return set()

@@ -89,3 +89,12 @@ class Config:
                 return yaml.load(fp)
         except FileNotFoundError:
             return None
+
+    def collect_scopes(self):
+        """Return a list of SSO scopes required for all/regular users."""
+        scopes = set()
+        for module in self.modules:
+            scopes |= module.scopes()
+        if not scopes:
+            scopes.add("publicData")
+        return sorted(list(scopes))
