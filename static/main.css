@@ -1,3 +1,6 @@
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~ Calefaction Main CSS ~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* =============================== Universal =============================== */
+
 @import url(//fonts.googleapis.com/css?family=Open+Sans:400,400italic,700);
 
 body {
@@ -316,4 +319,29 @@ footer ul li:not(:last-child):after {
 
 #logout-form {
     margin-bottom: 1em;
+}
+
+/* ================================ Modules ================================ */
+/* -------------------------------- Members -------------------------------- */
+
+#members-list {
+    list-style: none;
+    margin: 1em 0 0.5em 0;
+    padding: 0;
+    column-count: 2;
+}
+
+#member-list > li {
+    margin-bottom: 0.5em;
+}
+
+#member-list > li > img {
+    width: 48px;
+    height: 48px;
+    vertical-align: middle;
+}
+
+#member-list > li > span {
+    margin-left: 0.5em;
+    vertical-align: middle;
 }

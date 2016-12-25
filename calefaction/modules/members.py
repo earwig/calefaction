@@ -11,6 +11,8 @@ SCOPES = {"esi-corporations.read_corporation_membership.v1"}
 
 _Member = namedtuple("_Member", ["id", "name"])
 
+# ... show roles if possible
+
 def get_members():
     """Return a list of the members of the user's corporation.
 
