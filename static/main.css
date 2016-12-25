@@ -331,17 +331,18 @@ footer ul li:not(:last-child):after {
     column-count: 2;
 }
 
-#member-list > li {
+#members-list > li {
     margin-bottom: 0.5em;
 }
 
-#member-list > li > img {
+#members-list > li > img {
     width: 48px;
     height: 48px;
     vertical-align: middle;
+    border-width: 1px;
 }
 
-#member-list > li > span {
+#members-list > li > span {
     margin-left: 0.5em;
     vertical-align: middle;
 }
