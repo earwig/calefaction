@@ -7,7 +7,7 @@
             <a href="${g.eve.image.character(member.id, 1024)}">
                 <img class="styled-border" title="${member.name}" alt="${member.name}'s Portrait" src="${g.eve.image.character(member.id, 256)}"/>
             </a>
-            <span>${member.name}</span>
+            <span>${member.name} <em>${member.roles}</em></span>
         </li>
     % endfor
 </ul>

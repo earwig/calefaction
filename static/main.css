@@ -150,7 +150,7 @@ header nav > ul > li {
     display: inline-block;
 }
 
-header nav > ul > li:not(:last-child):after {
+header nav > ul > li:not(:last-child)::after {
     content: " \007c";
     color: #777;
 }
@@ -175,7 +175,7 @@ footer ul li {
     list-style: none;
 }
 
-footer ul li:not(:last-child):after {
+footer ul li:not(:last-child)::after {
     content: " \00b7";
 }
 
@@ -251,7 +251,7 @@ footer ul li:not(:last-child):after {
     border-width: 1px;
 }
 
-#character-options:after, #character-options:before {
+#character-options::after, #character-options::before {
     bottom: 100%;
     left: 20px;
     border: solid transparent;
@@ -262,13 +262,13 @@ footer ul li:not(:last-child):after {
     pointer-events: none;
 }
 
-#character-options:after {
+#character-options::after {
     border-bottom-color: black;
     border-width: 10px;
     margin-left: -10px;
 }
 
-#character-options:before {
+#character-options::before {
     border-bottom-color: #4A4A4A;
     border-width: 12px;
     margin-left: -12px;
@@ -331,22 +331,30 @@ footer ul li:not(:last-child):after {
     column-count: 2;
 }
 
-#members-list > li {
+#members-list li {
     margin-bottom: 0.5em;
 }
 
-#members-list > li a:hover {
+#members-list a:hover {
     text-decoration: none;
 }
 
-#members-list > li img {
+#members-list img {
     width: 48px;
     height: 48px;
     vertical-align: middle;
     border-width: 1px;
 }
 
-#members-list > li span {
+#members-list span {
     margin-left: 0.5em;
     vertical-align: middle;
+}
+
+#members-list em {
+    font-size: 90%;
+}
+
+#members-list em::before {
+    content: ", ";
 }
