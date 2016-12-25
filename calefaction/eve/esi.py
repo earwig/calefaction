@@ -155,8 +155,8 @@ class EVESwaggerInterface:
             cached = None
 
         self._debug("[%s] [%s] %s", method.__name__.upper(),
-                    "cache" if cached else "fresh", query)
-        if cached:
+                    "fresh" if cached is None else "cache", query)
+        if cached is not None:
             return cached
 
         headers = {
