@@ -11,7 +11,11 @@ SCOPES = {"esi-corporations.read_corporation_membership.v1"}
 
 _Member = namedtuple("_Member", ["id", "name", "roles"])
 
-# ... sort by seniority
+def _weight(role):
+    """Return an integer weight for the given role for sorting purposes."""
+    if role == "CEO":
+        return 0
+    return 100
 
 def get_members():
     """Return a list of the members of the user's corporation.
@@ -28,9 +32,12 @@ def get_members():
     cids = ",".join(str(item["character_id"]) for item in resp)
     ceo_id = g.eve.esi(token).v2.corporations(corp_id).get()["ceo_id"]
     resp = g.eve.esi(token).v1.characters.names.get(character_ids=cids)
-    return [_Member(item["character_id"], item["character_name"],
-                    "CEO" if item["character_id"] == ceo_id else None)
-            for item in resp]
+
+    members = [_Member(item["character_id"], item["character_name"],
+                       "CEO" if item["character_id"] == ceo_id else None)
+               for item in resp]
+    members.sort(key=lambda m: (_weight(m.roles), m.name))
+    return members
 
 def home():
     """Render and return the main members page."""
