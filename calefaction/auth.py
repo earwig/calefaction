@@ -282,6 +282,22 @@ class AuthManager:
         self._update_prop_cache(module, prop, value)
         return True
 
+    def get_token(self):
+        """Return a valid token for the current character, or None.
+
+        Assuming this is called in a restricted route (following a True result
+        from is_authenticated), this function makes no API calls and should
+        always succeed. If it is called in other circumstances, it may fail and
+        return None.
+        """
+        cid = self.get_character_id()
+        if not cid:
+            return None
+
+        if not hasattr(g, "_cached_token"):
+            g._cached_token = self._get_token(cid)
+        return g._cached_token
+
     def is_authenticated(self):
         """Return whether the user has permission to access this site.
 
@@ -308,6 +324,7 @@ class AuthManager:
         self._debug("Access granted for char id=%d session id=%d", cid,
                     session["id"])
         g.db.touch_session(session["id"])
+        g._cached_token = token
         return True
 
     def make_login_link(self):
