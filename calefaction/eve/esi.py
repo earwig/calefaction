@@ -18,18 +18,24 @@ class _ESICache:
     EXPIRATION_RATE = 0.2
 
     def __init__(self):
-        self._index = {}
+        self._public = {}
+        self._private = {}
         self._lock = Lock()
 
     @staticmethod
-    def _calculate_expiry(resp):
-        """Calculate the expiration date for the given response object."""
+    def _get_cache_policy(resp):
+        """Calculate the expiry and availability of the given response."""
         if "Cache-Control" not in resp.headers:
             return None
 
         directives = resp.headers["Cache-Control"].lower().split(";")
         directives = [d.strip() for d in directives]
-        if "public" not in directives:
+
+        if "public" in directives:
+            public = True
+        elif "private" in directives:
+            public = False
+        else:
             return None
 
         expires = resp.headers.get("Expires")
@@ -37,9 +43,11 @@ class _ESICache:
             return None
 
         try:
-            return datetime.strptime(expires, "%a, %d %b %Y %H:%M:%S GMT")
+            expiry = datetime.strptime(expires, "%a, %d %b %Y %H:%M:%S GMT")
         except ValueError:
             return None
+
+        return public, expiry
 
     @staticmethod
     def freeze_dict(d):
@@ -51,36 +59,52 @@ class _ESICache:
 
     def _expire(self):
         """Remove old entries from the cache. Assumes lock is acquired."""
-        condemned = []
         now = datetime.utcnow()
-        for key, (expiry, _) in self._index.items():
-            if expiry < now:
-                condemned.append(key)
-        for key in condemned:
-            del self._index[key]
+        for index in (self._private, self._public):
+            condemned = []
+            for key, (expiry, _) in index.items():
+                if expiry < now:
+                    condemned.append(key)
+            for key in condemned:
+                del index[key]
 
-    def fetch(self, key):
+    def fetch(self, key, token):
         """Try to look up a key in the cache. Return None if not found.
 
-        The key should be a string.
+        The key should be a string. The token is used if a route is cached
+        privately.
 
         This will periodically clear the cache of expired entries.
         """
         with self._lock:
             if random.random() < self.EXPIRATION_RATE:
                 self._expire()
-            if key in self._index:
-                expiry, value = self._index[key]
+
+            if (key, token) in self._private:
+                expiry, value = self._private[key, token]
                 if expiry > datetime.utcnow():
                     return value
+
+            if key in self._public:
+                expiry, value = self._public[key]
+                if expiry > datetime.utcnow():
+                    return value
+
             return None
 
-    def insert(self, key, value, response):
+    def insert(self, key, token, value, response):
         """Store a key-value pair using the response as cache control."""
-        expiry = self._calculate_expiry(response)
-        if expiry and expiry > datetime.utcnow():
+        policy = self._get_cache_policy(response)
+        if not policy:
+            return
+
+        public, expiry = policy
+        if expiry > datetime.utcnow():
             with self._lock:
-                self._index[key] = (expiry, value)
+                if public:
+                    self._public[key] = (expiry, value)
+                else:
+                    self._private[key, token] = (expiry, value)
 
 
 class _ESIQueryBuilder:
@@ -150,7 +174,7 @@ class EVESwaggerInterface:
         if can_cache:
             pkey = self._cache.freeze_dict(params)
             key = "|".join((method.__name__, self._data_source, query, pkey))
-            cached = self._cache.fetch(key)
+            cached = self._cache.fetch(key, token)
         else:
             cached = None
 
@@ -177,7 +201,7 @@ class EVESwaggerInterface:
             raise EVEAPIError()
 
         if can_cache and result is not None:
-            self._cache.insert(key, result, resp)
+            self._cache.insert(key, token, result, resp)
         return result
 
     def get(self, query, token, params=None):
