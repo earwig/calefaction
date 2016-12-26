@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 
-from flask import abort, g, request
+from flask import abort, g, redirect, request
 from flask_mako import render_template
 
 from ._provided import blueprint, config
@@ -42,4 +42,4 @@ def set_campaign():
     if campaign not in config["enabled"]:
         abort(400)
     g.auth.set_character_modprop("campaigns", "current", campaign)
-    return "", 204
+    return redirect(url_for(".campaign"), 303)
