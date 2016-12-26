@@ -96,6 +96,7 @@ def set_style(style):
     return "", 204
 
 @app.errorhandler(404)
+@app.catch_exceptions
 def page_not_found(err):
     """Render and return the 404 error template."""
     return render_template("404.mako"), 404

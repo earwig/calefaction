@@ -47,10 +47,11 @@ def make_error_catcher(app, error_template):
                 raise
             except TemplateError as exc:
                 app.logger.error("Caught exception:\n{0}".format(exc.text))
-                return render_template(error_template, traceback=exc.text)
+                trace = exc.text
             except Exception:
                 app.logger.exception("Caught exception:")
-                return render_template(error_template, traceback=format_exc())
+                trace = format_exc()
+            return render_template(error_template, traceback=trace), 500
         return inner
     return callback
 
