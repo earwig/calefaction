@@ -1,6 +1,6 @@
 <%inherit file="_base.mako"/>
 <%block name="title">
-    Log out &ndash; ${g.config.get("corp.name") | h}
+    ${self.maketitle("Log out")}
 </%block>
 <h2>Log out</h2>
 <p>Use the button below to safely log out and clear your session.</p>

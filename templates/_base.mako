@@ -3,7 +3,16 @@
     <head>
         <meta charset="utf-8">
         <title>
-            <%block name="title">${g.config.get("corp.name") | h}</%block>
+            <%def name="maketitle(*parts)">
+                <%
+                    if request.url_rule.endpoint == "index":
+                        parts = ()
+                %>
+                ${" | ".join(parts + (g.config.get("corp.name"),)) | h}
+            </%def>
+            <%block name="title">
+                ${maketitle()}
+            </%block>
         </title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="canonical" href="${g.config.scheme}://${g.config.get('site.canonical')}${request.script_root}${request.path}">
