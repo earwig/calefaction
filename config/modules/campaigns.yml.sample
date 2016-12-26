@@ -4,12 +4,12 @@
 
 # List of active campaigns, in your preferred order:
 enabled:
-  - Foo
-  - Bar
+  - foo
+  - bar
 
 campaigns:
   # ...
-  Foo:
-    a: b
-  Bar:
-    a: b
+  foo:
+    title: Foo
+  bar:
+    title: Bar

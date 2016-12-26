@@ -3,6 +3,8 @@ var overlaps = function(needle, haystack) {
 };
 
 $(function() {
+    /* ============================= Universal ============================= */
+
     // Install logout auto-POST form:
     $("#logout").click(function() {
         $("<form>", {
@@ -43,4 +45,12 @@ $(function() {
             .prop("disabled", false);
         $(this).addClass("cur").find(":submit").prop("disabled", true);
     });
+
+    /* ============================== Modules ============================== */
+
+    // Campaigns: enable form auto-submit on campaign change:
+    $("#campaigns-select select").change(function() {
+        this.form.submit();
+    });
+    $('#campaigns-select input[type="submit"]').hide();
 });

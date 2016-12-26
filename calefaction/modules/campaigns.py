@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 
-from flask import abort, g
+from flask import abort, g, request
 from flask_mako import render_template
 
 from ._provided import blueprint, config
@@ -16,7 +16,12 @@ def get_current():
 
 def home():
     """Render and return the main campaign page."""
-    return render_template("campaigns/campaign.mako", current=get_current())
+    current = get_current()
+    if current:
+        campaign = config["campaigns"][current]
+        return render_template(
+            "campaigns/campaign.mako", name=current, campaign=campaign)
+    return render_template("campaigns/empty.mako")
 
 def navitem():
     """Render and return the navigation item for this module."""
@@ -30,10 +35,11 @@ def campaign():
     """Render and return the current campaign page."""
     return home()
 
-@blueprint.rroute("/settings/campaign/<campaign>", methods=["POST"])
-def set_campaign(campaign):
+@blueprint.rroute("/settings/campaign", methods=["POST"])
+def set_campaign():
     """Update the user's currently selected campaign."""
+    campaign = request.args.get("campaign")
     if campaign not in config["enabled"]:
-        abort(404)
+        abort(400)
     g.auth.set_character_modprop("campaigns", "current", campaign)
     return "", 204

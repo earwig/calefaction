@@ -1,4 +1,7 @@
 <%inherit file="../_default.mako"/>
+<%block name="title">
+    Members &ndash; ${g.config.get("corp.name") | h}
+</%block>
 <h2>Members</h2>
 % if members:
     <ul id="members-list">

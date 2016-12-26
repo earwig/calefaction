@@ -322,6 +322,27 @@ footer ul li:not(:last-child)::after {
 }
 
 /* ================================ Modules ================================ */
+/* ------------------------------- Campaigns ------------------------------- */
+
+#campaigns-select {
+    display: inline-block;
+    padding-right: 1em;
+    background: transparent 100% 50%/contain no-repeat;
+    border-width: 1px;
+}
+
+#campaigns-select select {
+    max-width: 120px;
+    padding: 0 0.25em;
+    font-size: 100%;
+    color: inherit;
+    background: transparent;
+    border: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
 /* -------------------------------- Members -------------------------------- */
 
 #members-list {
