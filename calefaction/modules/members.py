@@ -6,6 +6,7 @@ from flask import g
 from flask_mako import render_template
 
 from ._provided import blueprint
+from ..exceptions import EVEAPIForbiddenError
 
 SCOPES = {"esi-corporations.read_corporation_membership.v1"}
 
@@ -28,10 +29,13 @@ def get_members():
         return []
 
     corp_id = g.config.get("corp.id")
-    resp = g.eve.esi(token).v2.corporations(corp_id).members.get()
-    cids = ",".join(str(item["character_id"]) for item in resp)
-    ceo_id = g.eve.esi(token).v2.corporations(corp_id).get()["ceo_id"]
-    resp = g.eve.esi(token).v1.characters.names.get(character_ids=cids)
+    try:
+        ceo_id = g.eve.esi(token).v2.corporations(corp_id).get()["ceo_id"]
+        cids_r = g.eve.esi(token).v2.corporations(corp_id).members.get()
+        cids = ",".join(sorted(str(item["character_id"]) for item in cids_r))
+        resp = g.eve.esi(token).v1.characters.names.get(character_ids=cids)
+    except EVEAPIForbiddenError:
+        return []
 
     members = [_Member(item["character_id"], item["character_name"],
                        "CEO" if item["character_id"] == ceo_id else None)

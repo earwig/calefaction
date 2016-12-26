@@ -6,7 +6,7 @@ from threading import Lock
 
 import requests
 
-from ..exceptions import EVEAPIError
+from ..exceptions import EVEAPIError, EVEAPIForbiddenError
 
 __all__ = ["EVESwaggerInterface"]
 
@@ -196,8 +196,10 @@ class EVESwaggerInterface:
                           headers=headers, timeout=10)
             resp.raise_for_status()
             result = resp.json() if resp.content else None
-        except (requests.RequestException, ValueError):
+        except (requests.RequestException, ValueError) as exc:
             self._logger.exception("ESI request failed")
+            if hasattr(exc, "response") and exc.response.status_code == 403:
+                raise EVEAPIForbiddenError()
             raise EVEAPIError()
 
         if can_cache and result is not None:
