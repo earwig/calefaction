@@ -224,6 +224,11 @@ footer ul li:not(:last-child)::after {
     background-color: rgba(255, 60, 30, 0.2);
 }
 
+#flashes .dismiss {
+    float: right;
+    margin: 0 0 0.5em 0.5em;
+}
+
 #character-portrait {
     position: relative;
     display: inline-block;

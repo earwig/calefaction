@@ -14,6 +14,17 @@ $(function() {
         return false;
     });
 
+    // Allow user to dismiss flashes:
+    $("#flashes > div").each(function() {
+        $(this).prepend($("<a>", {
+            addClass: "dismiss",
+            href: "#"
+        }).html("[&times;]").click(function() {
+            $(this).parent().remove();
+            return false;
+        }));
+    });
+
     // Toggle character options on click:
     var charopts = $("#character-options");
     charopts.hide();
