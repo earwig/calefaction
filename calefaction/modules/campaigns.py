@@ -31,9 +31,21 @@ def navitem():
         return result.decode("utf8")
 
 @blueprint.rroute("/campaign")
-def campaign():
+def current_campaign():
     """Render and return the current campaign page."""
-    return home()
+    current = get_current()
+    if current:
+        return redirect(url_for(".campaign", name=current), 303)
+    return render_template("campaigns/empty.mako")
+
+@blueprint.rroute("/campaigns/<name>")
+def campaign(name):
+    """Render and return a campaign page."""
+    if name not in config["enabled"]:
+        abort(404)
+    campaign = config["campaigns"][name]
+    return render_template(
+        "campaigns/campaign.mako", name=name, campaign=campaign)
 
 @blueprint.rroute("/settings/campaign", methods=["POST"])
 def set_campaign():
@@ -42,4 +54,4 @@ def set_campaign():
     if campaign not in config["enabled"]:
         abort(400)
     g.auth.set_character_modprop("campaigns", "current", campaign)
-    return redirect(url_for(".campaign"), 303)
+    return redirect(url_for(".campaign", name=campaign), 303)

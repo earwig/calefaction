@@ -12,5 +12,5 @@ Campaign:
     </form>
 % else:
     <% campaign = g.config.modules.campaigns.config["campaigns"][current] %>
-    <a href="${url_for('campaigns.campaign')}">${campaign["title"]}</a>
+    <a href="${url_for('campaigns.campaign', name=current)}">${campaign["title"]}</a>
 % endif
