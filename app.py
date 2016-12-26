@@ -65,8 +65,8 @@ def index():
 @app.catch_exceptions
 def login():
     """Handle the last step of a SSO login request."""
-    code = request.args.get("code")
-    state = request.args.get("state")
+    code = request.values.get("code")
+    state = request.values.get("state")
 
     success, caught = try_func(lambda: auth.handle_login(code, state))
     if success:

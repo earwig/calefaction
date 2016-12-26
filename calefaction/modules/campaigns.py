@@ -38,7 +38,7 @@ def campaign():
 @blueprint.rroute("/settings/campaign", methods=["POST"])
 def set_campaign():
     """Update the user's currently selected campaign."""
-    campaign = request.args.get("campaign")
+    campaign = request.form.get("campaign")
     if campaign not in config["enabled"]:
         abort(400)
     g.auth.set_character_modprop("campaigns", "current", campaign)
