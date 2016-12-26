@@ -1,6 +1,6 @@
 <%inherit file="_base.mako"/>
 <%block name="righthead">
-    <a href="${g.auth.make_login_link()}">
+    <a href="${g.auth.make_login_link() | h}">
         <img id="login-button" title="Log in with EVE Online" alt="Log in with EVE Online" src="${url_for('staticv', filename='images/eve-login.png')}"/>
     </a>
 </%block>
