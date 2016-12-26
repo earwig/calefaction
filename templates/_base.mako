@@ -5,7 +5,7 @@
         <title>
             <%def name="maketitle(*parts)">
                 <%
-                    if request.url_rule.endpoint == "index":
+                    if request.url_rule and request.url_rule.endpoint == "index":
                         parts = ()
                 %>
                 ${" | ".join(parts + (g.config.get("corp.name"),)) | h}
