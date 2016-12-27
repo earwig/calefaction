@@ -7,9 +7,37 @@ enabled:
   - foo
   - bar
 
+# Data for each campaign. Name must match entry in the enabled list above. If a
+# campaign is defined here but not enabled, its URL will be accessible but not
+# advertised anywhere, and it will be marked as inactive.
 campaigns:
-  # ...
   foo:
-    title: Foo
+    # Campaign title. This is possibly a longer or more colorful version of the
+    # name used as the internal key/campaign ID.
+    title: Stop the Foo
+    # List of active operations:
+    enabled:
+      - frigates
+      - titan
+    # Determines order of elements on campaign page; use separate lists for
+    # section breaks:
+    layout:
+      - [frigates, titan]
+    # Definitions for each operation. Operations track certain statistics.
+    operations:
+      # Will track the number of Foo frigates killed by the corp:
+      frigates:
+        title: "Operation: Kill Foo Frigates"
+        type:  killboard
+        qualifiers: |-
+          return ((victim_corp == "Foo Corporation") and
+                  (victim_ship_class == "Frigate"))
+      # Will track possession of Tritanium by all corp members:
+      titan:
+        title: Let's Build a Titan
+        type:  collection
+        qualifiers: |-
+          return item_type == "Tritanium"
   bar:
-    title: Bar
+    title: Save the Bar
+    operations: []

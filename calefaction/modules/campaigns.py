@@ -48,6 +48,20 @@ def campaign(name):
     return render_template("campaigns/campaign.mako",
                            name=name, campaign=campaign, enabled=enabled)
 
+@blueprint.rroute("/campaigns/<cname>/operations/<opname>")
+def operation(cname, opname):
+    """Render and return an operation page."""
+    if cname not in config["campaigns"]:
+        abort(404)
+    campaign = config["campaigns"][cname]
+    if opname not in campaign["operations"]:
+        abort(404)
+    operation = campaign["operations"][opname]
+    enabled = cname in config["enabled"] and opname in campaign["enabled"]
+    return render_template("campaigns/operation.mako",
+                           cname=cname, campaign=campaign, opname=opname,
+                           operation=operation, enabled=enabled)
+
 @blueprint.rroute("/settings/campaign", methods=["POST"])
 def set_campaign():
     """Update the user's currently selected campaign."""

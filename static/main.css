@@ -27,7 +27,7 @@ a:hover {
     text-decoration: underline;
 }
 
-h2 {
+h2, h3 {
     margin: 0.5em 0;
 }
 
@@ -358,6 +358,73 @@ h2 .disabled::after {
     padding-left: 0.75em;
     font-size: 75%;
     content: "✘";
+}
+
+#operations {
+    margin-bottom: 1em;
+}
+
+#operations section {
+    display: flex;
+    justify-content: space-around;
+}
+
+.operation .stats .primary {
+    line-height: 60px;
+    height: 60px;
+}
+
+.operation .stats .primary .big {
+    font-size: 300%;
+}
+
+.operation .stats .primary .medium {
+    font-size: 200%;
+}
+
+.operation .stats .primary .small {
+    font-size: 150%;
+}
+
+.operation .stats .unit {
+    font-style: italic;
+}
+
+@media (min-width: 800px) {
+    #operations {
+        margin-top: 1em;
+    }
+
+    #operations section:not(:last-child) {
+        margin-bottom: 3em;
+    }
+
+    #operations section:last-child {
+        margin-bottom: 2em;
+    }
+
+    .operation {
+        margin: 0 0.75em;
+        text-align: center;
+    }
+}
+
+@media (max-width: 799px) {
+    #operations section {
+        flex-direction: column;
+    }
+
+    .operation {
+        margin: 0.5em 0;
+    }
+
+    .operation .stats > div {
+        display: inline-block;
+    }
+
+    .operation .stats .unit {
+        margin-left: 0.25em;
+    }
 }
 
 /* -------------------------------- Members -------------------------------- */
