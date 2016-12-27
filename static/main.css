@@ -366,7 +366,14 @@ h2 .disabled::after {
 
 #operations section {
     display: flex;
+}
+
+#operations section.loose {
     justify-content: space-around;
+}
+
+#operations section.tight {
+    justify-content: space-between;
 }
 
 .operation .stats .primary {
@@ -392,14 +399,10 @@ h2 .disabled::after {
 
 @media (min-width: 800px) {
     #operations {
-        margin-top: 1em;
+        margin: 1em;
     }
 
-    #operations section:not(:last-child) {
-        margin-bottom: 3em;
-    }
-
-    #operations section:last-child {
+    #operations section {
         margin-bottom: 2em;
     }
 

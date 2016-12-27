@@ -8,7 +8,8 @@
 </h2>
 <div id="operations">
     % for section in campaign["layout"]:
-        <section>
+        <% klass = "loose" if len(section) < 3 else "tight" %>
+        <section class="${klass}">
             % for opname in section:
                 <% operation = campaign["operations"][opname] %>
                 <div class="operation">
