@@ -348,6 +348,18 @@ footer ul li:not(:last-child)::after {
     -moz-appearance: none;
 }
 
+h2 .disabled {
+    color: #989898;
+    text-decoration: line-through;
+}
+
+h2 .disabled::after {
+    display: inline-block;
+    padding-left: 0.75em;
+    font-size: 75%;
+    content: "✘";
+}
+
 /* -------------------------------- Members -------------------------------- */
 
 #members-list {

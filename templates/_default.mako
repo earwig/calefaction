@@ -14,7 +14,7 @@
 </%block>
 <%block name="righthead">
     <div id="character-portrait">
-        <img class="styled-border" alt="Portrait" src="${g.eve.image.character(g.auth.get_character_id(), 256)}"/>
+        <img class="styled-border" alt="Portrait" src="${g.eve.image.character(g.auth.get_character_id() or 1, 256)}"/>
         <div id="character-options" class="styled-border">
             <div id="style-options">
                 <% cur_style = g.auth.get_character_prop("style") or g.config.get("style.default") %>

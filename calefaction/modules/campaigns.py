@@ -19,8 +19,8 @@ def home():
     current = get_current()
     if current:
         campaign = config["campaigns"][current]
-        return render_template(
-            "campaigns/campaign.mako", name=current, campaign=campaign)
+        return render_template("campaigns/campaign.mako",
+                               name=current, campaign=campaign, enabled=True)
     return render_template("campaigns/empty.mako")
 
 def navitem():
@@ -41,11 +41,12 @@ def current_campaign():
 @blueprint.rroute("/campaigns/<name>")
 def campaign(name):
     """Render and return a campaign page."""
-    if name not in config["enabled"]:
+    if name not in config["campaigns"]:
         abort(404)
     campaign = config["campaigns"][name]
-    return render_template(
-        "campaigns/campaign.mako", name=name, campaign=campaign)
+    enabled = name in config["enabled"]
+    return render_template("campaigns/campaign.mako",
+                           name=name, campaign=campaign, enabled=enabled)
 
 @blueprint.rroute("/settings/campaign", methods=["POST"])
 def set_campaign():
