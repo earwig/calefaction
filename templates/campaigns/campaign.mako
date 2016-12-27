@@ -12,7 +12,7 @@
             % for opname in section:
                 <% operation = campaign["operations"][opname] %>
                 <div class="operation">
-                    <h3><a href="${url_for('.operation', cname=name, opname=opname)}">${operation["title"] | h}</a></h3>
+                    <h3><a href="${url_for('campaigns.operation', cname=name, opname=opname)}">${operation["title"] | h}</a></h3>
                     <div class="stats">
                         <!-- ... -->
                         <%
