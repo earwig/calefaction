@@ -3,16 +3,11 @@
 from flask import abort, g, redirect, request, url_for
 from flask_mako import render_template
 
-from ._provided import blueprint, config
+from .getters import get_current
+from .._provided import blueprint, config
 
-def get_current():
-    """Return the name of the currently selected campaign, or None."""
-    if not config["enabled"]:
-        return None
-    setting = g.auth.get_character_modprop("campaigns", "current")
-    if not setting or setting not in config["enabled"]:
-        return config["enabled"][0]
-    return setting
+__all__ = ["home", "navitem", "current_campaign", "campaign", "operation",
+           "set_campaign"]
 
 def home():
     """Render and return the main campaign page."""

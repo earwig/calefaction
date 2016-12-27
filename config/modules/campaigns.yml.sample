@@ -36,6 +36,7 @@ campaigns:
       titan:
         title: Let's Build a Titan
         type:  collection
+        unit:  unit|units
         qualifiers: |-
           return item_type == "Tritanium"
   bar:

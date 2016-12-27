@@ -376,24 +376,24 @@ h2 .disabled::after {
     justify-content: space-between;
 }
 
-.operation .stats .primary {
+.operation .overview .num {
     line-height: 60px;
     height: 60px;
 }
 
-.operation .stats .primary .big {
+.operation .overview .num.big {
     font-size: 300%;
 }
 
-.operation .stats .primary .medium {
+.operation .overview .num.medium {
     font-size: 200%;
 }
 
-.operation .stats .primary .small {
+.operation .overview .num.small {
     font-size: 150%;
 }
 
-.operation .stats .unit {
+.operation .overview .unit {
     font-style: italic;
 }
 
@@ -421,11 +421,11 @@ h2 .disabled::after {
         margin: 0.5em 0;
     }
 
-    .operation .stats > div {
+    .operation .overview > div {
         display: inline-block;
     }
 
-    .operation .stats .unit {
+    .operation .overview .unit {
         margin-left: 0.25em;
     }
 }
