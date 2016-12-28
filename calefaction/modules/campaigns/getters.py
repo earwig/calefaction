@@ -12,6 +12,8 @@ from ...database import Database as MainDB
 
 __all__ = ["get_current", "get_overview", "get_summary", "get_unit"]
 
+_MAX_STALENESS = 60 * 60
+
 CampaignDB.path = str(Path(MainDB.path).parent / "db_campaigns.sqlite3")
 
 app.before_request(CampaignDB.pre_hook)
@@ -28,8 +30,8 @@ def _update_operation(cname, opname, new):
     qualifiers = operation["qualifiers"]
     show_isk = operation.get("isk", True)
 
-    primary = 42
-    secondary = 63
+    primary = __import__("random").randint(10, 99)
+    secondary = __import__("random").randint(100000, 50000000)
     g.campaign_db.set_overview(cname, opname, primary, secondary)
 
 def get_current():
@@ -49,13 +51,14 @@ def get_overview(cname, opname):
 
     Updates the database if necessary, so this can take some time.
     """
+    maxdelta = timedelta(seconds=_MAX_STALENESS)
     with _lock:
         last_updated = g.campaign_db.check_operation(cname, opname)
         if last_updated is None:
             logger.debug("Adding campaign=%s operation=%s", cname, opname)
             _update_operation(cname, opname, new=True)
             g.campaign_db.add_operation(cname, opname)
-        elif datetime.utcnow() - last_updated > timedelta(seconds=60 * 60):
+        elif datetime.utcnow() - last_updated > maxdelta:
             logger.debug("Updating campaign=%s operation=%s", cname, opname)
             _update_operation(cname, opname, new=False)
             g.campaign_db.touch_operation(cname, opname)

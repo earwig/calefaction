@@ -376,30 +376,30 @@ h2 .disabled::after {
     justify-content: space-between;
 }
 
-.operation .overview .primary {
-    line-height: 60px;
+.operation .primary .num {
     height: 60px;
+    line-height: 60px;
 }
 
-.operation .overview .primary.big {
+.operation .big {
     font-size: 300%;
 }
 
-.operation .overview .primary.medium {
+.operation .medium {
     font-size: 200%;
 }
 
-.operation .overview .primary.small {
+.operation .small {
     font-size: 150%;
 }
 
-.operation .overview .unit {
+.operation .unit {
     font-style: italic;
 }
 
 @media (min-width: 800px) {
     #operations {
-        margin: 1em;
+        margin: 1em 2em;
     }
 
     #operations section {
@@ -409,6 +409,14 @@ h2 .disabled::after {
     .operation {
         margin: 0 0.75em;
         text-align: center;
+    }
+
+    .operation .secondary {
+        margin-top: 0.5em;
+    }
+
+    .operation .secondary .unit {
+        margin-left: 0.15em;
     }
 }
 
@@ -421,12 +429,12 @@ h2 .disabled::after {
         margin: 0.5em 0;
     }
 
-    .operation .overview > div {
+    .operation .primary, .operation .primary .unit {
         display: inline-block;
     }
 
-    .operation .overview .unit {
-        margin-left: 0.25em;
+    .operation .unit {
+        margin-left: 0.15em;
     }
 }
 

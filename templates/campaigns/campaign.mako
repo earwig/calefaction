@@ -23,11 +23,15 @@
                         <a href="${url_for('campaigns.operation', cname=name, opname=opname)}">${operation["title"] | h}</a>
                     </h3>
                     <div class="overview">
-                        <div class="primary ${klass}">${"{:,}".format(primary)}</div>
-                        <div class="unit">${mod.get_unit(operation, primary)}</div>
+                        <div class="primary">
+                            <span class="num ${klass}">${"{:,}".format(primary)}</span>
+                            <div class="unit">${mod.get_unit(operation, primary)}</div>
+                        </div>
                         % if secondary is not None:
-                            <div class="secondary">${"{:,}".format(secondary)}</div>
-                            <div class="unit">${mod.get_unit(operation, secondary, primary=False)}</div>
+                            <div class="secondary">
+                                <span class="num">${"{:,}".format(secondary)}</span>
+                                <span class="unit">${mod.get_unit(operation, secondary, primary=False)}</span>
+                            </div>
                         % endif
                     </div>
                     % if summary:
