@@ -100,6 +100,3 @@ def set_style(style):
 def page_not_found(err):
     """Render and return the 404 error template."""
     return render_template("404.mako"), 404
-
-if __name__ == "__main__":
-    app.run(debug=True, port=8080)

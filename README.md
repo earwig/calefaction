@@ -27,8 +27,10 @@ Guide
 
 ### Test
 
-    ./app.py
-    # go to http://localhost:8080
+    export FLASK_APP=`pwd`/app.py
+    export FLASK_DEBUG=1
+    flask run
+    # go to http://localhost:5000
 
 ### Deploy
 
