@@ -1,12 +1,13 @@
 # -*- coding: utf-8  -*-
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from threading import Lock
 
 from flask import g
 
 from .database import CampaignDB
+from .update import update_operation
 from .._provided import app, config, logger
 from ...database import Database as MainDB
 
@@ -20,19 +21,6 @@ app.before_request(CampaignDB.pre_hook)
 app.teardown_appcontext(CampaignDB.post_hook)
 
 _lock = Lock()
-
-def _update_operation(cname, opname, new):
-    """Update a campaign/operation."""
-    ...
-
-    operation = config["campaigns"][cname]["operations"][opname]
-    optype = operation["type"]
-    qualifiers = operation["qualifiers"]
-    show_isk = operation.get("isk", True)
-
-    primary = __import__("random").randint(10, 99)
-    secondary = __import__("random").randint(100000, 50000000)
-    g.campaign_db.set_overview(cname, opname, primary, secondary)
 
 def get_current():
     """Return the name of the currently selected campaign, or None."""
@@ -51,20 +39,20 @@ def get_overview(cname, opname):
 
     Updates the database if necessary, so this can take some time.
     """
-    maxdelta = timedelta(seconds=_MAX_STALENESS)
     with _lock:
-        last_updated = g.campaign_db.check_operation(cname, opname)
+        last_updated, _ = g.campaign_db.check_operation(cname, opname)
         if last_updated is None:
             logger.debug("Adding campaign=%s operation=%s", cname, opname)
-            _update_operation(cname, opname, new=True)
-            g.campaign_db.add_operation(cname, opname)
-        elif datetime.utcnow() - last_updated > maxdelta:
-            logger.debug("Updating campaign=%s operation=%s", cname, opname)
-            _update_operation(cname, opname, new=False)
-            g.campaign_db.touch_operation(cname, opname)
+            update_operation(cname, opname, new=True)
         else:
-            logger.debug("Using cache for campaign=%s operation=%s",
-                         cname, opname)
+            age = (datetime.utcnow() - last_updated).total_seconds()
+            if age > _MAX_STALENESS:
+                logger.debug("Updating (stale cache age=%d) campaign=%s "
+                             "operation=%s", age, cname, opname)
+                update_operation(cname, opname, new=False)
+            else:
+                logger.debug("Using cache (age=%d) for campaign=%s "
+                             "operation=%s", age, cname, opname)
         return g.campaign_db.get_overview(cname, opname)
 
 def get_summary(name, opname, limit=5):

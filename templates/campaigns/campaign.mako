@@ -29,7 +29,7 @@
                         </div>
                         % if secondary is not None:
                             <div class="secondary">
-                                <span class="num">${"{:,}".format(secondary)}</span>
+                                <span class="num">${"{:,.2f}".format(secondary)}</span>
                                 <span class="unit">${mod.get_unit(operation, secondary, primary=False)}</span>
                             </div>
                         % endif

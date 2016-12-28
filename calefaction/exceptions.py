@@ -7,6 +7,7 @@ This module contains exceptions for Calefaction.
     +-- AccessDeniedError
     +-- EVEAPIError
         +-- EVEAPIForbiddenError
+        +-- ZKillboardError
 """
 
 class CalefactionError(RuntimeError):
@@ -23,4 +24,8 @@ class EVEAPIError(CalefactionError):
 
 class EVEAPIForbiddenError(EVEAPIError):
     """We tried to make an API request that we don't have permission for."""
+    pass
+
+class ZKillboardError(EVEAPIError):
+    """Represents an error while using zKillboard's API."""
     pass

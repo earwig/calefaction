@@ -13,7 +13,6 @@ class SSOManager:
 
     def __init__(self, session, logger):
         self._session = session
-
         self._logger = logger
         self._debug = logger.debug
 

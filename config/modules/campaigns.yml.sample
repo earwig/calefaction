@@ -29,7 +29,7 @@ campaigns:
       frigates:
         # Full operation name:
         title: "Operation: Kill Foo Frigates"
-        # Data source (here, retrieve data from ZKillboard):
+        # Data source (here, retrieve data from zKillboard):
         type:  killboard
         # Show total ISK killed (defaults to true):
         isk:   true
