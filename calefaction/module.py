@@ -37,6 +37,7 @@ class Module:
         provided.app = app
         provided.blueprint = bp
         provided.config = self._config.load_module_config(self._name)
+        provided.logger = self._logger
         sys.modules[provided.__name__] = provided
 
         self._module = importlib.import_module(fullname)

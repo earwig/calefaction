@@ -376,20 +376,20 @@ h2 .disabled::after {
     justify-content: space-between;
 }
 
-.operation .overview .num {
+.operation .overview .primary {
     line-height: 60px;
     height: 60px;
 }
 
-.operation .overview .num.big {
+.operation .overview .primary.big {
     font-size: 300%;
 }
 
-.operation .overview .num.medium {
+.operation .overview .primary.medium {
     font-size: 200%;
 }
 
-.operation .overview .num.small {
+.operation .overview .primary.small {
     font-size: 150%;
 }
 

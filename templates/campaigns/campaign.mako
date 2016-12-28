@@ -14,23 +14,27 @@
             % for opname in section:
                 <%
                     operation = campaign["operations"][opname]
-                    num = mod.get_count(name, opname)
+                    primary, secondary = mod.get_overview(name, opname)
                     summary = mod.get_summary(name, opname, limit=5)
-                    klass = "big" if num < 1000 else "medium" if num < 1000000 else "small"
+                    klass = "big" if primary < 1000 else "medium" if primary < 1000000 else "small"
                 %>
                 <div class="operation">
                     <h3>
                         <a href="${url_for('campaigns.operation', cname=name, opname=opname)}">${operation["title"] | h}</a>
                     </h3>
                     <div class="overview">
-                        <div class="num ${klass}">${"{:,}".format(num)}</div>
-                        <div class="unit">${mod.get_unit(operation, num)}</div>
+                        <div class="primary ${klass}">${"{:,}".format(primary)}</div>
+                        <div class="unit">${mod.get_unit(operation, primary)}</div>
+                        % if secondary is not None:
+                            <div class="secondary">${"{:,}".format(secondary)}</div>
+                            <div class="unit">${mod.get_unit(operation, secondary, primary=False)}</div>
+                        % endif
                     </div>
                     % if summary:
                         <ul class="summary">
-                        % for item in summary:
-                            <li>${item}</li>
-                        % endfor
+                            % for item in summary:
+                                <li>${item}</li>
+                            % endfor
                         </ul>
                     % endif
                 </div>

@@ -10,4 +10,4 @@ logs/
 !config/*.sample
 !config/modules
 !config/modules/*.sample
-!data/schema.sql
+!data/schema*.sql

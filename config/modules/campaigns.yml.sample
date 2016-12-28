@@ -27,18 +27,26 @@ campaigns:
     operations:
       # Will track the number of Foo frigates killed by the corp:
       frigates:
+        # Full operation name:
         title: "Operation: Kill Foo Frigates"
+        # Data source (here, retrieve data from ZKillboard):
         type:  killboard
+        # Show total ISK killed (defaults to true):
+        isk:   true
+        # Python function to filter kills:
         qualifiers: |-
-          return ((victim_corp == "Foo Corporation") and
-                  (victim_ship_class == "Frigate"))
+          return (kill["victim"]["corporationName"] == "Foo Corporation" and
+                  kill["victim"]["shipTypeID"] in ...)
       # Will track possession of Tritanium by all corp members:
       titan:
         title: Let's Build a Titan
+        # Here, retrieve data from EVE's Assets API:
         type:  collection
+        isk:   false
+        # Report as "10 units" / "1 unit" of Tritanium
         unit:  unit|units
         qualifiers: |-
-          return item_type == "Tritanium"
+          return item_type == "Tritanium"  # ...
   bar:
     title: Save the Bar
     operations: []

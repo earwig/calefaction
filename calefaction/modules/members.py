@@ -5,7 +5,7 @@ from collections import namedtuple
 from flask import g
 from flask_mako import render_template
 
-from ._provided import blueprint
+from ._provided import blueprint, logger
 from ..exceptions import EVEAPIForbiddenError
 
 SCOPES = {"esi-corporations.read_corporation_membership.v1"}
@@ -29,6 +29,7 @@ def get_members():
         return []
 
     corp_id = g.config.get("corp.id")
+    logger.debug("Fetching member list for corp id=%d", corp_id)
     try:
         ceo_id = g.eve.esi(token).v2.corporations(corp_id).get()["ceo_id"]
         cids_r = g.eve.esi(token).v2.corporations(corp_id).members.get()
