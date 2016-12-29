@@ -6,6 +6,7 @@ config/*
 config/modules/*
 data/*
 logs/
+templates/.cache/
 
 !config/*.sample
 !config/modules

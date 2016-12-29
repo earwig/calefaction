@@ -73,6 +73,8 @@ class Config:
         """Install relevant config into the application, including modules."""
         app.config["SERVER_NAME"] = self.get("site.canonical")
         app.config["PREFERRED_URL_SCHEME"] = self.scheme
+        app.config["MAKO_MODULE_DIRECTORY"] = str(
+            self._dir.parent / "templates" / ".cache")
         app.secret_key = self.get("auth.session_key")
 
         for module in self.modules:
