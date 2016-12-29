@@ -53,12 +53,19 @@ def get_overview(cname, opname):
             else:
                 logger.debug("Using cache (age=%d) for campaign=%s "
                              "operation=%s", age, cname, opname)
-        return g.campaign_db.get_overview(cname, opname)
+    return g.campaign_db.get_overview(cname, opname)
 
-def get_summary(name, opname, limit=5):
+def get_summary(cname, opname, limit=5):
     """Return a sample fraction of results for the given campaign/operation."""
-    ...
-    return []
+    optype = config["campaigns"][cname]["operations"][opname]["type"]
+    if optype == "killboard":
+        kills = g.campaign_db.get_associated_kills(cname, opname, limit=limit)
+        return kills, "killboard_recent"
+    elif optype == "collection":
+        ...
+        return [], None
+    else:
+        raise RuntimeError("Unknown operation type: %s" % optype)
 
 def get_unit(operation, num, primary=True):
     """Return the correct form of the unit tracked by the given operation."""

@@ -98,6 +98,7 @@ class CampaignDB:
         except ValueError:
             raise RuntimeError("Invalid kill_date=%s for kill_id=%d" % (
                 kill["killTime"], kill["killID"]))
+        # ... Ensure IDs are all ints
 
         query = """INSERT OR REPLACE INTO kill (
                 kill_id, kill_date, kill_system, kill_victim_shipid,
@@ -135,3 +136,34 @@ class CampaignDB:
             WHERE ok_campaign = ? AND ok_operation = ?"""
         res = self._conn.execute(query, (campaign, operation)).fetchall()
         return tuple(res[0])
+
+    def get_associated_kills(self, campaign, operation, limit=5, offset=0):
+        """Return a list of kills associated with a campaign/operation.
+
+        Kills are returned as dictionaries most recent first, up to a limit.
+        Use -1 for no limit.
+        """
+        if not isinstance(limit, int):
+            raise ValueError(limit)
+        if not isinstance(offset, int):
+            raise ValueError(offset)
+
+        query = """SELECT kill_id, kill_date, kill_system, kill_victim_shipid,
+                kill_victim_charid, kill_victim_corpid, kill_victim_allianceid,
+                kill_victim_factionid, kill_value
+            FROM oper_kill
+            JOIN kill ON ok_killid = kill_id
+            WHERE ok_campaign = ? AND ok_operation = ?
+            ORDER BY ok_killid DESC LIMIT {} OFFSET {}"""
+        qform = query.format(limit, offset)
+        res = self._conn.execute(qform, (campaign, operation)).fetchall()
+
+        return [{
+            "id": row[0],
+            "date": datetime.strptime(row[1], "%Y-%m-%d %H:%M:%S"),
+            "system": row[2],
+            "victim": {
+                "ship_id": row[3], "char_id": row[4], "corp_id": row[5],
+                "alliance_id": row[6], "faction_id": row[7]},
+            "value": row[8]
+        } for row in res]

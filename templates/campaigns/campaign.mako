@@ -1,10 +1,15 @@
+<%! import humanize %>
 <%inherit file="../_default.mako"/>
+<%namespace file="renderers.mako" import="render_summary"/>
 <%block name="title">
     ${self.maketitle(campaign["title"], "Campaigns")}
 </%block>
 <h2>
     <span class="understate">Campaign:</span>
     <span${"" if enabled else ' class="disabled"'}>${campaign["title"] | h}</span>
+    % if not enabled:
+        <abbr class="disabled-info" title="Campaign inactive">&#10008;</abbr>
+    % endif
 </h2>
 <% mod = g.config.modules.campaigns %>
 <div id="operations">
@@ -15,8 +20,10 @@
                 <%
                     operation = campaign["operations"][opname]
                     primary, secondary = mod.get_overview(name, opname)
-                    summary = mod.get_summary(name, opname, limit=5)
+                    summary, renderer = mod.get_summary(name, opname, limit=5)
                     klass = "big" if primary < 1000 else "medium" if primary < 1000000 else "small"
+                    punit = mod.get_unit(operation, primary)
+                    sunit = mod.get_unit(operation, secondary, primary=False)
                 %>
                 <div class="operation">
                     <h3>
@@ -25,21 +32,19 @@
                     <div class="overview">
                         <div class="primary">
                             <span class="num ${klass}">${"{:,}".format(primary)}</span>
-                            <div class="unit">${mod.get_unit(operation, primary)}</div>
+                            <div class="unit">${punit}</div>
                         </div>
                         % if secondary is not None:
                             <div class="secondary">
-                                <span class="num">${"{:,.2f}".format(secondary)}</span>
-                                <span class="unit">${mod.get_unit(operation, secondary, primary=False)}</span>
+                                <abbr title="${"{:,.2f}".format(secondary)} ${sunit}">
+                                    <span class="num">${humanize.intword(secondary) | h}</span>
+                                    <span class="unit">${sunit}</span>
+                                </abbr>
                             </div>
                         % endif
                     </div>
                     % if summary:
-                        <ul class="summary">
-                            % for item in summary:
-                                <li>${item}</li>
-                            % endfor
-                        </ul>
+                        ${render_summary(renderer, summary)}
                     % endif
                 </div>
             % endfor

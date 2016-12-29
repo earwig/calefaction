@@ -353,11 +353,11 @@ h2 .disabled {
     text-decoration: line-through;
 }
 
-h2 .disabled::after {
-    display: inline-block;
-    padding-left: 0.75em;
-    font-size: 75%;
-    content: "✘";
+h2 .disabled-info {
+    margin-left: 0.5em;
+    color: #989898;
+    font-size: 85%;
+    font-variant: none;
 }
 
 #operations {
