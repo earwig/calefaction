@@ -52,12 +52,12 @@ class ImageServer:
 
     def faction(self, id, width):
         """Return a URL for a faction logo."""
-        return self._url + "Alliance/{}_{}.jpg".format(id, width)
+        return self._url + "Alliance/{}_{}.png".format(id, width)
 
     def inventory(self, id, width):
         """Return a URL for an inventory item image."""
-        return self._url + "Type/{}_{}.jpg".format(id, width)
+        return self._url + "Type/{}_{}.png".format(id, width)
 
     def render(self, id, width):
         """Return a URL for ship render image."""
-        return self._url + "Render/{}_{}.jpg".format(id, width)
+        return self._url + "Render/{}_{}.png".format(id, width)
