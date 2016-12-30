@@ -19,5 +19,5 @@ a:hover {
 }
 
 #campaigns-select {
-    background-image: url('data:image/svg+xml;utf8,<?xml version="1.0" standalone="no"?><svg height="60" width="60" version="1.1" xmlns="http://www.w3.org/2000/svg"><polygon points="13,20 48,20 30,45" style="fill:#284A36;"/></svg>');
+    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjxzdmcgaGVpZ2h0PSI2MCIgd2lkdGg9IjYwIiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBvbHlnb24gcG9pbnRzPSIxMywyMCA0OCwyMCAzMCw0NSIgc3R5bGU9ImZpbGw6IzI4NEEzNjsiLz48L3N2Zz4K');
 }
