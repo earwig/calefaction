@@ -1,5 +1,10 @@
 # -*- coding: utf-8  -*-
 
+import gzip
+from threading import Lock
+
+import yaml
+
 __all__ = ["Universe"]
 
 class _SolarSystem:
@@ -115,27 +120,56 @@ class Universe:
 
     def __init__(self, datadir):
         self._dir = datadir
+        self._lock = Lock()
+        self._loaded = False
+        self._systems = {}
+        self._constellations = {}
+        self._regions = {}
+
+    def _load(self):
+        """Load in universe data. This can be called multiple times safely."""
+        if self._loaded:
+            return
+
+        with self._lock:
+            if self._loaded:
+                return
+
+            filename = str(self._dir / "galaxy.yml.gz")
+            with gzip.open(filename, "rb") as fp:
+                data = yaml.load(fp, Loader=yaml.CLoader)
+
+            self._systems = data["systems"]
+            self._constellations = data["constellations"]
+            self._regions = data["regions"]
+            self._loaded = True
 
     def system(self, sid):
         """Return a _SolarSystem with the given ID.
 
         If the ID is invalid, return a dummy unknown object with ID -1.
         """
-        ...
-        return _DummySolarSystem(self)
+        self._load()
+        if sid not in self._systems:
+            return _DummySolarSystem(self)
+        return _SolarSystem(self, sid, self._systems[sid])
 
     def constellation(self, cid):
         """Return a _Constellation with the given ID.
 
         If the ID is invalid, return a dummy unknown object with ID -1.
         """
-        ...
-        return _DummyConstellation(self)
+        self._load()
+        if cid not in self._constellations:
+            return _DummyConstellation(self)
+        return _Constellation(self, cid, self._constellations[cid])
 
     def region(self, rid):
         """Return a _Region with the given ID.
 
         If the ID is invalid, return a dummy unknown object with ID -1.
         """
-        ...
-        return _DummyRegion(self)
+        self._load()
+        if rid not in self._regions:
+            return _DummyRegion(self)
+        return _Region(self, rid, self._regions[rid])
