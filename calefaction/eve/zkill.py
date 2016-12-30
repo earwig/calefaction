@@ -32,7 +32,12 @@ class ZKillboard:
             self._debug("[GET] %s", query)
 
         try:
-            resp = self._session.get(url, timeout=10)
+            try:
+                resp = self._session.get(url, timeout=10)
+            except requests.ConnectionError:
+                self._logger.warn("zKillboard API query failed, retrying once")
+                time.sleep(self._MAX_RATE)
+                resp = self._session.get(url, timeout=10)
             resp.raise_for_status()
             result = resp.json() if resp.content else None
         except (requests.RequestException, ValueError):
