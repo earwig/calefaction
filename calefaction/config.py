@@ -30,9 +30,9 @@ class _ModuleIndex(list):
 class Config:
     """Stores application-wide configuration info."""
 
-    def __init__(self, confdir):
-        self._dir = confdir
-        self._filename = confdir / "config.yml"
+    def __init__(self, basedir):
+        self._dir = basedir
+        self._filename = basedir / "config" / "config.yml"
         self._data = None
         self._modules = _ModuleIndex()
         self._load()
@@ -60,6 +60,11 @@ class Config:
         return obj
 
     @property
+    def dir(self):
+        """Return the application's base directory."""
+        return self._dir
+
+    @property
     def modules(self):
         """Return a list-like object (a _ModuleIndex) of loaded modules."""
         return self._modules
@@ -74,7 +79,7 @@ class Config:
         app.config["SERVER_NAME"] = self.get("site.canonical")
         app.config["PREFERRED_URL_SCHEME"] = self.scheme
         app.config["MAKO_MODULE_DIRECTORY"] = str(
-            self._dir.parent / "templates" / ".cache")
+            self._dir / "templates" / ".cache")
         app.secret_key = self.get("auth.session_key")
 
         for module in self.modules:
@@ -85,7 +90,7 @@ class Config:
 
         Returns a YAML parse of {confdir}/modules/{name}.yml, or None.
         """
-        filename = self._dir / "modules" / (name + ".yml")
+        filename = self._dir / "config" / "modules" / (name + ".yml")
         try:
             with filename.open("rb") as fp:
                 return yaml.load(fp)

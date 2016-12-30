@@ -19,7 +19,7 @@ from calefaction.util import (
 app = Flask(__name__)
 
 basepath = Path(__file__).resolve().parent
-config = Config(basepath / "config")
+config = Config(basepath)
 Database.path = str(basepath / "data" / "db.sqlite3")
 eve = EVE(config)
 auth = AuthManager(config, eve)

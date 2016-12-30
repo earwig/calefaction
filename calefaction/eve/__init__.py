@@ -8,6 +8,7 @@ from .clock import Clock
 from .esi import EVESwaggerInterface
 from .image import ImageServer
 from .sso import SSOManager
+from .universe import Universe
 from .zkill import ZKillboard
 from .. import __release__, baseLogger
 
@@ -26,6 +27,7 @@ class EVE:
         self._esi = EVESwaggerInterface(session, logger.getChild("esi"))
         self._image = ImageServer()
         self._sso = SSOManager(session, logger.getChild("sso"))
+        self._universe = Universe(config.dir / "data" / "universe")
         self._zkill = ZKillboard(session, logger.getChild("zkill"))
 
     @staticmethod
@@ -56,6 +58,11 @@ class EVE:
     def sso(self):
         """The Single Sign-On API module."""
         return self._sso
+
+    @property
+    def universe(self):
+        """The Universe API module."""
+        return self._universe
 
     @property
     def zkill(self):

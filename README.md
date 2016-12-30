@@ -23,7 +23,7 @@ Guide
     mkdir logs
     sudo chmod 0600 config/config.yml data/db.sqlite3
     sudo chown www-data:www-data config/config.yml data data/db.sqlite3 logs
-    ...  # TODO: convert these into scripts, add module instructions
+    ...  # TODO: convert these into scripts, add SDE instructions, add module instructions
 
 ### Test
 
