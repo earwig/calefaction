@@ -98,18 +98,22 @@ class CampaignDB:
         except ValueError:
             raise RuntimeError("Invalid kill_date=%s for kill_id=%d" % (
                 kill["killTime"], kill["killID"]))
-        # ... Ensure IDs are all ints
 
         query = """INSERT OR REPLACE INTO kill (
                 kill_id, kill_date, kill_system, kill_victim_shipid,
-                kill_victim_charid, kill_victim_corpid, kill_victim_allianceid,
-                kill_victim_factionid, kill_value)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+                kill_victim_charid, kill_victim_charname, kill_victim_corpid,
+                kill_victim_corpname, kill_victim_allianceid,
+                kill_victim_alliancename, kill_victim_factionid,
+                kill_victim_factionname, kill_value)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+        victim = kill["victim"]
         args = (
-            kill["killID"], kill["killTime"], kill["solarSystemID"],
-            kill["victim"]["shipTypeID"], kill["victim"]["characterID"],
-            kill["victim"]["corporationID"], kill["victim"]["allianceID"],
-            kill["victim"]["factionID"], kill["zkb"]["totalValue"])
+            int(kill["killID"]), kill["killTime"], int(kill["solarSystemID"]),
+            int(victim["shipTypeID"]), int(victim["characterID"]),
+            victim["characterName"], int(victim["corporationID"]),
+            victim["corporationName"], int(victim["allianceID"]),
+            victim["allianceName"], int(victim["factionID"]),
+            victim["factionName"], float(kill["zkb"]["totalValue"]))
         with self._conn as conn:
             conn.execute(query, args)
 
@@ -149,8 +153,10 @@ class CampaignDB:
             raise ValueError(offset)
 
         query = """SELECT kill_id, kill_date, kill_system, kill_victim_shipid,
-                kill_victim_charid, kill_victim_corpid, kill_victim_allianceid,
-                kill_victim_factionid, kill_value
+                kill_victim_charid, kill_victim_charname, kill_victim_corpid,
+                kill_victim_corpname, kill_victim_allianceid,
+                kill_victim_alliancename, kill_victim_factionid,
+                kill_victim_factionname, kill_value
             FROM oper_kill
             JOIN kill ON ok_killid = kill_id
             WHERE ok_campaign = ? AND ok_operation = ?
@@ -163,7 +169,15 @@ class CampaignDB:
             "date": datetime.strptime(row[1], "%Y-%m-%d %H:%M:%S"),
             "system": row[2],
             "victim": {
-                "ship_id": row[3], "char_id": row[4], "corp_id": row[5],
-                "alliance_id": row[6], "faction_id": row[7]},
-            "value": row[8]
+                "ship_id": row[3],
+                "char_id": row[4],
+                "char_name": row[5],
+                "corp_id": row[6],
+                "corp_name": row[7],
+                "alliance_id": row[8],
+                "alliance_name": row[9],
+                "faction_id": row[10],
+                "faction_name": row[11]
+            },
+            "value": row[12]
         } for row in res]

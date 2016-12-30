@@ -28,9 +28,13 @@ CREATE TABLE kill (
     kill_system INTEGER,
     kill_victim_shipid INTEGER,
     kill_victim_charid INTEGER,
+    kill_victim_charname TEXT,
     kill_victim_corpid INTEGER,
+    kill_victim_corpname TEXT,
     kill_victim_allianceid INTEGER,
+    kill_victim_alliancename TEXT,
     kill_victim_factionid INTEGER,
+    kill_victim_factionname TEXT,
     kill_value REAL
 );
 
