@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import humanize
 
 __all__ = ["format_isk", "format_isk_compact", "format_utctime",
-           "format_utctime_compact"]
+           "format_utctime_compact", "format_security", "get_security_class"]
 
 def format_isk(value):
     """Nicely format an ISK value."""
@@ -64,3 +64,13 @@ def format_utctime_compact(value):
     if delta < timedelta(seconds=1):
         return "just now"
     return "{} ago".format(_format_compact_delta(delta))
+
+def format_security(value):
+    """Given a system security status as a float, return a rounded string."""
+    return str(round(value, 1))
+
+def get_security_class(value):
+    """Given a system security status, return the corresponding CSS class."""
+    if value < 0.05:
+        return "sec-null"
+    return "sec-" + str(round(value, 1)).replace(".", "_")

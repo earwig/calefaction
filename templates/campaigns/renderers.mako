@@ -1,22 +1,27 @@
 <%!
-    from calefaction.format import format_isk_compact, format_utctime_compact
+    from calefaction.format import (
+        format_isk_compact, format_utctime_compact, format_security,
+        get_security_class)
 %>
 <%def name="_killboard_kill(kill)">
-    <% victim = kill["victim"] %>
+    <%
+        victim = kill["victim"]
+        system = g.eve.universe.system(kill["system"])
+    %>
     <tr>
         <td class="fluid">
+            <abbr title="${kill["date"].strftime("%Y-%m-%d %H:%M")}">${format_utctime_compact(kill["date"]) | h}</abbr><br/>
             <a href="https://zkillboard.com/kill/${kill['id']}/">
-                <abbr title="${kill["date"].strftime("%Y-%m-%d %H:%M")}">${format_utctime_compact(kill["date"]) | h}</abbr><br/>
                 <abbr title="${"{:,.2f}".format(kill["value"])} ISK">${format_isk_compact(kill["value"]) | h}</abbr>
             </a>
         </td>
         <td class="fluid extra">
-            ${kill["system"]} 0.3<br/><!-- ... -->
-            Region<!-- ... -->
+            <a href="https://zkillboard.com/system/${system.id}/">${system.name}</a> <abbr title="${system.security}" class="${get_security_class(system.security)}">${format_security(system.security)}</abbr><br/>
+            <a href="https://zkillboard.com/region/${system.region.id}/">${system.region.name}</a>
         </td>
         <td class="icon">
             <a href="https://zkillboard.com/kill/${kill['id']}/">
-                <img title="Kill ${kill['id']}" alt="Kill ${kill['id']}" src="${g.eve.image.inventory(victim["ship_id"], 64)}"/>
+                <img title="Kill ${kill['id']}: ..." alt="Kill ${kill['id']}: ..." src="${g.eve.image.inventory(victim["ship_id"], 64)}"/>
             </a>
         </td>
         <td class="icon extra">
