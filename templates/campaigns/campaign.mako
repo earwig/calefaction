@@ -1,4 +1,6 @@
-<%! import humanize %>
+<%!
+    from calefaction.format import format_isk
+%>
 <%inherit file="../_default.mako"/>
 <%namespace file="renderers.mako" import="render_summary"/>
 <%block name="title">
@@ -37,14 +39,16 @@
                         % if secondary is not None:
                             <div class="secondary">
                                 <abbr title="${"{:,.2f}".format(secondary)} ${sunit}">
-                                    <span class="num">${humanize.intword(secondary) | h}</span>
+                                    <span class="num">${format_isk(secondary) | h}</span>
                                     <span class="unit">${sunit}</span>
                                 </abbr>
                             </div>
                         % endif
                     </div>
                     % if summary:
-                        ${render_summary(renderer, summary)}
+                        <div class="summary">
+                            ${render_summary(renderer, summary)}
+                        </div>
                     % endif
                 </div>
             % endfor

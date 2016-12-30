@@ -87,6 +87,8 @@ def _update_collection_operations(cname, opnames):
         operation = campaign["operations"][opname]
         show_isk = operation.get("isk", True)
 
+        # store per-user counts; update for all users in corp who have fresh
+        # API keys and leave other data stale
         ...
         primary = __import__("random").randint(10, 99)
         secondary = __import__("random").randint(10000000, 5000000000) / 100 \

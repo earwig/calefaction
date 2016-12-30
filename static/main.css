@@ -31,6 +31,11 @@ h2, h3 {
     margin: 0.5em 0;
 }
 
+abbr[title], acronym[title] {
+    border-bottom: 1px dotted #555;
+    text-decoration: none;
+}
+
 .understate {
     font-weight: normal;
 }
@@ -393,13 +398,88 @@ h2 .disabled-info {
     font-size: 150%;
 }
 
+.operation .secondary {
+    font-size: 105%;
+}
+
 .operation .unit {
     font-style: italic;
 }
 
+.operation .summary .head {
+    margin-top: 1em;
+    font-size: 14px;
+}
+
+.operation .summary .contents {
+    position: relative;
+    margin-top: 0.5em;
+    border: 1px solid #282828;
+    font-size: 14px;
+}
+
+.operation .killboard {
+    border-spacing: 0;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.operation .killboard:not(.expanded) tr:nth-child(2n) {
+    background-color: #181818;
+}
+
+.operation .killboard:not(.expanded) tr:nth-child(2n+1) {
+    background-color: #0A0A0A;
+}
+
+.operation .killboard td {
+    padding: 0.25em 0;
+}
+
+.operation .killboard td:first-child {
+    padding-left: 1em;
+}
+
+.operation .killboard td:last-child {
+    padding-right: 1em;
+}
+
+.operation .killboard .fluid {
+    padding-right: 0.5em;
+}
+
+.operation .killboard .icon {
+    width: 46px;
+}
+
+.operation .killboard.expanded {
+    position: absolute;
+    z-index: 1;
+    transition: clip-path 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    clip-path: inset(0 100% 0 0);
+}
+
+.operation .killboard:not(.expanded) .extra {
+    display: none;
+}
+
+.operation .killboard.expanded .spacer {
+    display: none;
+}
+
+.operation .killboard img {
+    width: 42px;
+    height: 42px;
+    vertical-align: middle;
+}
+
+.operation .killboard abbr {
+    border-bottom: none;
+}
+
 @media (min-width: 800px) {
     #operations {
-        margin: 1em 2em;
+        margin: 1em 0;
     }
 
     #operations section {
@@ -429,12 +509,20 @@ h2 .disabled-info {
         margin: 0.5em 0;
     }
 
+    .operation .overview {
+        margin-left: 1em;
+    }
+
     .operation .primary, .operation .primary .unit {
         display: inline-block;
     }
 
     .operation .unit {
         margin-left: 0.15em;
+    }
+
+    .operation .killboard:not(.expanded) {
+        width: 100%;
     }
 }
 
