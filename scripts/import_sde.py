@@ -8,6 +8,10 @@ import sys
 
 import yaml
 
+_SHIP_CAT = 6
+_FIGHTER_CAT = 87
+_STRUCT_CATS = [22, 23, 40, 46, 65]
+
 _REGION = 3
 _CONSTELLATION = 4
 _SOLAR_SYSTEM = 5
@@ -16,12 +20,40 @@ def _load_yaml(filename):
     with filename.open("rb") as fp:
         return yaml.load(fp, Loader=yaml.CLoader)
 
-def _verify_typeids(sde_dir):
-    print("Verifying typeIDs... ", end="", flush=True)
+def _save_yaml(filename, data):
+    with filename.open("w") as fp:
+        fp.write(yaml.dump(data, Dumper=yaml.CDumper))
 
-    filename = sde_dir / "fsd" / "typeIDs.yaml"
-    with filename.open("rb") as fp:
-        data = yaml.load(fp.read(1024 * 16), Loader=yaml.CLoader)
+def _verify_categoryids(sde_dir):
+    print("Verifying categoryIDs... ", end="", flush=True)
+
+    data = _load_yaml(sde_dir / "fsd" / "categoryIDs.yaml")
+
+    assert data[_SHIP_CAT]["name"]["en"] == "Ship"
+
+    print("done.")
+
+def _load_groupids(sde_dir):
+    print("Loading groupIDs... ", end="", flush=True)
+
+    data = _load_yaml(sde_dir / "fsd" / "groupIDs.yaml")
+
+    groups = {cid: {} for cid in [_SHIP_CAT, _FIGHTER_CAT] + _STRUCT_CATS}
+    for gid, group in data.items():
+        cat = group["categoryID"]
+        if cat in groups:
+            name = group["name"]["en"]
+            assert isinstance(gid, int)
+            assert isinstance(name, str)
+            groups[cat][gid] = name
+
+    print("done.")
+    return groups
+
+def _load_typeids(sde_dir, groups):
+    print("Loading typeIDs... ", end="", flush=True)
+
+    data = _load_yaml(sde_dir / "fsd" / "typeIDs.yaml")
 
     assert data[_REGION]["groupID"] == _REGION
     assert data[_REGION]["name"]["en"] == "Region"
@@ -30,7 +62,23 @@ def _verify_typeids(sde_dir):
     assert data[_SOLAR_SYSTEM]["groupID"] == _SOLAR_SYSTEM
     assert data[_SOLAR_SYSTEM]["name"]["en"] == "Solar System"
 
+    types = {"ships": {}, "structures": {}, "fighters": {}}
+    cat_conv = {_SHIP_CAT: "ships", _FIGHTER_CAT: "fighters"}
+    cat_conv.update({cid: "structures" for cid in _STRUCT_CATS})
+    group_conv = {gid: cid for cid, gids in groups.items() for gid in gids}
+
+    for tid, type_ in data.items():
+        gid = type_["groupID"]
+        if gid in group_conv:
+            cid = group_conv[gid]
+            cname = cat_conv[cid]
+            name = type_["name"]["en"]
+            group = groups[cid][gid]
+            assert isinstance(tid, int)
+            types[cname][tid] = {"name": name, "group": group}
+
     print("done.")
+    return types
 
 def _load_ids(sde_dir):
     print("Loading itemIDs... ", end="", flush=True)
@@ -194,12 +242,17 @@ def _load_factions(sde_dir):
     print("done.")
     return factions
 
+def _dump_types(out_dir, types):
+    print("Dumping types... ", end="", flush=True)
+
+    _save_yaml(out_dir / "types.yml", types)
+
+    print("done.")
+
 def _dump_galaxy(out_dir, galaxy):
     print("Dumping galaxy... ", end="", flush=True)
 
-    filename = out_dir / "galaxy.yml"
-    with filename.open("w") as fp:
-        fp.write(yaml.dump(galaxy, Dumper=yaml.CDumper))
+    _save_yaml(out_dir / "galaxy.yml", galaxy)
 
     print("done.")
 
@@ -207,15 +260,12 @@ def _dump_entities(out_dir, factions):
     print("Dumping entities... ", end="", flush=True)
 
     entities = {"factions": factions}
-
-    filename = out_dir / "entities.yml"
-    with filename.open("w") as fp:
-        fp.write(yaml.dump(entities, Dumper=yaml.CDumper))
+    _save_yaml(out_dir / "entities.yml", entities)
 
     print("done.")
 
 def _compress(out_dir):
-    targets = ["galaxy", "entities"]
+    targets = ["types", "galaxy", "entities"]
     for basename in targets:
         print("Compressing %s... " % basename, end="", flush=True)
 
@@ -231,7 +281,7 @@ def _compress(out_dir):
 def _cleanup(out_dir):
     print("Cleaning up... ", end="", flush=True)
 
-    targets = ["galaxy", "entities"]
+    targets = ["types", "galaxy", "entities"]
     for basename in targets:
         (out_dir / (basename + ".yml")).unlink()
 
@@ -243,15 +293,19 @@ def import_sde(sde_dir, out_dir):
     print("- from: %s" % sde_dir)
     print("- to:   %s" % out_dir)
 
-    _verify_typeids(sde_dir)
+    _verify_categoryids(sde_dir)
+    groups = _load_groupids(sde_dir)
+    types = _load_typeids(sde_dir, groups)
+    _dump_types(out_dir, types)
+    del groups, types
+
     ids = _load_ids(sde_dir)
     print("Counts: regions=%d, constellations=%d, systems=%d" % (
         len(ids[_REGION]), len(ids[_CONSTELLATION]), len(ids[_SOLAR_SYSTEM])))
     names = _load_names(sde_dir)
 
     galaxy = _build_galaxy_skeleton(ids, names)
-    del ids
-    del names
+    del ids, names
     _load_galaxy_associations(sde_dir, galaxy)
     _dump_galaxy(out_dir, galaxy)
     del galaxy

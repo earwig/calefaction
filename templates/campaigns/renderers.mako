@@ -7,6 +7,7 @@
     <%
         victim = kill["victim"]
         system = g.eve.universe.system(kill["system"])
+        killed = g.eve.universe.killable(victim["ship_id"])
     %>
     <tr>
         <td class="fluid">
@@ -21,7 +22,7 @@
         </td>
         <td class="icon">
             <a href="https://zkillboard.com/kill/${kill['id']}/">
-                <img title="Kill ${kill['id']}: ..." alt="Kill ${kill['id']}: ..." src="${g.eve.image.inventory(victim["ship_id"], 64)}"/>
+                <img title="Kill ${kill['id']}: ${killed.name}" alt="Kill ${kill['id']}: ${killed.name}" src="${g.eve.image.inventory(victim["ship_id"], 64)}"/>
             </a>
         </td>
         <td class="icon extra">

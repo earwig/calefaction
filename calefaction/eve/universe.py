@@ -113,6 +113,39 @@ class _Faction(_UniqueObject):
         return self._data["name"]
 
 
+class _Killable(_UniqueObject):
+    """Represents a killable object, like a ship, structure, or fighter."""
+
+    def __init__(self, universe, kid, cat, data):
+        super().__init__(universe, kid, data)
+        self._cat = cat
+
+    @property
+    def name(self):
+        """The killable object's name, as a string."""
+        return self._data["name"]
+
+    @property
+    def group(self):
+        """The killable object's group, as a string."""
+        return self._data["group"]
+
+    @property
+    def is_ship(self):
+        """Whether the killable object is a ship."""
+        return self._cat == "ships"
+
+    @property
+    def is_structure(self):
+        """Whether the killable object is a structure."""
+        return self._cat == "structures"
+
+    @property
+    def is_fighter(self):
+        """Whether the killable object is a fighter."""
+        return self._cat == "fighters"
+
+
 class _DummySolarSystem(_SolarSystem):
     """Represents an unknown or invalid solar system."""
 
@@ -153,6 +186,16 @@ class _DummyFaction(_Faction):
         })
 
 
+class _DummyKillable(_Killable):
+    """Represents an unknown or invalid killable object."""
+
+    def __init__(self, universe):
+        super().__init__(universe, -1, None, {
+            "name": "Unknown",
+            "group": "Unknown"
+        })
+
+
 class Universe:
     """EVE API module for static universe data."""
 
@@ -166,6 +209,8 @@ class Universe:
         self._constellations = {}
         self._regions = {}
         self._factions = {}
+        self._killable_idx = {}
+        self._killable_tab = {}
 
     @staticmethod
     def _load_yaml(path):
@@ -191,6 +236,12 @@ class Universe:
             entities = self._load_yaml(self._dir / "entities.yml.gz")
             self._factions = entities["factions"]
             del entities
+
+            types = self._load_yaml(self._dir / "types.yml.gz")
+            self._killable_idx = {kid: cat for cat, kids in types.items()
+                                  for kid in kids}
+            self._killable_tab = types
+            del types
 
             self._loaded = True
 
@@ -234,10 +285,13 @@ class Universe:
             return _DummyFaction(self)
         return _Faction(self, fid, self._factions[fid])
 
-    def ship(self, sid):
-        """Return a _Ship with the given ID.
+    def killable(self, kid):
+        """Return a _Killable with the given ID.
 
         If the ID is invalid, return a dummy unknown object with ID -1.
         """
-        ...
-        raise NotImplementedError()
+        self._load()
+        if kid not in self._killable_idx:
+            return _DummyKillable(self)
+        cat = self._killable_idx[kid]
+        return _Killable(self, kid, cat, self._killable_tab[cat][kid])
