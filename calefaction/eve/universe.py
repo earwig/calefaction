@@ -7,18 +7,22 @@ import yaml
 
 __all__ = ["Universe"]
 
-class _SolarSystem:
-    """Represents a solar system."""
+class _UniqueObject:
+    """Base class for uniquely ID'd objects in the universe."""
 
-    def __init__(self, universe, sid, data):
+    def __init__(self, universe, id_, data):
         self._universe = universe
-        self._id = sid
+        self._id = id_
         self._data = data
 
     @property
     def id(self):
-        """The solar system's ID, as an integer."""
+        """The object's unique ID, as an integer."""
         return self._id
+
+
+class _SolarSystem(_UniqueObject):
+    """Represents a solar system."""
 
     @property
     def name(self):
@@ -40,19 +44,31 @@ class _SolarSystem:
         """The solar system's security status, as a float."""
         return self._data["security"]
 
-
-class _Constellation:
-    """Represents a constellation."""
-
-    def __init__(self, universe, cid, data):
-        self._universe = universe
-        self._id = cid
-        self._data = data
+    @property
+    def faction(self):
+        """The solar system's faction, as a _Faction object, or None."""
+        if "faction" in self._data:
+            return self._universe.faction(self._data["faction"])
+        return self.constellation.faction
 
     @property
-    def id(self):
-        """The constellation's ID, as an integer."""
-        return self._id
+    def is_nullsec(self):
+        """Whether the solar system is in nullsec."""
+        return self.security < 0.05
+
+    @property
+    def is_lowsec(self):
+        """Whether the solar system is in nullsec."""
+        return self.security >= 0.05 and self.security < 0.45
+
+    @property
+    def is_highsec(self):
+        """Whether the solar system is in nullsec."""
+        return self.security >= 0.45
+
+
+class _Constellation(_UniqueObject):
+    """Represents a constellation."""
 
     @property
     def name(self):
@@ -64,23 +80,36 @@ class _Constellation:
         """The constellation's region, as a _Region object."""
         return self._universe.region(self._data["region"])
 
-
-class _Region:
-    """Represents a region."""
-
-    def __init__(self, universe, rid, data):
-        self._universe = universe
-        self._id = rid
-        self._data = data
-
     @property
-    def id(self):
-        """The region's ID, as an integer."""
-        return self._id
+    def faction(self):
+        """The constellation's faction, as a _Faction object, or None."""
+        if "faction" in self._data:
+            return self._universe.faction(self._data["faction"])
+        return self.region.faction
+
+
+class _Region(_UniqueObject):
+    """Represents a region."""
 
     @property
     def name(self):
         """The region's name, as a string."""
+        return self._data["name"]
+
+    @property
+    def faction(self):
+        """The region's faction, as a _Faction object, or None."""
+        if "faction" in self._data:
+            return self._universe.faction(self._data["faction"])
+        return None
+
+
+class _Faction(_UniqueObject):
+    """Represents a faction."""
+
+    @property
+    def name(self):
+        """The faction's name, as a string."""
         return self._data["name"]
 
 
@@ -115,16 +144,34 @@ class _DummyRegion(_Region):
         })
 
 
+class _DummyFaction(_Faction):
+    """Represents an unknown or invalid faction."""
+
+    def __init__(self, universe):
+        super().__init__(universe, -1, {
+            "name": "Unknown"
+        })
+
+
 class Universe:
     """EVE API module for static universe data."""
 
     def __init__(self, datadir):
         self._dir = datadir
+
         self._lock = Lock()
         self._loaded = False
+
         self._systems = {}
         self._constellations = {}
         self._regions = {}
+        self._factions = {}
+
+    @staticmethod
+    def _load_yaml(path):
+        """Load in and return a YAML file with the given path."""
+        with gzip.open(str(path), "rb") as fp:
+            return yaml.load(fp, Loader=yaml.CLoader)
 
     def _load(self):
         """Load in universe data. This can be called multiple times safely."""
@@ -135,13 +182,16 @@ class Universe:
             if self._loaded:
                 return
 
-            filename = str(self._dir / "galaxy.yml.gz")
-            with gzip.open(filename, "rb") as fp:
-                data = yaml.load(fp, Loader=yaml.CLoader)
+            galaxy = self._load_yaml(self._dir / "galaxy.yml.gz")
+            self._systems = galaxy["systems"]
+            self._constellations = galaxy["constellations"]
+            self._regions = galaxy["regions"]
+            del galaxy
 
-            self._systems = data["systems"]
-            self._constellations = data["constellations"]
-            self._regions = data["regions"]
+            entities = self._load_yaml(self._dir / "entities.yml.gz")
+            self._factions = entities["factions"]
+            del entities
+
             self._loaded = True
 
     def system(self, sid):
@@ -173,3 +223,21 @@ class Universe:
         if rid not in self._regions:
             return _DummyRegion(self)
         return _Region(self, rid, self._regions[rid])
+
+    def faction(self, fid):
+        """Return a _Faction with the given ID.
+
+        If the ID is invalid, return a dummy unknown object with ID -1.
+        """
+        self._load()
+        if fid not in self._factions:
+            return _DummyFaction(self)
+        return _Faction(self, fid, self._factions[fid])
+
+    def ship(self, sid):
+        """Return a _Ship with the given ID.
+
+        If the ID is invalid, return a dummy unknown object with ID -1.
+        """
+        ...
+        raise NotImplementedError()

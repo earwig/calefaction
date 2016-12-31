@@ -90,6 +90,66 @@ def _build_galaxy_skeleton(ids, names):
     print("done.")
     return galaxy
 
+def _load_assoc_for_system(galaxy, system, rid, cid):
+    data = _load_yaml(system / "solarsystem.staticdata")
+    sid = data["solarSystemID"]
+    sec = data["security"]
+
+    assert isinstance(sid, int)
+    assert isinstance(sec, float)
+    assert sid >= 0
+    assert sec >= -1.0 and sec <= 1.0
+
+    galaxy["systems"][sid]["constellation"] = cid
+    galaxy["systems"][sid]["region"] = rid
+    galaxy["systems"][sid]["security"] = sec
+
+    if "factionID" in data:
+        facid = data["factionID"]
+        assert isinstance(facid, int)
+        assert facid >= 0
+        galaxy["systems"][sid]["faction"] = facid
+
+def _load_assoc_for_constellation(galaxy, constellation, rid):
+    data = _load_yaml(constellation / "constellation.staticdata")
+    cid = data["constellationID"]
+
+    assert isinstance(cid, int)
+    assert cid >= 0
+
+    galaxy["constellations"][cid]["region"] = rid
+
+    if "factionID" in data:
+        facid = data["factionID"]
+        assert isinstance(facid, int)
+        assert facid >= 0
+        galaxy["constellations"][cid]["faction"] = facid
+
+    for system in constellation.iterdir():
+        if not system.is_dir():
+            continue
+
+        _load_assoc_for_system(galaxy, system, rid, cid)
+
+def _load_assoc_for_region(galaxy, region):
+    data = _load_yaml(region / "region.staticdata")
+    rid = data["regionID"]
+
+    assert isinstance(rid, int)
+    assert rid >= 0
+
+    if "factionID" in data:
+        facid = data["factionID"]
+        assert isinstance(facid, int)
+        assert facid >= 0
+        galaxy["regions"][rid]["faction"] = facid
+
+    for constellation in region.iterdir():
+        if not constellation.is_dir():
+            continue
+
+        _load_assoc_for_constellation(galaxy, constellation, rid)
+
 def _load_galaxy_associations(sde_dir, galaxy):
     print("Loading galaxy staticdata... ", end="", flush=True)
 
@@ -101,38 +161,8 @@ def _load_galaxy_associations(sde_dir, galaxy):
         for region in base.iterdir():
             if not region.is_dir():
                 continue
-            rdata = _load_yaml(region / "region.staticdata")
-            rid = rdata["regionID"]
 
-            assert isinstance(rid, int)
-            assert rid >= 0
-
-            for constellation in region.iterdir():
-                if not constellation.is_dir():
-                    continue
-                cdata = _load_yaml(constellation / "constellation.staticdata")
-                cid = cdata["constellationID"]
-
-                assert isinstance(cid, int)
-                assert cid >= 0
-
-                galaxy["constellations"][cid]["region"] = rid
-
-                for system in constellation.iterdir():
-                    if not system.is_dir():
-                        continue
-                    sdata = _load_yaml(system / "solarsystem.staticdata")
-                    sid = sdata["solarSystemID"]
-                    sec = sdata["security"]
-
-                    assert isinstance(sid, int)
-                    assert isinstance(sec, float)
-                    assert sid >= 0
-                    assert sec >= -1.0 and sec <= 1.0
-
-                    galaxy["systems"][sid]["constellation"] = cid
-                    galaxy["systems"][sid]["region"] = rid
-                    galaxy["systems"][sid]["security"] = sec
+            _load_assoc_for_region(galaxy, region)
 
     print("done.")
 
@@ -145,6 +175,25 @@ def _load_galaxy_associations(sde_dir, galaxy):
         if system["region"] < 0 or system["constellation"] < 0:
             print("[WARNING] Orphaned system: %d=%s" % (sid, system["name"]))
 
+def _load_factions(sde_dir):
+    print("Loading factions... ", end="", flush=True)
+
+    data = _load_yaml(sde_dir / "bsd" / "chrFactions.yaml")
+
+    factions = {}
+    for entry in data:
+        fid = entry["factionID"]
+        name = entry["factionName"]
+
+        assert isinstance(fid, int)
+        assert isinstance(name, str)
+        assert fid >= 0
+
+        factions[fid] = {"name": name}
+
+    print("done.")
+    return factions
+
 def _dump_galaxy(out_dir, galaxy):
     print("Dumping galaxy... ", end="", flush=True)
 
@@ -154,22 +203,37 @@ def _dump_galaxy(out_dir, galaxy):
 
     print("done.")
 
-def _compress_galaxy(out_dir):
-    print("Compressing galaxy... ", end="", flush=True)
+def _dump_entities(out_dir, factions):
+    print("Dumping entities... ", end="", flush=True)
 
-    fn_src = out_dir / "galaxy.yml"
-    fn_dst = out_dir / "galaxy.yml.gz"
+    entities = {"factions": factions}
 
-    with fn_src.open("rb") as f_in:
-        with gzip.open(str(fn_dst), "wb") as f_out:
-            shutil.copyfileobj(f_in, f_out)
+    filename = out_dir / "entities.yml"
+    with filename.open("w") as fp:
+        fp.write(yaml.dump(entities, Dumper=yaml.CDumper))
 
     print("done.")
+
+def _compress(out_dir):
+    targets = ["galaxy", "entities"]
+    for basename in targets:
+        print("Compressing %s... " % basename, end="", flush=True)
+
+        fn_src = out_dir / (basename + ".yml")
+        fn_dst = out_dir / (basename + ".yml.gz")
+
+        with fn_src.open("rb") as f_in:
+            with gzip.open(str(fn_dst), "wb") as f_out:
+                shutil.copyfileobj(f_in, f_out)
+
+        print("done.")
 
 def _cleanup(out_dir):
     print("Cleaning up... ", end="", flush=True)
 
-    (out_dir / "galaxy.yml").unlink()
+    targets = ["galaxy", "entities"]
+    for basename in targets:
+        (out_dir / (basename + ".yml")).unlink()
 
     print("done.")
 
@@ -184,13 +248,19 @@ def import_sde(sde_dir, out_dir):
     print("Counts: regions=%d, constellations=%d, systems=%d" % (
         len(ids[_REGION]), len(ids[_CONSTELLATION]), len(ids[_SOLAR_SYSTEM])))
     names = _load_names(sde_dir)
+
     galaxy = _build_galaxy_skeleton(ids, names)
     del ids
     del names
     _load_galaxy_associations(sde_dir, galaxy)
     _dump_galaxy(out_dir, galaxy)
     del galaxy
-    _compress_galaxy(out_dir)
+
+    factions = _load_factions(sde_dir)
+    _dump_entities(out_dir, factions)
+    del factions
+
+    _compress(out_dir)
     _cleanup(out_dir)
 
 def main():
