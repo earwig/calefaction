@@ -35,8 +35,10 @@ campaigns:
         isk:   true
         # Python function to filter kills:
         qualifiers: |-
-          return (kill["victim"]["corporationName"] == "Foo Corporation" and
-                  kill["victim"]["shipTypeID"] in ...)
+          victim = kill["victim"]
+          corpname = victim["corporationName"]
+          killed = g.eve.universe.killable(victim["shipTypeID"])
+          return corpname == "Foo Corporation" and killed.group == "Frigate"
       # Will track possession of Tritanium by all corp members:
       titan:
         title: Let's Build a Titan

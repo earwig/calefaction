@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8  -*-
 
+"""
+Import an EVE Online Static Data Export dump to Calefaction.
+"""
+
 import gzip
 from pathlib import Path
 import shutil

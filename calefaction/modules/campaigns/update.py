@@ -25,7 +25,7 @@ def _build_filter(qualifiers):
     contents of a config file because it originates from a known place on the
     filesystem.
     """
-    namespace = {}
+    namespace = {"g": g}
     body = "def _func(kill):\n" + textwrap.indent(qualifiers, " " * 4)
     exec(body, namespace)
     return namespace["_func"]
