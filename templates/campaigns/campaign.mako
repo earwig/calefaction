@@ -16,8 +16,7 @@
 <% mod = g.config.modules.campaigns %>
 <div id="operations">
     % for section in campaign["layout"]:
-        <% klass = "loose" if len(section) < 3 else "tight" %>
-        <section class="${klass}">
+        <section>
             % for opname in section:
                 <%
                     operation = campaign["operations"][opname]

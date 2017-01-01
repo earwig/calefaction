@@ -417,12 +417,8 @@ h2 .disabled-info {
     display: flex;
 }
 
-#operations section.loose {
-    justify-content: space-around;
-}
-
-#operations section.tight {
-    justify-content: space-between;
+.operation {
+    flex: 1;
 }
 
 .operation .primary .num {
@@ -541,6 +537,11 @@ h2 .disabled-info {
 
     .operation .secondary .unit {
         margin-left: 0.15em;
+    }
+
+    .operation .summary .contents {
+        display: inline-block;
+        margin-bottom: -4px;
     }
 }
 
