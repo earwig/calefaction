@@ -63,14 +63,16 @@
             <td class="icon spacer"></td>
         % endif
         % if detail:
-            <td class="detail-item detail-list">
-                <a href="https://zkillboard.com/corporation/${victim['corp_id']}/">${victim['corp_name'] | h}</a>
-                % if victim['alliance_name']:
-                    <a href="https://zkillboard.com/alliance/${victim['alliance_id']}/">${victim['alliance_name'] | h}</a>
-                % endif
-                % if victim['faction_name']:
-                    <a href="https://zkillboard.com/faction/${victim['faction_id']}/">${victim['faction_name'] | h}</a>
-                % endif
+            <td class="detail-item">
+                <ul class="detail-list">
+                    <li><a href="https://zkillboard.com/corporation/${victim['corp_id']}/">${victim['corp_name'] | h}</a></li>
+                    % if victim['alliance_name']:
+                        <li><a href="https://zkillboard.com/alliance/${victim['alliance_id']}/">${victim['alliance_name'] | h}</a></li>
+                    % endif
+                    % if victim['faction_name']:
+                        <li><a href="https://zkillboard.com/faction/${victim['faction_id']}/">${victim['faction_name'] | h}</a></li>
+                    % endif
+                </ul>
             </td>
         % endif
     </tr>

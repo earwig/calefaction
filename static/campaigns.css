@@ -204,7 +204,18 @@ h2 .disabled-info {
     padding-left: 0.5em;
 }
 
-.operation.detail .detail-list > :not(:last-child)::after {
+.operation.detail .detail-list {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.operation.detail .detail-list li {
+    display: inline-block;
+}
+
+.operation.detail .detail-list li:not(:last-child)::after {
     margin-left: 0.25em;
     content: "/";
     color: #AAA;
