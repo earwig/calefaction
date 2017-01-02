@@ -167,7 +167,7 @@ header .spacer {
 }
 
 header .sep {
-    color: #777777;
+    color: #777;
 }
 
 footer ul {
@@ -446,75 +446,89 @@ h2 .disabled-info {
     font-style: italic;
 }
 
+.operation .summary {
+    font-size: 14px;
+}
+
 .operation .summary .head {
     margin-top: 1em;
-    font-size: 14px;
 }
 
 .operation .summary .contents {
     position: relative;
     margin-top: 0.5em;
     border: 1px solid #282828;
-    font-size: 14px;
 }
 
-.operation .killboard {
+.operation .board {
     border-spacing: 0;
     border-collapse: collapse;
     text-align: left;
 }
 
-.operation .killboard:not(.expanded) tr:nth-child(2n) {
+.operation .board:not(.expanded) tr:nth-child(2n) {
     background-color: #181818;
 }
 
-.operation .killboard:not(.expanded) tr:nth-child(2n+1) {
+.operation .board:not(.expanded) tr:nth-child(2n+1) {
     background-color: #0A0A0A;
 }
 
-.operation .killboard td {
+.operation .board td {
     padding: 0.25em 0;
 }
 
-.operation .killboard td:first-child {
+.operation .board td:first-child {
     padding-left: 1em;
 }
 
-.operation .killboard td:last-child {
+.operation .board td:last-child {
     padding-right: 1em;
 }
 
-.operation .killboard .fluid {
+.operation .board .fluid {
     padding-right: 0.5em;
 }
 
-.operation .killboard .icon {
+.operation .board .icon {
     width: 46px;
 }
 
-.operation .killboard.expanded {
+.operation .board.expanded {
     position: absolute;
     z-index: 1;
     transition: clip-path 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     clip-path: inset(0 100% 0 0);
 }
 
-.operation .killboard:not(.expanded) .extra {
+.operation .board:not(.expanded) .extra {
     display: none;
 }
 
-.operation .killboard.expanded .spacer {
+.operation .board.expanded .spacer {
     display: none;
 }
 
-.operation .killboard img {
+.operation .board img {
     width: 42px;
     height: 42px;
     vertical-align: middle;
 }
 
-.operation .killboard abbr {
+.operation .board abbr {
     border-bottom: none;
+}
+
+.operation .itemboard .num {
+    padding-left: 0.5em;
+    text-align: right;
+    font-weight: bold;
+}
+
+.operation .itemboard .num::before {
+    content: "×";
+    font-weight: normal;
+    color: #AAA;
 }
 
 @media (min-width: 800px) {
@@ -566,7 +580,7 @@ h2 .disabled-info {
         margin-left: 0.15em;
     }
 
-    .operation .killboard:not(.expanded) {
+    .operation .board:not(.expanded) {
         width: 100%;
     }
 }

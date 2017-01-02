@@ -67,7 +67,7 @@ $(function() {
 
     //Campaigns: selectively reveal operation summary details:
     $(".operation .killboard tr").mouseenter(function() {
-        var div = $("<table>", {addClass: "killboard expanded"})
+        var div = $("<table>", {addClass: "board expanded"})
             .css($(this).position())
             .css("background-color", $(this).css("background-color"))
             .css("position", "fixed")

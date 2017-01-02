@@ -54,10 +54,21 @@
         % endif
     </tr>
 </%def>
+<%def name="_itemboard_item(item)">
+    <%
+        type_id, count = item
+        type = g.eve.universe.type(type_id)
+    %>
+    <tr>
+        <td class="icon"><img title="${type.name | h}" alt="" src="${g.eve.image.inventory(type_id, 64)}"/></td>
+        <td><a href="https://eve-central.com/home/quicklook.html?typeid=${type_id | u}">${type.name | h}</a></td>
+        <td class="num">${count | h}</td>
+    </tr>
+</%def>
 <%def name="_killboard_recent(summary)">
     <div class="head">Most recent kills:</div>
     <div class="contents">
-        <table class="killboard">
+        <table class="board killboard">
             % for kill in summary:
                 ${_killboard_kill(kill)}
             % endfor
@@ -65,9 +76,13 @@
     </div>
 </%def>
 <%def name="_collection_items(summary)">
-    <div class="head">XXX:</div>
+    <div class="head">Top items:</div>
     <div class="contents">
-        ${summary | h}
+        <table class="board itemboard">
+            % for item in summary:
+                ${_itemboard_item(item)}
+            % endfor
+        </table>
     </div>
 </%def>
 
