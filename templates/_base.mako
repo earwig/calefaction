@@ -11,11 +11,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="canonical" href="${g.config.scheme}://${g.config.get('site.canonical')}${request.script_root}${request.path}">
         ${support.makecss("main.css")}
+        <%block name="extracss"></%block>
         <% style = g.auth.get_character_prop("style") or g.config.get("style.default") %>
         % if style:
             ${support.makecss("styles/{}.css".format(style), "user-style")}
         % endif
-        <%block name="extracss"></%block>
         % for size in g.eve.image.corp_widths:
             <link rel="icon" type="image/png" sizes="${size}x${size}" href="${g.eve.image.corp(g.config.get('corp.id'), size)}"/>
         % endfor
