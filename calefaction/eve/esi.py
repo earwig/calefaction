@@ -3,6 +3,7 @@
 from datetime import datetime
 import random
 from threading import Lock
+import time
 
 import requests
 
@@ -153,6 +154,7 @@ class EVESwaggerInterface:
     data = esi.post("/v1/universe/names/", token, data={"ids": [entity_id]})
     data = esi(token).v1.universe.names.post(ids=[entity_id]})
     """
+    _RETRY_WAIT = 0.5
 
     def __init__(self, session, logger):
         self._session = session
@@ -190,9 +192,15 @@ class EVESwaggerInterface:
         params["datasource"] = self._data_source
         url = self._base_url + query
 
+        call = lambda: method(url, params=params, json=data or None,
+                              headers=headers, timeout=10)
         try:
-            resp = method(url, params=params, json=data or None,
-                          headers=headers, timeout=10)
+            try:
+                resp = call()
+            except requests.ConnectionError:
+                self._logger.warn("ESI request failed, retrying once")
+                time.sleep(self._RETRY_WAIT)
+                resp = call()
             resp.raise_for_status()
             result = resp.json() if resp.content else None
         except (requests.RequestException, ValueError) as exc:
