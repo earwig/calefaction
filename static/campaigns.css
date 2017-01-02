@@ -210,6 +210,12 @@ h2 .disabled-info {
     color: #AAA;
 }
 
+.last-updated {
+    margin-bottom: 1em;
+    font-size: 90%;
+    font-style: italic;
+}
+
 @media (min-width: 800px) {
     #operations {
         margin: 1em 0;

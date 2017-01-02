@@ -1,5 +1,6 @@
 <%!
-    from calefaction.format import format_isk
+    from calefaction.format import format_isk, format_utctime
+
 %>
 <%inherit file="../_default.mako"/>
 <%namespace file="renderers.mako" import="render_summary"/>
@@ -50,4 +51,8 @@
             ${render_summary(renderer, summary, detail=True)}
         </div>
     % endif
+</div>
+<div class="last-updated">
+    <% last_updated, _ = g.campaign_db.check_operation(cname, opname) %>
+    Last updated: <abbr title="${last_updated.strftime("%Y-%m-%d %H:%M:%S")}">${format_utctime(last_updated) | h}</abbr>
 </div>
