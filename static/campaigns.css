@@ -29,6 +29,15 @@ h2 .disabled-info {
     font-variant: none;
 }
 
+.breadcrumb {
+    margin-top: 1em;
+    font-size: 90%;
+}
+
+.breadcrumb::after {
+    content: "»";
+}
+
 #operations {
     margin-bottom: 1em;
 }
@@ -72,6 +81,7 @@ h2 .disabled-info {
 
 .operation .summary .head {
     margin-top: 1em;
+    font-weight: normal;
 }
 
 .operation .summary .contents {
@@ -110,8 +120,12 @@ h2 .disabled-info {
     padding-right: 0.5em;
 }
 
-.operation .board .icon {
+.operation:not(.detail) .board .icon {
     width: 46px;
+}
+
+.operation.detail .board .icon {
+    width: 52px;
 }
 
 .operation .board.expanded {
@@ -121,7 +135,7 @@ h2 .disabled-info {
     clip-path: inset(0 100% 0 0);
 }
 
-.operation .board:not(.expanded) .extra {
+.operation:not(.detail) .board:not(.expanded) .extra {
     display: none;
 }
 
@@ -130,13 +144,25 @@ h2 .disabled-info {
 }
 
 .operation .board img {
+    vertical-align: middle;
+}
+
+.operation:not(.detail) .board img {
     width: 42px;
     height: 42px;
-    vertical-align: middle;
+}
+
+.operation.detail .board img {
+    width: 48px;
+    height: 48px;
 }
 
 .operation .board abbr {
     border-bottom: none;
+}
+
+.operation .board a:hover {
+    text-decoration: none;
 }
 
 .operation .itemboard td:last-child {
@@ -154,6 +180,36 @@ h2 .disabled-info {
     color: #AAA;
 }
 
+.operation.detail {
+    margin-bottom: 1em;
+}
+
+.operation.detail .overview {
+    margin-left: 1em;
+}
+
+.operation.detail .primary, .operation.detail .primary .unit {
+    display: inline-block;
+}
+
+.operation.detail .unit {
+    margin-left: 0.15em;
+}
+
+.operation.detail .contents, .operation.detail .board:not(.expanded) {
+    width: 100%;
+}
+
+.operation.detail .detail-item {
+    padding-left: 0.5em;
+}
+
+.operation.detail .detail-list > :not(:last-child)::after {
+    margin-left: 0.25em;
+    content: "/";
+    color: #AAA;
+}
+
 @media (min-width: 800px) {
     #operations {
         margin: 1em 0;
@@ -163,12 +219,12 @@ h2 .disabled-info {
         margin-bottom: 2em;
     }
 
-    .operation {
+    .operation:not(.detail) {
         margin: 0 0.75em;
         text-align: center;
     }
 
-    .operation .secondary {
+    .operation:not(.detail) .secondary {
         margin-top: 0.5em;
     }
 

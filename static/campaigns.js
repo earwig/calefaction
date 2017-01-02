@@ -6,7 +6,7 @@ $(function() {
     $('#campaigns-select input[type="submit"]').hide();
 
     //Selectively reveal operation summary details:
-    $(".operation .killboard tr").mouseenter(function() {
+    $(".operation:not(.detail) .killboard tr").mouseenter(function() {
         var div = $("<table>", {addClass: "board expanded"})
             .css($(this).position())
             .css("background-color", $(this).css("background-color"))
