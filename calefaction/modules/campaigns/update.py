@@ -6,6 +6,7 @@ import textwrap
 from flask import g
 
 from .._provided import config, logger
+from ...exceptions import EVEAPIForbiddenError
 
 __all__ = ["update_operation"]
 
@@ -17,7 +18,7 @@ def _save_operation(cname, opname, primary, secondary, key=None):
     g.campaign_db.set_overview(cname, opname, primary, secondary)
     g.campaign_db.touch_operation(cname, opname, key=key)
 
-def _build_filter(qualifiers):
+def _build_filter(qualifiers, arg):
     """Given a qualifiers string from the config, return a filter function.
 
     This function is extremely sensitive since it executes arbitrary Python
@@ -26,7 +27,7 @@ def _build_filter(qualifiers):
     filesystem.
     """
     namespace = {"g": g}
-    body = "def _func(kill):\n" + textwrap.indent(qualifiers, " " * 4)
+    body = ("def _func(%s):\n" % arg) + textwrap.indent(qualifiers, " " * 4)
     exec(body, namespace)
     return namespace["_func"]
 
@@ -52,7 +53,7 @@ def _update_killboard_operations(cname, opnames, min_kill_id):
     filters = []
     for opname in opnames:
         qualif = operations[opname]["qualifiers"]
-        filters.append((_build_filter(qualif), opname))
+        filters.append((_build_filter(qualif, "kill"), opname))
 
     args = ["kills", "corporationID", g.config.get("corp.id"), "no-items",
             "no-attackers", "orderDirection", "asc"]
@@ -80,21 +81,64 @@ def _update_killboard_operations(cname, opnames, min_kill_id):
             secondary = None
         _save_operation(cname, opname, primary, secondary, key=max_kill_id)
 
+def _save_collection_overview(cname, opnames, data):
+    """Save collection overview data to the database."""
+    operations = config["campaigns"][cname]["operations"]
+    if any(operations[opname].get("isk", True) for opname in opnames):
+        pricelist = g.eve.esi().v1.markets.prices.get()
+        prices = {entry["type_id"]: entry["average_price"]
+                  for entry in pricelist if "average_price" in entry}
+    else:
+        prices = {}
+
+    for opname in opnames:
+        primary = sum(sum(d.values()) for d in data[opname].values())
+        show_isk = operations[opname].get("isk", True)
+        if show_isk:
+            secondary = sum(prices.get(typeid, 0.0) * count
+                            for d in data[opname].values()
+                            for typeid, count in d.items())
+        else:
+            secondary = None
+        _save_operation(cname, opname, primary, secondary)
+
 def _update_collection_operations(cname, opnames):
     """Update all collection-type operations in the given campaign subset."""
-    campaign = config["campaigns"][cname]
+    operations = config["campaigns"][cname]["operations"]
+    filters = []
     for opname in opnames:
-        operation = campaign["operations"][opname]
-        show_isk = operation.get("isk", True)
+        qualif = operations[opname]["qualifiers"]
+        filters.append((_build_filter(qualif, "asset"), opname))
 
-        # store per-user counts; update for all users in corp who have fresh
-        # API keys and leave other data stale
-        ...
-        primary = __import__("random").randint(10, 99)
-        secondary = __import__("random").randint(10000000, 5000000000) / 100 \
-            if show_isk else None
+    data = {opname: {} for opname in opnames}
 
-        _save_operation(cname, opname, primary, secondary)
+    for char_id, token in g.auth.get_valid_characters():
+        logger.debug("Fetching assets for char id=%d campaign=%s "
+                     "operations=%s", char_id, cname, ",".join(opnames))
+        try:
+            assets = g.eve.esi(token).v1.characters(char_id).assets.get()
+        except EVEAPIForbiddenError:
+            logger.debug("Asset access denied for char id=%d", char_id)
+            continue
+
+        for opname in opnames:
+            data[opname][char_id] = {}
+
+        logger.debug("Evaluating %d assets for char id=%d",
+                     len(assets), char_id)
+        for asset in assets:
+            for filt, opname in filters:
+                if filt(asset):
+                    typeid = asset["type_id"]
+                    count = 1 if asset["is_singleton"] else asset["quantity"]
+                    char = data[opname][char_id]
+                    if typeid in char:
+                        char[typeid] += count
+                    else:
+                        char[typeid] = count
+
+    g.campaign_db.update_items(cname, data)
+    _save_collection_overview(cname, opnames, data)
 
 def update_operation(cname, opname, new=False):
     """Update a campaign/operation. Assumes a thread-exclusive lock is held."""

@@ -181,18 +181,29 @@ class AuthManager:
         g.db.update_auth(cid, token, expires, refresh)
         return token
 
+    def _is_corp_member(self, token, char_id):
+        """"Return whether the given character is in the site's corp."""
+        resp = self._eve.esi(token).v3.characters(char_id).get()
+        return resp.get("corporation_id") == self._config.get("corp.id")
+
     def _check_access(self, token, char_id):
         """"Check whether the given character is allowed to access this site.
 
         If allowed, do nothing. If not, raise AccessDeniedError.
         """
-        resp = self._eve.esi(token).v3.characters(char_id).get()
-        if resp.get("corporation_id") != self._config.get("corp.id"):
+        if not self._is_corp_member(token, char_id):
             self._debug("Access denied per corp membership for char id=%d "
                         "session id=%d", char_id, session["id"])
             g.db.drop_auth(char_id)
             self._invalidate_session()
             raise AccessDeniedError()
+
+    def _cache_token(self, cid, token):
+        """Cache the given token for this request."""
+        if hasattr(g, "_cached_tokens"):
+            g._cached_tokens[cid] = token
+        else:
+            g._cached_tokens = {cid: token}
 
     def _update_prop_cache(self, module, prop, value):
         """Update the value of a character module property in the cache."""
@@ -282,21 +293,29 @@ class AuthManager:
         self._update_prop_cache(module, prop, value)
         return True
 
-    def get_token(self):
-        """Return a valid token for the current character, or None.
+    def get_token(self, cid=None):
+        """Return a valid token for the given character.
 
-        Assuming this is called in a restricted route (following a True result
-        from is_authenticated), this function makes no API calls and should
-        always succeed. If it is called in other circumstances, it may fail and
-        return None.
+        If no character is given, we use the current session's character. If a
+        token couldn't be retrieved, return None.
+
+        Assuming we want the current character's token and this is called in a
+        restricted route (following a True result from is_authenticated), this
+        function makes no API calls and should always succeed. If it is called
+        in other circumstances, it may return None or raise EVEAPIError.
         """
-        cid = self.get_character_id()
+        if cid is None:
+            cid = self.get_character_id()
         if not cid:
             return None
 
-        if not hasattr(g, "_cached_token"):
-            g._cached_token = self._get_token(cid)
-        return g._cached_token
+        if hasattr(g, "_cached_tokens"):
+            if cid in g._cached_tokens:
+                return g._cached_tokens[cid]
+
+        token = self._get_token(cid)
+        self._cache_token(cid, token)
+        return token
 
     def is_authenticated(self):
         """Return whether the user has permission to access this site.
@@ -324,7 +343,7 @@ class AuthManager:
         self._debug("Access granted for char id=%d session id=%d", cid,
                     session["id"])
         g.db.touch_session(session["id"])
-        g._cached_token = token
+        self._cache_token(cid, token)
         return True
 
     def make_login_link(self):
@@ -382,3 +401,35 @@ class AuthManager:
         if "id" in session:
             self._debug("Logging out session id=%d", session["id"])
         self._invalidate_session()
+
+    def get_valid_characters(self):
+        """Iterate over all valid corp members that we have tokens for.
+
+        Each character is returned as a 2-tuple of (char_id, token).
+
+        This function may make a large number of API queries (up to three per
+        character in the corp), hence it is a generator.
+        """
+        chars = g.db.get_authed_characters()
+        for cid, token, expires, refresh in chars:
+            seconds_til_expiry = (expires - datetime.utcnow()).total_seconds()
+
+            if seconds_til_expiry < self.EXPIRY_THRESHOLD:
+                result = self._fetch_new_token(refresh, refresh=True)
+                if not result:
+                    self._debug("Couldn't refresh token for char id=%d", cid)
+                    g.db.drop_auth(cid)
+                    continue
+
+                token, expires, refresh, char_id, char_name = result
+                if char_id != cid:
+                    self._debug("Refreshed token has incorrect char id=%d for "
+                                "char id=%d", char_id, cid)
+                    g.db.drop_auth(cid)
+                    continue
+
+                g.db.put_character(cid, char_name)
+                g.db.update_auth(cid, token, expires, refresh)
+
+            if self._is_corp_member(token, cid):
+                yield cid, token

@@ -204,6 +204,19 @@ class Database:
         with self._conn as conn:
             conn.execute("DELETE FROM auth WHERE auth_character = ?", (cid,))
 
+    def get_authed_characters(self):
+        """Return a list of characters with authentication info.
+
+        Each list item is a 4-tuple of (character_id, access_token,
+        token_expiry, refresh_token).
+        """
+        query = """SELECT auth_character, auth_token, auth_token_expiry,
+            auth_refresh FROM auth"""
+        res = self._conn.execute(query).fetchall()
+        dtparse = lambda dt: datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
+        return [(cid, token, dtparse(expiry), refresh)
+                for (cid, token, expiry, refresh) in res]
+
     def set_character_modprop(self, cid, module, prop, value):
         """Add or update a character module property."""
         with self._conn as conn:

@@ -66,23 +66,37 @@ def _load_typeids(sde_dir, groups):
     assert data[_SOLAR_SYSTEM]["groupID"] == _SOLAR_SYSTEM
     assert data[_SOLAR_SYSTEM]["name"]["en"] == "Solar System"
 
-    types = {"ships": {}, "structures": {}, "fighters": {}}
+    types = {}
+    killables = {"ships": {}, "structures": {}, "fighters": {}}
     cat_conv = {_SHIP_CAT: "ships", _FIGHTER_CAT: "fighters"}
     cat_conv.update({cid: "structures" for cid in _STRUCT_CATS})
     group_conv = {gid: cid for cid, gids in groups.items() for gid in gids}
 
     for tid, type_ in data.items():
+        name = type_["name"].get("en", "Unknown")
         gid = type_["groupID"]
+
+        assert isinstance(tid, int)
+        assert isinstance(gid, int)
+        assert tid >= 0
+        assert gid >= 0
+
+        types[tid] = {"name": name, "group_id": gid}
+
+        if "marketGroupID" in type_:
+            mgid = type_["marketGroupID"]
+            assert isinstance(mgid, int)
+            assert mgid >= 0
+            types[tid]["market_group_id"] = mgid
+
         if gid in group_conv:
             cid = group_conv[gid]
             cname = cat_conv[cid]
-            name = type_["name"]["en"]
             group = groups[cid][gid]
-            assert isinstance(tid, int)
-            types[cname][tid] = {"name": name, "group": group}
+            killables[cname][tid] = {"name": name, "group": group}
 
     print("done.")
-    return types
+    return types, killables
 
 def _load_ids(sde_dir):
     print("Loading itemIDs... ", end="", flush=True)
@@ -248,28 +262,27 @@ def _load_factions(sde_dir):
 
 def _dump_types(out_dir, types):
     print("Dumping types... ", end="", flush=True)
-
     _save_yaml(out_dir / "types.yml", types)
+    print("done.")
 
+def _dump_killables(out_dir, killables):
+    print("Dumping killables... ", end="", flush=True)
+    _save_yaml(out_dir / "killables.yml", killables)
     print("done.")
 
 def _dump_galaxy(out_dir, galaxy):
     print("Dumping galaxy... ", end="", flush=True)
-
     _save_yaml(out_dir / "galaxy.yml", galaxy)
-
     print("done.")
 
 def _dump_entities(out_dir, factions):
     print("Dumping entities... ", end="", flush=True)
-
     entities = {"factions": factions}
     _save_yaml(out_dir / "entities.yml", entities)
-
     print("done.")
 
 def _compress(out_dir):
-    targets = ["types", "galaxy", "entities"]
+    targets = ["types", "killables", "galaxy", "entities"]
     for basename in targets:
         print("Compressing %s... " % basename, end="", flush=True)
 
@@ -285,7 +298,7 @@ def _compress(out_dir):
 def _cleanup(out_dir):
     print("Cleaning up... ", end="", flush=True)
 
-    targets = ["types", "galaxy", "entities"]
+    targets = ["types", "killables", "galaxy", "entities"]
     for basename in targets:
         (out_dir / (basename + ".yml")).unlink()
 
@@ -299,9 +312,10 @@ def import_sde(sde_dir, out_dir):
 
     _verify_categoryids(sde_dir)
     groups = _load_groupids(sde_dir)
-    types = _load_typeids(sde_dir, groups)
+    types, killables = _load_typeids(sde_dir, groups)
     _dump_types(out_dir, types)
-    del groups, types
+    _dump_killables(out_dir, killables)
+    del groups, types, killables
 
     ids = _load_ids(sde_dir)
     print("Counts: regions=%d, constellations=%d, systems=%d" % (

@@ -62,8 +62,8 @@ def get_summary(cname, opname, limit=5):
         kills = g.campaign_db.get_associated_kills(cname, opname, limit=limit)
         return kills, "killboard_recent"
     elif optype == "collection":
-        ...
-        return [], None
+        items = g.campaign_db.get_associated_items(cname, opname, limit=limit)
+        return items, "collection_items"
     else:
         raise RuntimeError("Unknown operation type: %s" % optype)
 

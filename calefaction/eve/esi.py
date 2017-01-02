@@ -163,7 +163,7 @@ class EVESwaggerInterface:
         self._data_source = "tranquility"
         self._cache = _ESICache()
 
-    def __call__(self, token):
+    def __call__(self, token=None):
         return _ESIQueryBuilder(self, token)
 
     def _do(self, method, query, params, data, token, can_cache=False):
@@ -183,10 +183,9 @@ class EVESwaggerInterface:
         if cached is not None:
             return cached
 
-        headers = {
-            "Accept": "application/json",
-            "Authorization": "Bearer " + token
-        }
+        headers = {"Accept": "application/json"}
+        if token is not None:
+            headers["Authorization"] = "Bearer " + token
         params = params.copy() if params else {}
         params["datasource"] = self._data_source
         url = self._base_url + query
@@ -198,7 +197,8 @@ class EVESwaggerInterface:
             result = resp.json() if resp.content else None
         except (requests.RequestException, ValueError) as exc:
             self._logger.exception("ESI request failed")
-            if hasattr(exc, "response") and exc.response.status_code == 403:
+            if hasattr(exc, "response") and (exc.response and
+                                             exc.response.status_code == 403):
                 raise EVEAPIForbiddenError()
             raise EVEAPIError()
 

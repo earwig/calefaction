@@ -17,35 +17,35 @@
             </a>
         </td>
         <td class="fluid extra">
-            <a href="https://zkillboard.com/system/${system.id}/">${system.name}</a> <abbr title="${system.security}" class="${get_security_class(system.security)}">${format_security(system.security)}</abbr><br/>
-            <a href="https://zkillboard.com/region/${system.region.id}/">${system.region.name}</a>
+            <a href="https://zkillboard.com/system/${system.id}/">${system.name | h}</a> <abbr title="${system.security}" class="${get_security_class(system.security)}">${format_security(system.security)}</abbr><br/>
+            <a href="https://zkillboard.com/region/${system.region.id}/">${system.region.name | h}</a>
         </td>
         <td class="icon">
             <a href="https://zkillboard.com/kill/${kill['id']}/">
-                <img title="Kill ${kill['id']}: ${killed.name}" alt="Kill ${kill['id']}: ${killed.name}" src="${g.eve.image.inventory(victim["ship_id"], 64)}"/>
+                <img title="Kill ${kill['id']}: ${killed.name | h}" alt="Kill ${kill['id']}: ${killed.name | h}" src="${g.eve.image.inventory(victim["ship_id"], 64)}"/>
             </a>
         </td>
         <td class="icon extra">
             <a href="https://zkillboard.com/character/${victim['char_id']}/">
-                <img title="${victim['char_name']}" alt="${victim['char_name']}" src="${g.eve.image.character(victim["char_id"], 128)}"/>
+                <img title="${victim['char_name'] | h}" alt="${victim['char_name'] | h}" src="${g.eve.image.character(victim["char_id"], 128)}"/>
             </a>
         </td>
         <td class="icon${' extra' if victim["alliance_id"] and victim["faction_id"] else ''}">
             <a href="https://zkillboard.com/corporation/${victim['corp_id']}/">
-                <img title="${victim['corp_name']}" alt="${victim['corp_name']}" src="${g.eve.image.corp(victim["corp_id"], 128)}"/>
+                <img title="${victim['corp_name'] | h}" alt="${victim['corp_name'] | h}" src="${g.eve.image.corp(victim["corp_id"], 128)}"/>
             </a>
         </td>
         <td class="icon${'' if victim["alliance_id"] else ' extra'}">
         % if victim["alliance_id"]:
             <a href="https://zkillboard.com/alliance/${victim['alliance_id']}/">
-                <img title="${victim['alliance_name']}" alt="${victim['alliance_name']}" src="${g.eve.image.alliance(victim["alliance_id"], 128)}"/>
+                <img title="${victim['alliance_name'] | h}" alt="${victim['alliance_name'] | h}" src="${g.eve.image.alliance(victim["alliance_id"], 128)}"/>
             </a>
         % endif
         </td>
         <td class="icon${'' if victim["faction_id"] else ' extra'}">
         % if victim["faction_id"]:
             <a href="https://zkillboard.com/faction/${victim['faction_id']}/">
-                <img title="${victim['faction_name']}" alt="${victim['faction_name']}" src="${g.eve.image.faction(victim["faction_id"], 128)}"/>
+                <img title="${victim['faction_name'] | h}" alt="${victim['faction_name'] | h}" src="${g.eve.image.faction(victim["faction_id"], 128)}"/>
             </a>
         % endif
         </td>
@@ -64,8 +64,17 @@
         </table>
     </div>
 </%def>
+<%def name="_collection_items(summary)">
+    <div class="head">XXX:</div>
+    <div class="contents">
+        ${summary | h}
+    </div>
+</%def>
+
 <%def name="render_summary(renderer, summary)"><%
     if renderer == "killboard_recent":
         return _killboard_recent(summary)
+    if renderer == "collection_items":
+        return _collection_items(summary)
     raise RuntimeError("Unknown renderer: %s" % renderer)
 %></%def>

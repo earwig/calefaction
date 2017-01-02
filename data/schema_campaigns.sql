@@ -56,7 +56,11 @@ DROP TABLE IF EXISTS oper_item;
 
 CREATE TABLE oper_item (
     oi_campaign TEXT,
-    oi_operation TEXT
-    -- ...
-    -- UNIQUE (oi_campaign, oi_operation, ...)
+    oi_operation TEXT,
+    oi_character INTEGER,
+    oi_type INTEGER,
+    oi_count INTEGER,
+    UNIQUE (oi_campaign, oi_operation, oi_character, oi_type)
 );
+
+CREATE INDEX oi_campaign_operation ON oper_item (oi_campaign, oi_operation);
