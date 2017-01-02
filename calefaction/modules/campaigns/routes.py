@@ -52,10 +52,11 @@ def operation(cname, opname):
     if opname not in campaign["operations"]:
         abort(404)
     operation = campaign["operations"][opname]
+    sortby = request.args.get("sort")
     enabled = cname in config["enabled"] and opname in campaign["enabled"]
     return render_template("campaigns/operation.mako",
                            cname=cname, campaign=campaign, opname=opname,
-                           operation=operation, enabled=enabled)
+                           operation=operation, sortby=sortby, enabled=enabled)
 
 @blueprint.rroute("/settings/campaign", methods=["POST"])
 def set_campaign():

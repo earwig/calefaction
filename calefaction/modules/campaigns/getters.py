@@ -55,17 +55,24 @@ def get_overview(cname, opname):
                              "operation=%s", age, cname, opname)
     return g.campaign_db.get_overview(cname, opname)
 
-def get_summary(cname, opname, limit=5):
-    """Return a sample fraction of results for the given campaign/operation."""
+def get_summary(cname, opname, sortby=None, limit=5):
+    """Return some details for the given campaign/operation."""
     optype = config["campaigns"][cname]["operations"][opname]["type"]
     if optype == "killboard":
-        kills = g.campaign_db.get_associated_kills(cname, opname, limit=limit)
-        return kills, "killboard_recent"
+        sorts = ["new", "old", "value"]
+        renderer = "killboard_recent"
+        func = g.campaign_db.get_associated_kills
     elif optype == "collection":
-        items = g.campaign_db.get_associated_items(cname, opname, limit=limit)
-        return items, "collection_items"
+        sorts = ["value", "quantity", "price"]
+        renderer = "collection_items"
+        func = g.campaign_db.get_associated_items
     else:
         raise RuntimeError("Unknown operation type: %s" % optype)
+
+    if sortby not in sorts:
+        sortby = sorts[0]
+    data = func(cname, opname, sort=sortby, limit=limit)
+    return data, renderer
 
 def get_unit(operation, num, primary=True):
     """Return the correct form of the unit tracked by the given operation."""

@@ -27,7 +27,7 @@
     <%
         mod = g.config.modules.campaigns
         primary, secondary = mod.get_overview(cname, opname)
-        summary, renderer = mod.get_summary(cname, opname, limit=-1)
+        summary, renderer = mod.get_summary(cname, opname, sortby=sortby, limit=-1)
         klass = "big" if primary < 1000 else "medium" if primary < 1000000 else "small"
         punit = mod.get_unit(operation, primary)
         sunit = mod.get_unit(operation, secondary, primary=False)
@@ -48,7 +48,7 @@
     </div>
     % if summary:
         <div class="summary">
-            ${render_summary(renderer, summary, detail=True)}
+            ${render_summary(renderer, summary, detail=True, sortby=sortby)}
         </div>
     % endif
 </div>

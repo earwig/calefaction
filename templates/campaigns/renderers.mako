@@ -95,9 +95,32 @@
         </td>
     </tr>
 </%def>
-<%def name="_killboard_recent(summary, detail)">
+<%def name="_build_sort_changer(keys, descriptors, sortby)">
+    % if keys:
+        <ul class="change-sort">
+            % for key in keys:
+                % if key == sortby:
+                    <li class="cur">${descriptors[key]}</li>
+                % else:
+                    <li><a href="${url_for('.operation', cname=cname, opname=opname, sort=key)}">${descriptors[key]}</a></li>
+                % endif
+            % endfor
+        </ul>
+    % endif
+</%def>
+<%def name="_killboard_recent(summary, detail, sortby)">
     % if detail:
+        <%
+            descriptors = {
+                "new": "most recent first",
+                "old": "most recent last",
+                "value": "most valuable first"
+            }
+            if sortby not in descriptors:
+                sortby = "new"
+        %>
         <h3 class="head">Kills:</h3>
+        ${_build_sort_changer(["new", "old", "value"], descriptors, sortby)}
     % else:
         <div class="head">Most recent kills:</div>
     % endif
@@ -113,9 +136,19 @@
         </table>
     </div>
 </%def>
-<%def name="_collection_items(summary, detail)">
+<%def name="_collection_items(summary, detail, sortby)">
     % if detail:
+        <%
+            descriptors = {
+                "value": "most valuable first",
+                "quantity": "greatest quantity first",
+                "price": "most expensive first"
+            }
+            if sortby not in descriptors:
+                sortby = "value"
+        %>
         <h3 class="head">Items:</h3>
+        ${_build_sort_changer(["value", "quantity", "price"], descriptors, sortby)}
     % else:
         <div class="head">Top items:</div>
     % endif
@@ -128,10 +161,10 @@
     </div>
 </%def>
 
-<%def name="render_summary(renderer, summary, detail=False)"><%
+<%def name="render_summary(renderer, summary, detail=False, sortby=None)"><%
     if renderer == "killboard_recent":
-        return _killboard_recent(summary, detail)
+        return _killboard_recent(summary, detail, sortby)
     if renderer == "collection_items":
-        return _collection_items(summary, detail)
+        return _collection_items(summary, detail, sortby)
     raise RuntimeError("Unknown renderer: %s" % renderer)
 %></%def>

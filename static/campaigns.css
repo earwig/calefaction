@@ -218,7 +218,36 @@ h2 .disabled-info {
 .operation.detail .detail-list li:not(:last-child)::after {
     margin-left: 0.25em;
     content: "/";
-    color: #AAA;
+    color: #777;
+}
+
+.change-sort {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+.change-sort li {
+    display: inline-block;
+}
+
+.change-sort .cur {
+    font-weight: bold;
+}
+
+.change-sort::before {
+    content: "[";
+    color: #777;
+}
+
+.change-sort::after {
+    content: "]";
+    color: #777;
+}
+
+.change-sort li:not(:last-child)::after {
+    content: " |";
+    color: #777;
 }
 
 .last-updated {

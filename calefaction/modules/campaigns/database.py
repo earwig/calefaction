@@ -141,12 +141,23 @@ class CampaignDB:
         res = self._conn.execute(query, (campaign, operation)).fetchall()
         return tuple(res[0])
 
-    def get_associated_kills(self, campaign, operation, limit=5, offset=0):
+    def get_associated_kills(self, campaign, operation, sort="new", limit=-1,
+                             offset=0):
         """Return a list of kills associated with a campaign/operation.
 
-        Kills are returned as dictionaries most recent first, up to a limit.
-        Use -1 for no limit.
+        Kills are returned as dictionaries, up to a limit. Use -1 for no limit.
+        The sort should be "new" for most recent first, "old" for most recent
+        last, or "value" for most valuable first.
         """
+        sortkeys = {
+            "new": "ok_killid DESC",
+            "old": "ok_killid ASC",
+            "value": "kill_value DESC, ok_killid DESC"
+        }
+        if sort in sortkeys:
+            sortkey = sortkeys[sort]
+        else:
+            raise ValueError(sort)
         if not isinstance(limit, int):
             raise ValueError(limit)
         if not isinstance(offset, int):
@@ -160,8 +171,8 @@ class CampaignDB:
             FROM oper_kill
             JOIN kill ON ok_killid = kill_id
             WHERE ok_campaign = ? AND ok_operation = ?
-            ORDER BY ok_killid DESC LIMIT {} OFFSET {}"""
-        qform = query.format(limit, offset)
+            ORDER BY {} LIMIT {} OFFSET {}"""
+        qform = query.format(sortkey, limit, offset)
         res = self._conn.execute(qform, (campaign, operation)).fetchall()
 
         return [{
@@ -205,21 +216,34 @@ class CampaignDB:
                 for char_id, types in chars.items()
                 for type_id, (count, value) in types.items()])
 
-    def get_associated_items(self, campaign, operation, limit=5, offset=0):
+    def get_associated_items(self, campaign, operation, sort="value", limit=-1,
+                             offset=0):
         """Return a list of items associated with a campaign/operation.
 
-        Items are returned as 2-tuples of (item_type, item_count), most
-        valuable first, up to a limit. Use -1 for no limit.
+        Items are returned as 2-tuples of (item_type, item_count), up to a
+        limit. Use -1 for no limit. The sort should be "value" for most
+        valuable first (individual item value * quantity), "quantity" for
+        greatest quantity first, "price" for most valuable items first.
         """
+        sortkeys = {
+            "value": "total_value DESC",
+            "quantity": "total_count DESC",
+            "price": "(total_value / total_count) DESC"
+        }
+        if sort in sortkeys:
+            sortkey = sortkeys[sort]
+        else:
+            raise ValueError(sort)
         if not isinstance(limit, int):
             raise ValueError(limit)
         if not isinstance(offset, int):
             raise ValueError(offset)
 
-        query = """SELECT oi_type, SUM(oi_count), TOTAL(oi_value) as total_val
+        query = """SELECT oi_type, SUM(oi_count) AS total_count,
+                TOTAL(oi_value) as total_value
             FROM oper_item
             WHERE oi_campaign = ? AND oi_operation = ?
-            GROUP BY oi_type ORDER BY total_val DESC LIMIT {} OFFSET {}"""
-        qform = query.format(limit, offset)
+            GROUP BY oi_type ORDER BY {} LIMIT {} OFFSET {}"""
+        qform = query.format(sortkey, limit, offset)
         res = self._conn.execute(qform, (campaign, operation)).fetchall()
         return [(type_id, count or 0, value) for type_id, count, value in res]
