@@ -187,7 +187,7 @@ class CampaignDB:
 
         The data should be a multi-layered dictionary. It maps operation names
         to a dict that maps character IDs to a dict that maps type IDs to
-        integer counts.
+        tuples of integer counts and float values.
         """
         with self._conn as conn:
             cur = conn.execute("BEGIN TRANSACTION")
@@ -195,29 +195,31 @@ class CampaignDB:
             cur.execute(query, (campaign,))
 
             query = """INSERT INTO oper_item (
-                    oi_campaign, oi_operation, oi_character, oi_type, oi_count)
-                VALUES (?, ?, ?, ?, ?)"""
+                    oi_campaign, oi_operation, oi_character, oi_type, oi_count,
+                    oi_value)
+                VALUES (?, ?, ?, ?, ?, ?)"""
             cur.executemany(query, [
-                (campaign, operation, int(char_id), int(type_id), int(count))
+                (campaign, operation, int(char_id), int(type_id), int(count),
+                 float(value))
                 for operation, chars in data.items()
                 for char_id, types in chars.items()
-                for type_id, count in types.items()])
+                for type_id, (count, value) in types.items()])
 
     def get_associated_items(self, campaign, operation, limit=5, offset=0):
         """Return a list of items associated with a campaign/operation.
 
-        Items are returned as 2-tuples of (item_type, item_count), most recent
-        first, up to a limit. Use -1 for no limit.
+        Items are returned as 2-tuples of (item_type, item_count), most
+        valuable first, up to a limit. Use -1 for no limit.
         """
         if not isinstance(limit, int):
             raise ValueError(limit)
         if not isinstance(offset, int):
             raise ValueError(offset)
 
-        query = """SELECT oi_type, SUM(oi_count) as total_count
+        query = """SELECT oi_type, SUM(oi_count), TOTAL(oi_value) as total_val
             FROM oper_item
             WHERE oi_campaign = ? AND oi_operation = ?
-            GROUP BY oi_type ORDER BY total_count DESC LIMIT {} OFFSET {}"""
+            GROUP BY oi_type ORDER BY total_val DESC LIMIT {} OFFSET {}"""
         qform = query.format(limit, offset)
         res = self._conn.execute(qform, (campaign, operation)).fetchall()
-        return [(type_id, count or 0) for type_id, count in res]
+        return [(type_id, count or 0, value) for type_id, count, value in res]

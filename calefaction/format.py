@@ -2,8 +2,16 @@ from datetime import datetime, timedelta
 
 import humanize
 
-__all__ = ["format_isk", "format_isk_compact", "format_utctime",
-           "format_utctime_compact", "format_security", "get_security_class"]
+__all__ = [
+    "format_quantity", "format_isk", "format_isk_compact", "format_utctime",
+    "format_utctime_compact", "format_security", "get_security_class"
+]
+
+def format_quantity(value):
+    """Nicely format an integer quantity."""
+    if value < 10**6:
+        return "{:,}".format(value)
+    return humanize.intword(value, "%.2f")
 
 def format_isk(value):
     """Nicely format an ISK value."""

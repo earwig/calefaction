@@ -519,13 +519,16 @@ h2 .disabled-info {
     border-bottom: none;
 }
 
-.operation .itemboard .num {
+.operation .itemboard td:last-child {
     padding-left: 0.5em;
     text-align: right;
+}
+
+.operation .itemboard .count {
     font-weight: bold;
 }
 
-.operation .itemboard .num::before {
+.operation .itemboard .count::before {
     content: "×";
     font-weight: normal;
     color: #AAA;

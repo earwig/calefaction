@@ -81,23 +81,22 @@ def _update_killboard_operations(cname, opnames, min_kill_id):
             secondary = None
         _save_operation(cname, opname, primary, secondary, key=max_kill_id)
 
+def _get_prices():
+    """Return a dict mapping type IDs to ISK prices."""
+    pricelist = g.eve.esi().v1.markets.prices.get()
+    return {entry["type_id"]: entry["average_price"]
+            for entry in pricelist if "average_price" in entry}
+
 def _save_collection_overview(cname, opnames, data):
     """Save collection overview data to the database."""
     operations = config["campaigns"][cname]["operations"]
-    if any(operations[opname].get("isk", True) for opname in opnames):
-        pricelist = g.eve.esi().v1.markets.prices.get()
-        prices = {entry["type_id"]: entry["average_price"]
-                  for entry in pricelist if "average_price" in entry}
-    else:
-        prices = {}
-
     for opname in opnames:
-        primary = sum(sum(d.values()) for d in data[opname].values())
+        primary = sum(count for d in data[opname].values()
+                      for (count, _) in d.values())
         show_isk = operations[opname].get("isk", True)
         if show_isk:
-            secondary = sum(prices.get(typeid, 0.0) * count
-                            for d in data[opname].values()
-                            for typeid, count in d.items())
+            secondary = sum(value for d in data[opname].values()
+                            for (_, value) in d.values())
         else:
             secondary = None
         _save_operation(cname, opname, primary, secondary)
@@ -110,6 +109,7 @@ def _update_collection_operations(cname, opnames):
         qualif = operations[opname]["qualifiers"]
         filters.append((_build_filter(qualif, "asset"), opname))
 
+    prices = _get_prices()
     data = {opname: {} for opname in opnames}
 
     for char_id, token in g.auth.get_valid_characters():
@@ -131,11 +131,13 @@ def _update_collection_operations(cname, opnames):
                 if filt(asset):
                     typeid = asset["type_id"]
                     count = 1 if asset["is_singleton"] else asset["quantity"]
+                    value = prices.get(typeid, 0.0)
                     char = data[opname][char_id]
                     if typeid in char:
-                        char[typeid] += count
+                        char[typeid][0] += count
+                        char[typeid][1] += count * value
                     else:
-                        char[typeid] = count
+                        char[typeid] = [count, count * value]
 
     g.campaign_db.update_items(cname, data)
     _save_collection_overview(cname, opnames, data)

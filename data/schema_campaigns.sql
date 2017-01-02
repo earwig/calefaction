@@ -60,6 +60,7 @@ CREATE TABLE oper_item (
     oi_character INTEGER,
     oi_type INTEGER,
     oi_count INTEGER,
+    oi_value REAL,
     UNIQUE (oi_campaign, oi_operation, oi_character, oi_type)
 );
 

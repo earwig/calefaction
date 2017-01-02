@@ -47,6 +47,7 @@ campaigns:
         isk:   false
         # Report as "10 units" / "1 unit" of Tritanium
         unit:  unit|units
+        # Python function to filter items:
         qualifiers: |-
           type = g.eve.universe.type(asset["type_id"])
           return type.name == "Tritanium"

@@ -1,7 +1,7 @@
 <%!
     from calefaction.format import (
-        format_isk_compact, format_utctime_compact, format_security,
-        get_security_class)
+        format_quantity, format_isk_compact, format_utctime_compact,
+        format_security, get_security_class)
 %>
 <%def name="_killboard_kill(kill)">
     <%
@@ -56,13 +56,20 @@
 </%def>
 <%def name="_itemboard_item(item)">
     <%
-        type_id, count = item
+        type_id, count, value = item
         type = g.eve.universe.type(type_id)
     %>
     <tr>
-        <td class="icon"><img title="${type.name | h}" alt="" src="${g.eve.image.inventory(type_id, 64)}"/></td>
-        <td><a href="https://eve-central.com/home/quicklook.html?typeid=${type_id | u}">${type.name | h}</a></td>
-        <td class="num">${count | h}</td>
+        <td class="icon">
+            <img title="${type.name | h}" alt="" src="${g.eve.image.inventory(type_id, 64)}"/>
+        </td>
+        <td>
+            <a href="https://eve-central.com/home/quicklook.html?typeid=${type_id | u}">${type.name | h}</a>
+        </td>
+        <td>
+            <span class="count">${format_quantity(count) | h}</span><br/>
+            <abbr class="price" title="${"{:,.2f}".format(value)} ISK">${format_isk_compact(value) | h}</abbr>
+        </td>
     </tr>
 </%def>
 <%def name="_killboard_recent(summary)">
