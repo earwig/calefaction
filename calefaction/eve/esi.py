@@ -197,7 +197,7 @@ class EVESwaggerInterface:
             result = resp.json() if resp.content else None
         except (requests.RequestException, ValueError) as exc:
             self._logger.exception("ESI request failed")
-            if hasattr(exc, "response") and (exc.response and
+            if hasattr(exc, "response") and (exc.response is not None and
                                              exc.response.status_code == 403):
                 raise EVEAPIForbiddenError()
             raise EVEAPIError()
