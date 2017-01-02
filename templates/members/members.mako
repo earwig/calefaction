@@ -1,6 +1,9 @@
 <%inherit file="../_default.mako"/>
 <%block name="title">
-    ${self.maketitle("Members")}
+    ${self.support.maketitle("Members")}
+</%block>
+<%block name="extracss">
+    ${self.support.makecss("members.css")}
 </%block>
 <h2>Members</h2>
 % if members:

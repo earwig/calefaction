@@ -1,0 +1,34 @@
+#members-list {
+    list-style: none;
+    margin: 1em 0 0.5em 0;
+    padding: 0;
+    column-count: 2;
+}
+
+#members-list li {
+    margin-bottom: 0.5em;
+}
+
+#members-list a:hover {
+    text-decoration: none;
+}
+
+#members-list img {
+    width: 48px;
+    height: 48px;
+    vertical-align: middle;
+    border-width: 1px;
+}
+
+#members-list span {
+    margin-left: 0.5em;
+    vertical-align: middle;
+}
+
+#members-list em {
+    font-size: 90%;
+}
+
+#members-list em::before {
+    content: ", ";
+}

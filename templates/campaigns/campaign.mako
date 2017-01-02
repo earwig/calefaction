@@ -4,7 +4,13 @@
 <%inherit file="../_default.mako"/>
 <%namespace file="renderers.mako" import="render_summary"/>
 <%block name="title">
-    ${self.maketitle(campaign["title"], "Campaigns")}
+    ${self.support.maketitle(campaign["title"], "Campaigns")}
+</%block>
+<%block name="extracss">
+    ${self.support.makecss("campaigns.css")}
+</%block>
+<%block name="extrajs">
+    ${self.support.makejs("campaigns.js")}
 </%block>
 <h2>
     <span class="understate">Campaign:</span>

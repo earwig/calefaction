@@ -1,32 +1,27 @@
+<%namespace name="support" file="_base_support.mako" inheritable="True"/>\
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
         <title>
-            <%def name="maketitle(*parts)">
-                <%
-                    if request.url_rule and request.url_rule.endpoint == "index":
-                        parts = ()
-                %>
-                ${" | ".join(parts + (g.config.get("corp.name"),)) | h}
-            </%def>
             <%block name="title">
-                ${maketitle()}
+                ${support.maketitle()}
             </%block>
         </title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="canonical" href="${g.config.scheme}://${g.config.get('site.canonical')}${request.script_root}${request.path}">
-        <link rel="stylesheet" type="text/css" href="${url_for('staticv', filename='main.css')}"/>
+        ${support.makecss("main.css")}
         <% style = g.auth.get_character_prop("style") or g.config.get("style.default") %>
         % if style:
-            <% stylesheet = "styles/{}.css".format(style) %>
-            <link id="user-style" rel="stylesheet" type="text/css" href="${url_for('staticv', filename=stylesheet)}"/>
+            ${support.makecss("styles/{}.css".format(style), "user-style")}
         % endif
+        <%block name="extracss"></%block>
         % for size in g.eve.image.corp_widths:
             <link rel="icon" type="image/png" sizes="${size}x${size}" href="${g.eve.image.corp(g.config.get('corp.id'), size)}"/>
         % endfor
         <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-        <script src="${url_for('staticv', filename='main.js')}"></script>
+        ${support.makejs("main.js")}
+        <%block name="extrajs"></%block>
     </head>
     <body>
         <%block name="header">

@@ -3,8 +3,6 @@ var overlaps = function(needle, haystack) {
 };
 
 $(function() {
-    /* ============================= Universal ============================= */
-
     // Install logout auto-POST form:
     $("#logout").click(function() {
         $("<form>", {
@@ -55,32 +53,5 @@ $(function() {
         $("#style-options .cur").removeClass("cur").find(":submit")
             .prop("disabled", false);
         $(this).addClass("cur").find(":submit").prop("disabled", true);
-    });
-
-    /* ============================== Modules ============================== */
-
-    // Campaigns: enable form auto-submit on campaign change:
-    $("#campaigns-select select").change(function() {
-        this.form.submit();
-    });
-    $('#campaigns-select input[type="submit"]').hide();
-
-    //Campaigns: selectively reveal operation summary details:
-    $(".operation .killboard tr").mouseenter(function() {
-        var div = $("<table>", {addClass: "board expanded"})
-            .css($(this).position())
-            .css("background-color", $(this).css("background-color"))
-            .css("position", "fixed")
-            .append($("<tr>").html($(this).html()))
-            .mouseleave(function() { $(this).remove(); });
-        div.find(".spacer").remove();
-        $(this).closest(".summary").find(".expanded").remove();
-        $(this).closest(".contents").prepend(div);
-        div.css("width", Math.max(div.width(), $(this).width()));
-        div.css("position", "");
-        div.css("clip-path", "inset(0 0% 0 0)");
-    });
-    $(".operation .summary").mouseleave(function() {
-        $(this).find(".expanded").remove();
     });
 });
