@@ -11,8 +11,8 @@ __all__ = ["Database"]
 
 class Database:
     """Database manager for low-level authentication actions."""
-    MAX_SESSION_STALENESS = 2 * 60 * 60  # 2 hours
-    MAX_SESSION_AGE = 24 * 60 * 60  # 24 hours
+    MAX_SESSION_STALENESS = 7 * 24 * 60 * 60  # 7 days
+    MAX_SESSION_AGE = 30 * 24 * 60 * 60  # 30 days
     SESSION_GRACE = 60 * 60  # 1 hour
     path = None
 
