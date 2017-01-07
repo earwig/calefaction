@@ -45,6 +45,11 @@ class _SolarSystem(_UniqueObject):
         return self._data["security"]
 
     @property
+    def coords(self):
+        """The solar system's coordinates, as a 3-tuple of floats (x, y, z)."""
+        return tuple(self._data["coords"])
+
+    @property
     def faction(self):
         """The solar system's faction, as a _Faction object, or None."""
         if "faction" in self._data:
@@ -65,6 +70,11 @@ class _SolarSystem(_UniqueObject):
     def is_highsec(self):
         """Whether the solar system is in nullsec."""
         return self.security >= 0.45
+
+    @property
+    def is_whspace(self):
+        """Whether the solar system is in wormhole space."""
+        return self.region.is_whspace
 
 
 class _Constellation(_UniqueObject):
@@ -87,6 +97,11 @@ class _Constellation(_UniqueObject):
             return self._universe.faction(self._data["faction"])
         return self.region.faction
 
+    @property
+    def is_whspace(self):
+        """Whether the constellation is in wormhole space."""
+        return self.region.is_whspace
+
 
 class _Region(_UniqueObject):
     """Represents a region."""
@@ -102,6 +117,11 @@ class _Region(_UniqueObject):
         if "faction" in self._data:
             return self._universe.faction(self._data["faction"])
         return None
+
+    @property
+    def is_whspace(self):
+        """Whether the region is in wormhole space."""
+        return self._id >= 11000000
 
 
 class _Faction(_UniqueObject):
@@ -173,7 +193,8 @@ class _DummySolarSystem(_SolarSystem):
             "name": "Unknown",
             "constellation": -1,
             "region": -1,
-            "security": 0.0
+            "security": 0.0,
+            "coords": (0, 0, 0)
         })
 
 
@@ -287,6 +308,12 @@ class Universe:
         if sid not in self._systems:
             return _DummySolarSystem(self)
         return _SolarSystem(self, sid, self._systems[sid])
+
+    def systems(self):
+        """Return an iterator over all _SolarSystems."""
+        self._load()
+        for sid in self._systems:
+            yield self.system(sid)
 
     def constellation(self, cid):
         """Return a _Constellation with the given ID.

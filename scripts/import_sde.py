@@ -150,7 +150,9 @@ def _build_galaxy_skeleton(ids, names):
         assert isinstance(sid, int)
         d[sid] = {
             "name": names[sid],
-            "constellation": -1, "region": -1, "security": 0.0
+            "constellation": -1,
+            "region": -1,
+            "security": 0.0
         }
 
     print("done.")
@@ -160,15 +162,18 @@ def _load_assoc_for_system(galaxy, system, rid, cid):
     data = _load_yaml(system / "solarsystem.staticdata")
     sid = data["solarSystemID"]
     sec = data["security"]
+    coords = data["center"]
 
     assert isinstance(sid, int)
     assert isinstance(sec, float)
     assert sid >= 0
     assert sec >= -1.0 and sec <= 1.0
+    assert len(coords) == 3 and all(isinstance(val, float) for val in coords)
 
     galaxy["systems"][sid]["constellation"] = cid
     galaxy["systems"][sid]["region"] = rid
     galaxy["systems"][sid]["security"] = sec
+    galaxy["systems"][sid]["coords"] = coords
 
     if "factionID" in data:
         facid = data["factionID"]
