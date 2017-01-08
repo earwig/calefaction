@@ -52,11 +52,7 @@ abbr[title], acronym[title] {
 }
 
 main, header, footer {
-    background-color: rgba(0, 0, 0, 0.8);
-}
-
-main {
-    border-width: 1px;
+    background-color: rgba(0, 0, 0, 0.85);
 }
 
 header {
@@ -84,6 +80,7 @@ header > div, footer > div {
     main {
         margin: 2em auto;
         padding: 0.5em 1.5em;
+        border-width: 1px;
     }
 
     header > div {
@@ -117,6 +114,7 @@ header > div, footer > div {
     main {
         margin: 1.5em auto;
         padding: 0 1em;
+        border-width: 1px 0;
     }
 
     footer > div {

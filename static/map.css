@@ -1,3 +1,22 @@
+.map-1 {
+    display: flex;
+}
+
+.map-2 {
+    flex: 1;
+}
+
+.map-3 {
+    height: 100%;
+}
+
+@media (min-width: 800px) {
+    .map-2 {
+        max-width: none;
+        margin: 2em;
+    }
+}
+
 #map .system {
     fill: currentColor;
 }
