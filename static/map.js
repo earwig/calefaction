@@ -19,7 +19,7 @@ var get_bounds = function(galaxy) {
 }
 
 $(function() {
-    $("#map").append($("<p>").text("Loading map data..."));
+    $("#map .preload").append($("<p>").text("Loading map data..."));
     $.getJSON( "map/data.json", data => {
         var galaxy = data["galaxy"];
         var systems = Object.values(galaxy);
@@ -31,16 +31,19 @@ $(function() {
 
         var [xmin, ymin, xspan, yspan] = get_bounds(galaxy);
         var scale = 1000;
+        var radius = scale / 2;
 
         var projx = x =>  ((x - xmin) / xspan - 0.5) * (scale * 0.99);
         var projy = y => -((y - ymin) / yspan - 0.5) * (scale * 0.99);
 
         $("#container > div").addClass("map-1");
         $("main").addClass("map-2");
-        $("#map").empty().addClass("map-3");
+        $("#map").addClass("map-3");
+        $("#map .preload").remove();
+        $("#map .controls").show();
 
         var svg = d3.select("#map").append("svg")
-            .attr("viewBox", (-0.5 * scale) + " " + (-0.5 * scale) +
+            .attr("viewBox", (-radius) + " " + (-radius) +
                   " " + scale + " " + scale);
         var stars = svg.append("g");
 
@@ -71,20 +74,30 @@ $(function() {
 
         var lastk = 1;
         var zoom = d3.zoom()
-            .scaleExtent([1, 50])
+            .extent([[-radius, -radius], [radius, radius]])
+            .scaleExtent([1, 63])
             .on("zoom", () => {
                 var trans = d3.event.transform;
-                var clamp = (scale / 2) * (trans.k - 1);
+                var clamp = radius * (trans.k - 1);
                 trans.x = Math.max(Math.min(trans.x, clamp), -clamp);
                 trans.y = Math.max(Math.min(trans.y, clamp), -clamp);
                 stars.attr("transform", trans);
+
                 if (trans.k != lastk) {
-                    stars.selectAll("circle").attr("r", 6 / (trans.k + 2));
-                    stars.selectAll("line").style("stroke-width", 2 / (trans.k + 1));
+                    stars.selectAll("circle")
+                        .attr("r", 6 / (trans.k + 2));
+                    stars.selectAll("line")
+                        .style("stroke-width", 2 / (trans.k + 1));
+                    $("#map-scale").val(Math.log2(trans.k + 1));
                     lastk = trans.k;
                 }
-            })
+            });
         svg.call(zoom);
+
+        $("#map-scale").on("input", e => {
+            var k = Math.pow(2, e.target.value) - 1;
+            zoom.scaleTo(svg, k);
+        })
 
         $(window).resize(() => {
             svg.style("display", "none")

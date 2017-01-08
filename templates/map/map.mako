@@ -10,8 +10,13 @@
     ${self.support.makejs("map.js")}
 </%block>
 <div id="map">
-    <h2>Map</h2>
-    <noscript>
-        <p>JavaScript is required to display the galaxy map.</p>
-    </noscript>
+    <div class="preload">
+        <h2>Map</h2>
+        <noscript>
+            <p>JavaScript is required to display the galaxy map.</p>
+        </noscript>
+    </div>
+    <div class="controls">
+        <input id="map-scale" type="range" min="1" max="6" step="0.1" value="1">
+    </div>
 </div>
