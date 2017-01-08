@@ -7,6 +7,18 @@ import yaml
 
 __all__ = ["Universe"]
 
+def _cache(func):
+    """Wrap a no-argument method to cache its return value in the object."""
+    def inner(self):
+        key = func.__name__
+        if key in self._cache:
+            return self._cache[key]
+        value = func(self)
+        self._cache[key] = value
+        return value
+    return inner
+
+
 class _UniqueObject:
     """Base class for uniquely ID'd objects in the universe."""
 
@@ -14,6 +26,7 @@ class _UniqueObject:
         self._universe = universe
         self._id = id_
         self._data = data
+        self._cache = {}
 
     @property
     def id(self):
@@ -30,11 +43,13 @@ class _SolarSystem(_UniqueObject):
         return self._data["name"]
 
     @property
+    @_cache
     def constellation(self):
         """The solar system's constellation, as a _Constellation object."""
         return self._universe.constellation(self._data["constellation"])
 
     @property
+    @_cache
     def region(self):
         """The solar system's region, as a _Region object."""
         return self._universe.region(self._data["region"])
@@ -50,6 +65,16 @@ class _SolarSystem(_UniqueObject):
         return tuple(self._data["coords"])
 
     @property
+    @_cache
+    def gates(self):
+        """The solar system's adjacent systems, via stargate.
+
+        A list of _SolarSystem objects.
+        """
+        return [self._universe.system(sid) for sid in self._data["gates"]]
+
+    @property
+    @_cache
     def faction(self):
         """The solar system's faction, as a _Faction object, or None."""
         if "faction" in self._data:
@@ -86,11 +111,13 @@ class _Constellation(_UniqueObject):
         return self._data["name"]
 
     @property
+    @_cache
     def region(self):
         """The constellation's region, as a _Region object."""
         return self._universe.region(self._data["region"])
 
     @property
+    @_cache
     def faction(self):
         """The constellation's faction, as a _Faction object, or None."""
         if "faction" in self._data:
@@ -112,6 +139,7 @@ class _Region(_UniqueObject):
         return self._data["name"]
 
     @property
+    @_cache
     def faction(self):
         """The region's faction, as a _Faction object, or None."""
         if "faction" in self._data:
@@ -131,6 +159,16 @@ class _Faction(_UniqueObject):
     def name(self):
         """The faction's name, as a string."""
         return self._data["name"]
+
+    @property
+    @_cache
+    def territory(self):
+        """The faction's controlled territory.
+
+        A list of _SolarSystems.
+        """
+        return [system for system in self._universe.systems()
+                if system.faction and system.faction.id == self.id]
 
 
 class _Type(_UniqueObject):
@@ -194,7 +232,8 @@ class _DummySolarSystem(_SolarSystem):
             "constellation": -1,
             "region": -1,
             "security": 0.0,
-            "coords": (0, 0, 0)
+            "coords": (0.0, 0.0, 0.0),
+            "gates": []
         })
 
 
@@ -325,6 +364,12 @@ class Universe:
             return _DummyConstellation(self)
         return _Constellation(self, cid, self._constellations[cid])
 
+    def constellations(self):
+        """Return an iterator over all _Constellations."""
+        self._load()
+        for cid in self._constellations:
+            yield self.constellation(cid)
+
     def region(self, rid):
         """Return a _Region with the given ID.
 
@@ -335,6 +380,12 @@ class Universe:
             return _DummyRegion(self)
         return _Region(self, rid, self._regions[rid])
 
+    def regions(self):
+        """Return an iterator over all _Regions."""
+        self._load()
+        for rid in self._regions:
+            yield self.region(rid)
+
     def faction(self, fid):
         """Return a _Faction with the given ID.
 
@@ -344,6 +395,12 @@ class Universe:
         if fid not in self._factions:
             return _DummyFaction(self)
         return _Faction(self, fid, self._factions[fid])
+
+    def factions(self):
+        """Return an iterator over all _Factions."""
+        self._load()
+        for fid in self._factions:
+            yield self.faction(fid)
 
     def type(self, tid):
         """Return a _Type with the given ID.

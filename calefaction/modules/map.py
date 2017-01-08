@@ -25,10 +25,18 @@ def mapdata():
         "galaxy": {
             system.id: {
                 "name": system.name,
+                "security": system.security,
                 "coords": system.coords,
-                "security": system.security
+                "gates": [dest.id for dest in system.gates],
+                "faction": system.faction.id if system.faction else -1
             }
             for system in g.eve.universe.systems() if not system.is_whspace
+        },
+        "factions": {
+            faction.id: {
+                "name": faction.name
+            }
+            for faction in g.eve.universe.factions() if faction.territory
         }
     }
     resp = app.response_class(response=json.dumps(payload), status=200,

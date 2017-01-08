@@ -152,7 +152,9 @@ def _build_galaxy_skeleton(ids, names):
             "name": names[sid],
             "constellation": -1,
             "region": -1,
-            "security": 0.0
+            "security": 0.0,
+            "coords": [0.0, 0.0, 0.0],
+            "gates": []
         }
 
     print("done.")
@@ -180,6 +182,16 @@ def _load_assoc_for_system(galaxy, system, rid, cid):
         assert isinstance(facid, int)
         assert facid >= 0
         galaxy["systems"][sid]["faction"] = facid
+
+    galaxy["systems->stargates"][sid] = []
+    for sgid, gate in data["stargates"].items():
+        dest = gate["destination"]
+        assert isinstance(sgid, int)
+        assert isinstance(dest, int)
+        assert sgid >= 0
+        assert dest >= 0
+        galaxy["systems->stargates"][sid].append(dest)
+        galaxy["stargates->systems"][sgid] = sid
 
 def _load_assoc_for_constellation(galaxy, constellation, rid):
     data = _load_yaml(constellation / "constellation.staticdata")
@@ -221,8 +233,18 @@ def _load_assoc_for_region(galaxy, region):
 
         _load_assoc_for_constellation(galaxy, constellation, rid)
 
+def _load_gate_info(galaxy):
+    sys2gate = galaxy["systems->stargates"]
+    gate2sys = galaxy["stargates->systems"]
+
+    for sid, gates in sys2gate.items():
+        galaxy["systems"][sid]["gates"] = [gate2sys[gate] for gate in gates]
+
 def _load_galaxy_associations(sde_dir, galaxy):
     print("Loading galaxy staticdata... ", end="", flush=True)
+
+    galaxy["systems->stargates"] = {}
+    galaxy["stargates->systems"] = {}
 
     univdir = sde_dir / "fsd" / "universe"
     for base in univdir.iterdir():
@@ -235,7 +257,9 @@ def _load_galaxy_associations(sde_dir, galaxy):
 
             _load_assoc_for_region(galaxy, region)
 
-    print("done.")
+    _load_gate_info(galaxy)
+    del galaxy["systems->stargates"]
+    del galaxy["stargates->systems"]
 
     for cid, constellation in galaxy["constellations"].items():
         if constellation["region"] < 0:
@@ -245,6 +269,8 @@ def _load_galaxy_associations(sde_dir, galaxy):
     for sid, system in galaxy["systems"].items():
         if system["region"] < 0 or system["constellation"] < 0:
             print("[WARNING] Orphaned system: %d=%s" % (sid, system["name"]))
+
+    print("done.")
 
 def _load_factions(sde_dir):
     print("Loading factions... ", end="", flush=True)
