@@ -4,6 +4,7 @@
 
 .map-2 {
     flex: 1;
+    padding: 0;
 }
 
 .map-3 {
@@ -17,6 +18,14 @@
     }
 }
 
+#map svg {
+    display: block;
+}
+
 #map .system {
     fill: currentColor;
+}
+
+#map .jump {
+    stroke: #585448;
 }

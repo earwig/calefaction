@@ -1,9 +1,9 @@
-var get_bounds = function(data) {
+var get_bounds = function(galaxy) {
     var xmin = Infinity, xmax = -Infinity,
         ymin = Infinity, ymax = -Infinity;
 
-    for (var sid in data["galaxy"]) {
-        var system = data["galaxy"][sid];
+    for (var sid in galaxy) {
+        var system = galaxy[sid];
         var x = system["coords"][0];
         var y = system["coords"][2];
         if (x < xmin) xmin = x;
@@ -21,8 +21,19 @@ var get_bounds = function(data) {
 $(function() {
     $("#map").append($("<p>").text("Loading map data..."));
     $.getJSON( "map/data.json", data => {
-        var [xmin, ymin, xspan, yspan] = get_bounds(data);
+        var galaxy = data["galaxy"];
+        var systems = Object.values(galaxy);
+        var jumps = [].concat
+            .apply([], Object.keys(galaxy)
+                .map(src => galaxy[src]["gates"]
+                    .map(dst => [parseInt(src), dst])))
+            .filter(pair => pair[0] < pair[1]);
+
+        var [xmin, ymin, xspan, yspan] = get_bounds(galaxy);
         var scale = 1000;
+
+        var projx = x =>  ((x - xmin) / xspan - 0.5) * (scale * 0.99);
+        var projy = y => -((y - ymin) / yspan - 0.5) * (scale * 0.99);
 
         $("#container > div").addClass("map-1");
         $("main").addClass("map-2");
@@ -33,18 +44,23 @@ $(function() {
                   " " + scale + " " + scale);
         var stars = svg.append("g");
 
+        stars.selectAll("line")
+            .data(jumps)
+            .enter()
+            .append("line")
+            .attr("x1", d => projx(galaxy[d[0]]["coords"][0]))
+            .attr("y1", d => projy(galaxy[d[0]]["coords"][2]))
+            .attr("x2", d => projx(galaxy[d[1]]["coords"][0]))
+            .attr("y2", d => projy(galaxy[d[1]]["coords"][2]))
+            .attr("class", "jump")
+            .style("stroke-width", 1);
+
         stars.selectAll("circle")
-            .data(Object.values(data["galaxy"]))
+            .data(systems)
             .enter()
             .append("circle")
-            .attr("cx", d => {
-                var x = d["coords"][0];
-                return ((x - xmin) / xspan - 0.5) * scale;
-            })
-            .attr("cy", d => {
-                var y = d["coords"][2];
-                return ((y - ymin) / yspan - 0.5) * scale;
-            })
+            .attr("cx", d => projx(d["coords"][0]))
+            .attr("cy", d => projy(d["coords"][2]))
             .attr("r", 2)
             .attr("class", d => {
                 var sec = d["security"];
@@ -64,6 +80,7 @@ $(function() {
                 stars.attr("transform", trans);
                 if (trans.k != lastk) {
                     stars.selectAll("circle").attr("r", 6 / (trans.k + 2));
+                    stars.selectAll("line").style("stroke-width", 2 / (trans.k + 1));
                     lastk = trans.k;
                 }
             })
@@ -72,7 +89,7 @@ $(function() {
         $(window).resize(() => {
             svg.style("display", "none")
                 .attr("width", $("#map").width())
-                .attr("height", $("#map").height() - 5)
+                .attr("height", $("#map").height())
                 .style("display", "");
         });
         $(window).resize();
