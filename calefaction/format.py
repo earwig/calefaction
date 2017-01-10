@@ -79,6 +79,6 @@ def format_security(value):
 
 def get_security_class(value):
     """Given a system security status, return the corresponding CSS class."""
-    if value < 0.05:
+    if value <= 0.0:
         return "sec-null"
-    return "sec-" + str(round(value, 1)).replace(".", "_")
+    return "sec-" + str(round(max(value, 0.1), 1)).replace(".", "_")

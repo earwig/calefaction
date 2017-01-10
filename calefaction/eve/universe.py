@@ -84,12 +84,12 @@ class _SolarSystem(_UniqueObject):
     @property
     def is_nullsec(self):
         """Whether the solar system is in nullsec."""
-        return self.security < 0.05
+        return self.security <= 0.0
 
     @property
     def is_lowsec(self):
         """Whether the solar system is in nullsec."""
-        return self.security >= 0.05 and self.security < 0.45
+        return self.security > 0.0 and self.security < 0.45
 
     @property
     def is_highsec(self):

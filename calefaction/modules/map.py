@@ -22,15 +22,23 @@ def map():
 def mapdata():
     """Render and return the map data as a JSON object."""
     payload = {
-        "galaxy": {
+        "systems": {
             system.id: {
                 "name": system.name,
+                "region": system.region.id,
                 "security": system.security,
                 "coords": system.coords,
                 "gates": [dest.id for dest in system.gates],
                 "faction": system.faction.id if system.faction else -1
             }
             for system in g.eve.universe.systems() if not system.is_whspace
+        },
+        "regions": {
+            region.id: {
+                "name": region.name,
+                "faction": region.faction.id if region.faction else -1
+            }
+            for region in g.eve.universe.regions() if not region.is_whspace
         },
         "factions": {
             faction.id: {

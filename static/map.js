@@ -21,7 +21,7 @@ var get_bounds = function(galaxy) {
 $(function() {
     $("#map .preload").append($("<p>").text("Loading map data..."));
     $.getJSON( "map/data.json", data => {
-        var galaxy = data["galaxy"];
+        var galaxy = data["systems"];
         var systems = Object.values(galaxy);
         var jumps = [].concat
             .apply([], Object.keys(galaxy)
@@ -67,8 +67,8 @@ $(function() {
             .attr("r", 2)
             .attr("class", d => {
                 var sec = d["security"];
-                var klass = sec < 0.05 ? "null" :
-                    Number(sec).toFixed(1).replace(".", "_");
+                var klass = sec <= 0.0 ? "null" :
+                    Number(Math.max(sec, 0.1)).toFixed(1).replace(".", "_");
                 return "system sec-" + klass;
             });
 
@@ -82,13 +82,13 @@ $(function() {
                 trans.x = Math.max(Math.min(trans.x, clamp), -clamp);
                 trans.y = Math.max(Math.min(trans.y, clamp), -clamp);
                 stars.attr("transform", trans);
+                $("#map-scale").val(Math.log2(trans.k + 1));
 
-                if (trans.k != lastk) {
+                if (Math.abs((trans.k - lastk) / lastk) > 0.1) {
                     stars.selectAll("circle")
                         .attr("r", 6 / (trans.k + 2));
                     stars.selectAll("line")
                         .style("stroke-width", 2 / (trans.k + 1));
-                    $("#map-scale").val(Math.log2(trans.k + 1));
                     lastk = trans.k;
                 }
             });
