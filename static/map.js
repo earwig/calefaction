@@ -18,10 +18,25 @@ var get_bounds = function(galaxy) {
     return [xmin, ymin, xspan, yspan];
 }
 
+var get_sec_class = function(sec) {
+    return "sec-" + (
+        sec <= 0.0 ? "null" :
+        Number(Math.max(sec, 0.1)).toFixed(1).replace(".", "_"));
+}
+
+var get_faction_class = function(factions, faction) {
+    if (faction < 0)
+        return "neutral";
+    if (factions[faction] !== undefined)
+        return "faction faction-" + S(factions[faction]["name"]).slugify();
+}
+
 $(function() {
     $("#map .preload").append($("<p>").text("Loading map data..."));
     $.getJSON( "map/data.json", data => {
         var galaxy = data["systems"];
+        var factions = data["factions"];
+
         var systems = Object.values(galaxy);
         var jumps = [].concat
             .apply([], Object.keys(galaxy)
@@ -45,9 +60,9 @@ $(function() {
         var svg = d3.select("#map").append("svg")
             .attr("viewBox", (-radius) + " " + (-radius) +
                   " " + scale + " " + scale);
-        var stars = svg.append("g");
+        var field = svg.append("g");
 
-        stars.selectAll("line")
+        field.selectAll("line")
             .data(jumps)
             .enter()
             .append("line")
@@ -58,19 +73,16 @@ $(function() {
             .attr("class", "jump")
             .style("stroke-width", 1);
 
-        stars.selectAll("circle")
+        field.selectAll("circle")
             .data(systems)
             .enter()
             .append("circle")
             .attr("cx", d => projx(d["coords"][0]))
             .attr("cy", d => projy(d["coords"][2]))
-            .attr("r", 2)
-            .attr("class", d => {
-                var sec = d["security"];
-                var klass = sec <= 0.0 ? "null" :
-                    Number(Math.max(sec, 0.1)).toFixed(1).replace(".", "_");
-                return "system sec-" + klass;
-            });
+            .attr("r", 2);
+
+        var stars = field.selectAll("circle");
+        var jumps = field.selectAll("line");
 
         var lastk = 1;
         var zoom = d3.zoom()
@@ -81,14 +93,12 @@ $(function() {
                 var clamp = radius * (trans.k - 1);
                 trans.x = Math.max(Math.min(trans.x, clamp), -clamp);
                 trans.y = Math.max(Math.min(trans.y, clamp), -clamp);
-                stars.attr("transform", trans);
+                field.attr("transform", trans);
                 $("#map-scale").val(Math.log2(trans.k + 1));
 
                 if (Math.abs((trans.k - lastk) / lastk) > 0.1) {
-                    stars.selectAll("circle")
-                        .attr("r", 6 / (trans.k + 2));
-                    stars.selectAll("line")
-                        .style("stroke-width", 2 / (trans.k + 1));
+                    stars.attr("r", 6 / (trans.k + 2));
+                    jumps.style("stroke-width", 2 / (trans.k + 1));
                     lastk = trans.k;
                 }
             });
@@ -97,7 +107,20 @@ $(function() {
         $("#map-scale").on("input", e => {
             var k = Math.pow(2, e.target.value) - 1;
             zoom.scaleTo(svg, k);
-        })
+        });
+
+        $('#map .controls input[name="color"]').change(function() {
+            if (this.value == "sec") {
+                stars.attr("class", d =>
+                    "system " + get_sec_class(d["security"]));
+            }
+            else if (this.value == "faction") {
+                stars.attr("class", d =>
+                    "system " + get_faction_class(factions, d["faction"]));
+            }
+        });
+
+        $("#map-color-sec").prop("checked", true).change();
 
         $(window).resize(() => {
             svg.style("display", "none")

@@ -41,4 +41,37 @@
     right: 0;
     padding: 0.5em;
     background-color: rgba(0, 0, 0, 0.75);
+    text-align: right;
+}
+
+#map .controls .label {
+    font-size: 85%;
+}
+
+#map .system.neutral {
+    color: #777;
+}
+
+#map .system.faction {
+    color: #AAA;
+}
+
+#map .system.faction-amarr-empire {
+    color: #FFDE78;
+}
+
+#map .system.faction-caldari-state {
+    color: #99CCEE;
+}
+
+#map .system.faction-gallente-federation {
+    color: #66BB99;
+}
+
+#map .system.faction-minmatar-republic {
+    color: #D89988;
+}
+
+#map .system.faction-jove-empire {
+    color: #444;
 }
