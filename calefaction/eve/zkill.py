@@ -27,32 +27,32 @@ class ZKillboard:
         Requires ESI API calls to fill in entity names. If we can't do them,
         we'll just set the names to be empty.
         """
-        esi = g.eve.esi()
+        esi = g.eve.esi
         victim = kill["victim"]
 
         if "character_id" in victim:
-            char_info = esi.v4.characters(victim["character_id"]).get()
+            char_info = esi().v4.characters(victim["character_id"]).get()
             victim["character_name"] = char_info["name"]
         else:
             victim["character_id"] = 0
             victim["character_name"] = ""
 
         if "corporation_id" in victim:
-            corp_info = esi.v3.corporations(victim["corporation_id"]).get()
+            corp_info = esi().v3.corporations(victim["corporation_id"]).get()
             victim["corporation_name"] = corp_info["corporation_name"]
         else:
             victim["corporation_id"] = 0
             victim["corporation_name"] = ""
 
         if "alliance_id" in victim:
-            alliance_info = esi.v2.alliances(victim["alliance_id"]).get()
+            alliance_info = esi().v2.alliances(victim["alliance_id"]).get()
             victim["alliance_name"] = alliance_info["alliance_name"]
         else:
             victim["alliance_id"] = 0
             victim["alliance_name"] = ""
 
         if "faction_id" in victim:
-            factions = esi.v1.universe.factions.get()
+            factions = esi().v1.universe.factions.get()
             matches = [fac["faction_name"] for fac in factions
                        if fac["faction_id"] == victim["faction_id"]]
             victim["faction_name"] = matches[0] if matches else ""
