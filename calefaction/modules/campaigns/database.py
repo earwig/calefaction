@@ -94,10 +94,10 @@ class CampaignDB:
     def add_kill(self, kill):
         """Insert a killmail into the database."""
         try:
-            datetime.strptime(kill["killTime"], "%Y-%m-%d %H:%M:%S")
+            datetime.strptime(kill["killmail_time"], "%Y-%m-%d %H:%M:%S")
         except ValueError:
             raise RuntimeError("Invalid kill_date=%s for kill_id=%d" % (
-                kill["killTime"], kill["killID"]))
+                kill["killmail_time"], kill["killmail_id"]))
 
         query = """INSERT OR REPLACE INTO kill (
                 kill_id, kill_date, kill_system, kill_victim_shipid,
@@ -108,12 +108,13 @@ class CampaignDB:
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
         victim = kill["victim"]
         args = (
-            int(kill["killID"]), kill["killTime"], int(kill["solarSystemID"]),
-            int(victim["shipTypeID"]), int(victim["characterID"]),
-            victim["characterName"], int(victim["corporationID"]),
-            victim["corporationName"], int(victim["allianceID"]),
-            victim["allianceName"], int(victim["factionID"]),
-            victim["factionName"], float(kill["zkb"]["totalValue"]))
+            int(kill["killmail_id"]), kill["killmail_time"],
+            int(kill["solar_system_id"]), int(victim["ship_type_id"]),
+            int(victim["character_id"]), victim["character_name"],
+            int(victim["corporation_id"]), victim["corporation_name"],
+            int(victim["alliance_id"]), victim["alliance_name"],
+            int(victim["faction_id"]), victim["faction_name"],
+            float(kill["zkb"]["totalValue"]))
         with self._conn as conn:
             conn.execute(query, args)
 

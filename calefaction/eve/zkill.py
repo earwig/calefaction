@@ -2,6 +2,7 @@
 
 import time
 
+from flask import g
 import requests
 
 from ..exceptions import ZKillboardError
@@ -19,6 +20,45 @@ class ZKillboard:
 
         self._base_url = "https://zkillboard.com/api"
         self._last_query = 0
+
+    def _extend_killmail(self, kill):
+        """Extend a killmail object to match the old ZKill format.
+
+        Requires ESI API calls to fill in entity names. If we can't do them,
+        we'll just set the names to be empty.
+        """
+        esi = g.eve.esi()
+        victim = kill["victim"]
+
+        if "character_id" in victim:
+            char_info = esi.v4.characters(victim["character_id"]).get()
+            victim["character_name"] = char_info["name"]
+        else:
+            victim["character_id"] = 0
+            victim["character_name"] = ""
+
+        if "corporation_id" in victim:
+            corp_info = esi.v3.corporations(victim["corporation_id"]).get()
+            victim["corporation_name"] = corp_info["corporation_name"]
+        else:
+            victim["corporation_id"] = 0
+            victim["corporation_name"] = ""
+
+        if "alliance_id" in victim:
+            alliance_info = esi.v2.alliances(victim["alliance_id"]).get()
+            victim["alliance_name"] = alliance_info["alliance_name"]
+        else:
+            victim["alliance_id"] = 0
+            victim["alliance_name"] = ""
+
+        if "faction_id" in victim:
+            factions = esi.v1.universe.factions.get()
+            matches = [fac["faction_name"] for fac in factions
+                       if fac["faction_id"] == victim["faction_id"]]
+            victim["faction_name"] = matches[0] if matches else ""
+        else:
+            victim["faction_id"] = 0
+            victim["faction_name"] = ""
 
     def query(self, *args):
         """Make an API query using the given arguments."""
@@ -47,10 +87,15 @@ class ZKillboard:
         self._last_query = time.time()
         return result
 
-    def iter_killmails(self, *args):
+    def iter_killmails(self, *args, extended=False):
         """Return an iterator over killmails using the given API arguments.
 
         Automagically follows pagination as far as possible. (Be careful.)
+
+        If extended is True, we will provide extra information for each kill
+        (names of entities instead of just IDs), which requires ESI API calls.
+        This matches the original API format of ZKill before it was, er,
+        "simplified".
         """
         page = 1
         while True:
@@ -60,7 +105,11 @@ class ZKillboard:
                 result = self.query(*args)
 
             if result:
-                yield from result
+                if extended:
+                    for kill in result:
+                        yield self._extend_killmail(kill)
+                else:
+                    yield from result
                 page += 1
             else:
                 break

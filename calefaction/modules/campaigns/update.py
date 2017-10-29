@@ -33,7 +33,7 @@ def _build_filter(qualifiers, arg):
 
 def _store_kill(cname, opnames, kill):
     """Store the given kill and its associations into the database."""
-    kid = kill["killID"]
+    kid = kill["killmail_id"]
     if g.campaign_db.has_kill(kid):
         current = g.campaign_db.get_kill_associations(cname, kid)
         opnames -= set(current)
@@ -59,12 +59,16 @@ def _update_killboard_operations(cname, opnames, min_kill_id):
             "no-attackers", "orderDirection", "desc"]
 
     max_kill_id = min_kill_id
-    for kill in g.eve.zkill.iter_killmails(*args):
-        kid = kill["killID"]
+    for kill in g.eve.zkill.iter_killmails(*args, extended=True):
+        kid = kill["killmail_id"]
         if min_kill_id > 0 and kid == min_kill_id:
+            # TODO: This fails if ZKill receives kills out of order.
+            # Should look ahead for kills within, say, 12 hours of the
+            # min_kill_id, and extend code below to ignore kills aleady
+            # included instead of re-adding.
             break
 
-        ktime = kill["killTime"]
+        ktime = kill["killmail_time"]
         logger.debug("Evaluating kill date=%s id=%d for campaign=%s "
                      "operations=%s", ktime, kid, cname, ",".join(opnames))
         max_kill_id = max(max_kill_id, kid)
