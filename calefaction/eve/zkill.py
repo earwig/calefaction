@@ -53,7 +53,7 @@ class ZKillboard:
 
         if "faction_id" in victim:
             factions = esi().v1.universe.factions.get()
-            matches = [fac["faction_name"] for fac in factions
+            matches = [fac["name"] for fac in factions
                        if fac["faction_id"] == victim["faction_id"]]
             victim["faction_name"] = matches[0] if matches else ""
         else:
