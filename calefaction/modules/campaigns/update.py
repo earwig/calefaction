@@ -56,13 +56,14 @@ def _update_killboard_operations(cname, opnames, min_kill_id):
         filters.append((_build_filter(qualif, "kill"), opname))
 
     args = ["kills", "corporationID", g.config.get("corp.id"), "no-items",
-            "no-attackers", "orderDirection", "asc"]
-    if min_kill_id > 0:
-        args += ["afterKillID", min_kill_id]
+            "no-attackers", "orderDirection", "desc"]
 
     max_kill_id = min_kill_id
     for kill in g.eve.zkill.iter_killmails(*args):
         kid = kill["killID"]
+        if min_kill_id > 0 and kid == min_kill_id:
+            break
+
         ktime = kill["killTime"]
         logger.debug("Evaluating kill date=%s id=%d for campaign=%s "
                      "operations=%s", ktime, kid, cname, ",".join(opnames))
@@ -153,13 +154,13 @@ def update_operation(cname, opname, new=False):
     if optype == "killboard":
         opsubset = []
         min_key = 0 if new else sys.maxsize
-        for opname in opnames:
-            last_updated, key = g.campaign_db.check_operation(cname, opname)
+        for opn in opnames:
+            last_updated, key = g.campaign_db.check_operation(cname, opn)
             if new and last_updated is None:
-                opsubset.append(opname)
+                opsubset.append(opn)
             elif not new and last_updated is not None:
                 min_key = min(min_key, key)
-                opsubset.append(opname)
+                opsubset.append(opn)
         _update_killboard_operations(cname, opsubset, min_key)
     elif optype == "collection":
         _update_collection_operations(cname, opnames)
