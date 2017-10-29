@@ -60,6 +60,8 @@ class ZKillboard:
             victim["faction_id"] = 0
             victim["faction_name"] = ""
 
+        return kill
+
     def query(self, *args):
         """Make an API query using the given arguments."""
         query = "/" + "".join(str(arg) + "/" for arg in args)
