@@ -56,7 +56,7 @@ def _update_killboard_operations(cname, opnames, min_kill_id):
         filters.append((_build_filter(qualif, "kill"), opname))
 
     args = ["kills", "corporationID", g.config.get("corp.id"), "no-items",
-            "no-attackers", "orderDirection", "desc"]
+            "no-attackers"]
 
     max_kill_id = min_kill_id
     for kill in g.eve.zkill.iter_killmails(*args, extended=True):
