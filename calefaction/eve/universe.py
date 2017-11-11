@@ -409,7 +409,7 @@ class Universe:
         """
         self._load()
         if tid not in self._types:
-            return _DummyKillable(self)
+            return _DummyType(self)
         return _Type(self, tid, self._types[tid])
 
     def killable(self, kid):
