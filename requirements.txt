@@ -1,7 +1,7 @@
-Flask==0.11.1
+Flask==1.0.2
 Flask-Mako==0.4
 humanize==0.5.1
-PyYAML==3.12
-requests==2.12.4
-uWSGI==2.0.14
-uwsgitop==0.9
+PyYAML==3.13
+requests==2.20.1
+uWSGI==2.0.17.1
+uwsgitop==0.10
